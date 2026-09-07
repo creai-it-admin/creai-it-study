@@ -32,6 +32,7 @@ export async function GET() {
   if (!data) return NextResponse.json({ formDef: null });
 
   return NextResponse.json({
+    submissionId: data.submission.id,
     formDef: { topicMd: data.formDef.topicMd, fields: data.formDef.fields },
     submission: {
       status: data.submission.status,

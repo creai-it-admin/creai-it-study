@@ -7,7 +7,7 @@ import { SegmentBar } from "@/components/SegmentBar";
 type Field = { id: string; order: number; question: string };
 type SaveState = "idle" | "saving" | "saved" | "failed";
 
-const DRAFT_KEY = "creai_inclass_draft";
+
 
 export function InclassForm() {
   const { state, offsetMs } = useLiveState();
@@ -17,30 +17,34 @@ export function InclassForm() {
   const [submitted, setSubmitted] = useState(false);
   const [save, setSave] = useState<SaveState>("idle");
   const [loaded, setLoaded] = useState(false);
+  const [draftKey, setDraftKey] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 처음 불러오기. 서버 답이 있으면 그걸 쓰고, 없거나 실패하면 브라우저 초안을 쓴다.
   useEffect(() => {
     let alive = true;
     (async () => {
-      let local: Record<string, string> = {};
-      try {
-        local = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}");
-      } catch {
-        local = {};
-      }
       try {
         const res = await fetch("/api/submission", { cache: "no-store" });
         const data = await res.json();
         if (!alive) return;
         if (data.formDef) {
+          // 초안 키를 사람과 폼별로 나눈다. 같은 브라우저를 다른 계정이 써도 안 섞인다.
+          const key = `creai_draft:${data.submissionId}`;
+          setDraftKey(key);
+          let local: Record<string, string> = {};
+          try {
+            local = JSON.parse(localStorage.getItem(key) ?? "{}");
+          } catch {
+            local = {};
+          }
           setTopic(data.formDef.topicMd);
           setFields(data.formDef.fields);
           setAnswers({ ...(data.submission?.answers ?? {}), ...local });
           setSubmitted(data.submission?.status === "submitted");
         }
       } catch {
-        if (alive) setAnswers(local);
+        // 서버를 못 부르면 폼 자체를 못 그린다. 다음 폴링에서 다시 시도된다.
       } finally {
         if (alive) setLoaded(true);
       }
@@ -51,12 +55,6 @@ export function InclassForm() {
   }, []);
 
   const persist = useCallback(async (next: Record<string, string>, submit = false) => {
-    // FR-503. 브라우저에 초안을 들고 있는다.
-    try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(next));
-    } catch {
-      /* 저장소가 막혀 있어도 계속 쓴다 */
-    }
     setSave("saving");
     try {
       const res = await fetch("/api/submission", {
@@ -66,18 +64,27 @@ export function InclassForm() {
       });
       if (!res.ok) throw new Error("save failed");
       setSave("saved");
-      if (submit) {
-        setSubmitted(true);
+      // 서버에 들어갔으면 초안을 지운다. 안 지우면 오래된 초안이 나중에 서버 답을 덮는다.
+      if (draftKey) {
         try {
-          localStorage.removeItem(DRAFT_KEY);
+          localStorage.removeItem(draftKey);
         } catch {
           /* noop */
         }
       }
+      if (submit) setSubmitted(true);
     } catch {
       setSave("failed");
+      // FR-503. 서버에 못 넣었을 때만 브라우저에 들고 있는다.
+      if (draftKey) {
+        try {
+          localStorage.setItem(draftKey, JSON.stringify(next));
+        } catch {
+          /* 저장소가 막혀 있어도 계속 쓴다 */
+        }
+      }
     }
-  }, []);
+  }, [draftKey]);
 
   // FR-502. 입력을 멈추고 2초가 지나면 초안을 저장한다.
   function onChange(fieldId: string, text: string) {

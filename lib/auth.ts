@@ -9,6 +9,21 @@ import { prisma } from "@/lib/prisma";
 
 export const CONSENT_COOKIE = "creai_consent";
 
+/**
+ * 동의 쿠키를 읽고 그 자리에서 지운다.
+ * 안 지우면 같은 브라우저에서 다음 사람이 앞사람 동의를 물려받는다.
+ */
+async function takeConsentCookie(): Promise<boolean> {
+  try {
+    const jar = await cookies();
+    const ok = jar.get(CONSENT_COOKIE)?.value === "1";
+    if (ok) jar.delete(CONSENT_COOKIE);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 function adminEmails(): string[] {
   return (process.env.ADMIN_EMAILS ?? "")
     .split(",")
@@ -26,13 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!user.email) return false;
       const email = user.email.toLowerCase();
 
-      let consented = false;
-      try {
-        const jar = await cookies();
-        consented = jar.get(CONSENT_COOKIE)?.value === "1";
-      } catch {
-        consented = false;
-      }
+      const consented = await takeConsentCookie();
 
       const roles: ("participant" | "admin")[] = ["participant"];
       if (adminEmails().includes(email)) roles.push("admin");
@@ -77,13 +86,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async createUser({ user }) {
       if (!user.email) return;
       const email = user.email.toLowerCase();
-      let consented = false;
-      try {
-        const jar = await cookies();
-        consented = jar.get(CONSENT_COOKIE)?.value === "1";
-      } catch {
-        consented = false;
-      }
+      const consented = await takeConsentCookie();
       const roles: ("participant" | "admin")[] = ["participant"];
       if (adminEmails().includes(email)) roles.push("admin");
       await prisma.user.update({

@@ -8,8 +8,17 @@ type State = {
   session: { id: string; weekNo: number; status: string; sharingOpen: boolean; deckUrl: string | null };
   segment: { kind: string; label: string; startedAt: string | null; plannedMin: number } | null;
   nextSegment: { kind: string; label: string } | null;
-  attendance: { userId: string; name: string; state: string; firstSeenAt: string }[];
-  submissions: { userId: string; name: string; status: string; filled: number; total: number }[];
+  rosterSize: number;
+  people: {
+    userId: string;
+    name: string;
+    onRoster: boolean;
+    attendance: string;
+    firstSeenAt: string | null;
+    submissionStatus: string;
+    filled: number;
+    total: number;
+  }[];
 };
 
 function mmss(sec: number) {
@@ -74,8 +83,10 @@ export function RunConsole({ id }: { id: string }) {
       : 0;
 
   const title = state.session.weekNo === 0 ? "리허설" : `${state.session.weekNo}주차`;
-  const submittedCount = state.submissions.filter((s) => s.status === "submitted").length;
-  const presentCount = state.attendance.filter((a) => a.state === "present").length;
+  const total = state.rosterSize;
+  const submittedCount = state.people.filter((p) => p.submissionStatus === "submitted").length;
+  const presentCount = state.people.filter((p) => p.attendance === "present").length;
+  const strangers = state.people.filter((p) => !p.onRoster);
 
   return (
     <div className="flex flex-col gap-5">
@@ -94,8 +105,11 @@ export function RunConsole({ id }: { id: string }) {
           ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {state.nextSegment ? (
+            <span className="text-[12.5px] text-ink-3">다음은 {state.nextSegment.label}</span>
+          ) : null}
           <button className="btn btn-primary" disabled={busy || !state.nextSegment} onClick={() => control("next")}>
-            {state.nextSegment ? `다음 구간으로 · ${state.nextSegment.label}` : "마지막 구간"}
+            다음 구간으로
           </button>
           <button
             className="btn"
@@ -110,52 +124,63 @@ export function RunConsole({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="card p-5">
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="text-[14px] font-semibold">제출 현황</h2>
-            <span className="font-en text-[13px] tabular-nums text-ink-2">{submittedCount} / 6</span>
-          </div>
-          <div className="flex flex-col gap-2">
-            {state.submissions.length === 0 ? (
-              <p className="text-[13px] text-ink-3">아직 아무도 쓰지 않았습니다</p>
-            ) : (
-              state.submissions.map((s) => (
-                <div key={s.userId} className="flex items-center justify-between text-[13.5px]">
-                  <span>{s.name}</span>
-                  <span className={s.status === "submitted" ? "text-[color:var(--ok)]" : "text-ink-3"}>
-                    {s.status === "submitted" ? "제출함" : `${s.filled} / ${s.total} 칸`}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
+      <div className="card p-5">
+        <div className="mb-4 flex items-baseline justify-between">
+          <h2 className="text-[14px] font-semibold">참가자</h2>
+          <span className="font-en text-[13px] tabular-nums text-ink-2">
+            출석 {presentCount} / {total} · 제출 {submittedCount} / {total}
+          </span>
         </div>
-
-        <div className="card p-5">
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="text-[14px] font-semibold">출석</h2>
-            <span className="font-en text-[13px] tabular-nums text-ink-2">{presentCount} / 6</span>
-          </div>
-          <div className="flex flex-col gap-2">
-            {state.attendance.length === 0 ? (
-              <p className="text-[13px] text-ink-3">아직 아무도 안 들어왔습니다</p>
-            ) : (
-              state.attendance.map((a) => (
-                <div key={a.userId} className="flex items-center justify-between text-[13.5px]">
-                  <span>{a.name}</span>
-                  <span className="font-en tabular-nums text-ink-3">
-                    {new Date(a.firstSeenAt).toLocaleTimeString("ko-KR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      timeZone: "Asia/Seoul",
-                    })}
+        <div className="flex flex-col">
+          {state.people.length === 0 ? (
+            <p className="text-[13px] text-ink-3">아직 아무도 안 들어왔습니다</p>
+          ) : (
+            state.people.map((p) => (
+              <div
+                key={p.userId}
+                className="flex items-center justify-between border-b border-line py-2 text-[13.5px] last:border-b-0"
+              >
+                <span className="flex items-center gap-2">
+                  {p.name}
+                  {!p.onRoster ? (
+                    <span className="rounded bg-[color:var(--warn)]/15 px-1.5 py-0.5 text-[11px] text-[color:var(--warn)]">
+                      명단 밖
+                    </span>
+                  ) : null}
+                </span>
+                <span className="flex items-center gap-4">
+                  <span
+                    className={
+                      p.attendance === "present"
+                        ? "text-[color:var(--ok)]"
+                        : p.attendance === "absent"
+                          ? "text-[color:var(--warn)]"
+                          : "text-ink-3"
+                    }
+                  >
+                    {p.attendance === "present" ? "출석" : p.attendance === "absent" ? "결석" : "미접속"}
                   </span>
-                </div>
-              ))
-            )}
-          </div>
+                  <span
+                    className={
+                      p.submissionStatus === "submitted" ? "text-[color:var(--ok)]" : "text-ink-3"
+                    }
+                  >
+                    {p.submissionStatus === "submitted"
+                      ? "제출함"
+                      : p.submissionStatus === "none"
+                        ? "안 씀"
+                        : `${p.filled} / ${p.total} 칸`}
+                  </span>
+                </span>
+              </div>
+            ))
+          )}
         </div>
+        {strangers.length > 0 ? (
+          <p className="mt-3 text-[12.5px] text-[color:var(--warn)]">
+            명단에 없는 계정이 {strangers.length}명 들어와 있습니다.
+          </p>
+        ) : null}
       </div>
 
       {state.session.weekNo === 0 ? (

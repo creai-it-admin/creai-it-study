@@ -28,8 +28,13 @@ npm run dev
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | 장표 PDF 업로드용 |
 | `SUPABASE_STORAGE_BUCKET` | 공개 버킷 이름. 기본 `decks` |
 | `ADMIN_EMAILS` | 쉼표로 구분. 여기 있는 계정은 첫 로그인에 운영진이 된다 |
+| `PARTICIPANT_EMAILS` | 쉼표로 구분. 그 기수 참가자 명단. 결석 처리와 "몇 명 중 몇 명"의 기준이다 |
 
-**퍼블릭 레포다.** `.env`는 커밋하지 않는다. 참가자 이메일도 시드에 넣지 않는다.
+**퍼블릭 레포다.** `.env`는 커밋하지 않는다. 참가자 이메일은 코드나 시드가 아니라
+`PARTICIPANT_EMAILS` 환경 변수로만 들어간다.
+
+`ADMIN_EMAILS`에 이메일을 나중에 추가하면 그 사람이 **다시 로그인해야** 운영진이 된다.
+역할은 로그인 시점에 DB에 쓰이기 때문이다.
 
 ## 화면
 
@@ -61,6 +66,12 @@ npm run dev
 다시 시도한다. 카페 와이파이가 끊겨도 쓰던 글이 날아가지 않는다.
 
 공유가 닫혀 있으면 서버가 남의 제출물을 아예 주지 않는다. 화면에서 숨기는 게 아니다.
+
+동의 여부와 운영진 권한은 `middleware.ts`에서 한 번에 막는다. 화면마다 검사를 흩어 놓으면
+하나 빠뜨렸을 때 그 문으로 다 들어온다. 동의 쿠키는 계정을 만들 때 소비하고 바로 지운다.
+
+PDF 워커는 `public/pdf.worker.min.mjs`에서 서빙한다. CDN을 못 잡아도 장표는 열려야 한다.
+`npm install`의 postinstall이 react-pdf가 쓰는 버전으로 복사해 둔다.
 
 ## 리허설
 

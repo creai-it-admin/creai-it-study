@@ -16,7 +16,12 @@ export async function GET() {
   if (state.sessionId) {
     await prisma.attendance.upsert({
       where: { sessionId_userId: { sessionId: state.sessionId, userId: session.user.id } },
-      create: { sessionId: state.sessionId, userId: session.user.id, state: "present" },
+      create: {
+        sessionId: state.sessionId,
+        userId: session.user.id,
+        state: "present",
+        firstSeenAt: new Date(),
+      },
       update: {},
     });
   }

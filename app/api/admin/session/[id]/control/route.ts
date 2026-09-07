@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { currentSegment, SEGMENT_ORDER } from "@/lib/session-state";
+import { rosterUsers } from "@/lib/roster";
 
 export const dynamic = "force-dynamic";
 
@@ -75,10 +76,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       prisma.studySession.update({ where: { id }, data: { status: "closed", sharingOpen: false } }),
     ]);
     // FR-602. 세션이 닫힐 때까지 로그인하지 않은 참가자는 absent다.
-    const participants = await prisma.user.findMany({
-      where: { roles: { has: "participant" } },
-      select: { id: true },
-    });
+    // 전체 계정이 아니라 그 기수 명단만 본다. 가입이 열려 있어서 참가자 역할은 아무나 갖는다.
+    const participants = await rosterUsers();
     const seen = await prisma.attendance.findMany({
       where: { sessionId: id },
       select: { userId: true },

@@ -176,7 +176,7 @@ model Attendance {
   id          String          @id @default(cuid())
   sessionId   String
   userId      String
-  firstSeenAt DateTime        @default(now())
+  firstSeenAt DateTime?
   state       AttendanceState @default(present)
 
   session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)

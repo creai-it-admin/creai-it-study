@@ -60,9 +60,15 @@ export function currentSegment(
   segments: { kind: SegmentKind; startedAt: Date | null; endedAt: Date | null; plannedMin: number }[]
 ) {
   const open = segments.filter((s) => s.startedAt && !s.endedAt);
-  if (open.length === 0) return null;
-  // 순서상 가장 뒤에 있는 것을 현재로 본다.
-  return open.sort((a, b) => SEGMENT_ORDER.indexOf(b.kind) - SEGMENT_ORDER.indexOf(a.kind))[0];
+  if (open.length > 0) {
+    // 순서상 가장 뒤에 있는 것을 현재로 본다.
+    return open.sort((a, b) => SEGMENT_ORDER.indexOf(b.kind) - SEGMENT_ORDER.indexOf(a.kind))[0];
+  }
+  // 세션이 running인데 열린 구간이 없을 수 있다(마지막 구간을 닫고 세션은 안 닫은 경우).
+  // 이때 참가자를 /home으로 튕기지 않고 마지막으로 시작된 구간에 머무르게 한다.
+  const started = segments.filter((s) => s.startedAt);
+  if (started.length === 0) return null;
+  return started.sort((a, b) => SEGMENT_ORDER.indexOf(b.kind) - SEGMENT_ORDER.indexOf(a.kind))[0];
 }
 
 export async function getLiveState(): Promise<LiveState> {
