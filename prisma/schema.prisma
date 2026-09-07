@@ -1,0 +1,186 @@
+// 0기 앱 Phase 1 스키마. 여덟 테이블. Auth.js가 요구하는 Account/Session/VerificationToken을 더한다.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  participant
+  admin
+}
+
+enum StudySessionStatus {
+  scheduled
+  running
+  closed
+}
+
+enum SegmentKind {
+  part1
+  part2
+  break_ @map("break")
+  part3
+}
+
+enum SubmissionStatus {
+  draft
+  submitted
+}
+
+enum AttendanceState {
+  present
+  absent
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  roles         Role[]    @default([participant])
+  consentedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  accounts    Account[]
+  sessions    Session[]
+  submissions Submission[]
+  attendances Attendance[]
+}
+
+// --- Auth.js 어댑터가 요구하는 테이블 ---
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// --- 스터디 도메인 ---
+
+model StudySession {
+  id          String             @id @default(cuid())
+  weekNo      Int
+  date        DateTime
+  status      StudySessionStatus @default(scheduled)
+  sharingOpen Boolean            @default(false)
+  deckUrl     String?
+
+  segments    Segment[]
+  formDef     FormDef?
+  attendances Attendance[]
+
+  @@index([status])
+}
+
+model Segment {
+  id         String      @id @default(cuid())
+  sessionId  String
+  kind       SegmentKind
+  plannedMin Int
+  startedAt  DateTime?
+  endedAt    DateTime?
+
+  session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, kind])
+}
+
+model FormDef {
+  id        String @id @default(cuid())
+  sessionId String @unique
+  topicMd   String
+
+  session     StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  fields      FormField[]
+  submissions Submission[]
+}
+
+model FormField {
+  id        String @id @default(cuid())
+  formDefId String
+  order     Int
+  question  String
+
+  formDef FormDef  @relation(fields: [formDefId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@unique([formDefId, order])
+}
+
+model Submission {
+  id          String           @id @default(cuid())
+  formDefId   String
+  userId      String
+  status      SubmissionStatus @default(draft)
+  submittedAt DateTime?
+  updatedAt   DateTime         @updatedAt
+
+  formDef FormDef  @relation(fields: [formDefId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@unique([formDefId, userId])
+}
+
+model Answer {
+  id           String @id @default(cuid())
+  submissionId String
+  formFieldId  String
+  text         String @default("")
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  formField  FormField  @relation(fields: [formFieldId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, formFieldId])
+}
+
+model Attendance {
+  id          String          @id @default(cuid())
+  sessionId   String
+  userId      String
+  firstSeenAt DateTime        @default(now())
+  state       AttendanceState @default(present)
+
+  session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+}

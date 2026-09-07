@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CREAI+IT AI 스터디 0기 앱
 
-## Getting Started
+스터디 운영을 굴리고, 다음 운영을 고칠 데이터를 쌓는다.
 
-First, run the development server:
+대면 세션 두 시간을 이 앱 하나로 진행한다. 커피빈에 스크린이 없어서 장표를 각자 노트북으로
+보고, 2부 인클래스 답변을 여기에 쓰고, 운영진이 구간을 넘긴다.
+
+구현 범위는 Phase 1이다. 요구사항 22개, 화면 8개, 테이블 8개.
+
+## 세팅
 
 ```bash
+npm install
+cp .env.example .env      # 값을 채운다
+npm run db:push           # 스키마를 DB에 민다
+npm run db:seed           # 회차 다섯 줄과 1주차 폼을 넣는다
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 환경 변수
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| 이름 | 무엇 |
+| --- | --- |
+| `NEXTAUTH_URL` | 로컬은 `http://localhost:3000` |
+| `NEXTAUTH_SECRET` | `openssl rand -base64 32`로 만든다 |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | 구글 OAuth. 리디렉션 URI는 `<주소>/api/auth/callback/google` |
+| `DATABASE_URL` / `DIRECT_URL` | Supabase Postgres 접속 문자열 |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | 장표 PDF 업로드용 |
+| `SUPABASE_STORAGE_BUCKET` | 공개 버킷 이름. 기본 `decks` |
+| `ADMIN_EMAILS` | 쉼표로 구분. 여기 있는 계정은 첫 로그인에 운영진이 된다 |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**퍼블릭 레포다.** `.env`는 커밋하지 않는다. 참가자 이메일도 시드에 넣지 않는다.
 
-## Learn More
+## 화면
 
-To learn more about Next.js, take a look at the following resources:
+| 누가 | 경로 | 무엇 |
+| --- | --- | --- |
+| 공통 | `/login` | 동의 체크박스와 구글 버튼 |
+| 공통 | `/` | 진입점. 현재 구간으로 보낸다 |
+| 참가자 | `/home` | 세션이 안 열렸을 때 |
+| 참가자 | `/deck` | 오늘 장표를 각자 넘긴다 |
+| 참가자 | `/inclass` | 오늘 폼을 쓰고 제출한다 |
+| 참가자 | `/inclass/shared` | 공유가 열린 뒤 서로 제출물을 본다 |
+| 운영진 | `/admin` | 회차 목록. 장표 업로드와 세션 시작 |
+| 운영진 | `/admin/run/[id]` | 진행 콘솔 |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 어떻게 도나
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+운영진이 `/admin`에서 회차에 장표를 올리고 세션을 시작하면 그 회차가 `running`이 된다.
+날짜를 보지 않는다. `running`인 회차 하나만 본다. 그래서 리허설 회차로 아무 때나 끝까지
+돌려 볼 수 있다.
 
-## Deploy on Vercel
+참가자 화면은 3초마다 `/api/state`를 물어 현재 구간을 받는다. **구간이 바뀌는 순간에만 한 번**
+그 구간 화면으로 옮기고, 그 뒤 참가자가 스스로 옮긴 경로는 다음 구간이 바뀔 때까지 건드리지
+않는다. 2부에 장표를 다시 열어 봐도 끌려가지 않는다.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+타이머는 서버 시각 기준이다. 상태 응답의 서버 시각으로 시차를 재 두고 보정해서 센다.
+1부에는 안 뜨고 2부, 휴식, 3부에만 뜬다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+인클 폼은 입력을 멈추고 2초 뒤에 저장한다. 저장이 실패하면 브라우저에 초안을 들고 있다가
+다시 시도한다. 카페 와이파이가 끊겨도 쓰던 글이 날아가지 않는다.
+
+공유가 닫혀 있으면 서버가 남의 제출물을 아예 주지 않는다. 화면에서 숨기는 게 아니다.
+
+## 리허설
+
+9월 12일 전에 `/admin`에서 리허설 회차로 아래를 끝까지 돈다. 브라우저 두 개가 필요하다.
+
+1. 운영진 계정과 참가자 계정으로 각각 로그인한다
+2. 리허설 회차에 장표를 올리고 세션을 시작한다
+3. 참가자 화면이 장표로 바뀌는지 본다. 장을 넘겨도 운영진 화면은 안 따라간다
+4. 2부로 넘긴다. 3초 안에 폼으로 바뀌고 타이머가 뜨는지 본다
+5. 참가자가 `/deck`을 직접 열어 본다. 3초 뒤에 안 끌려가는지 본다
+6. 칸을 채우다 새로고침하고, 와이파이를 껐다 켠다
+7. 제출한다. 콘솔 제출 현황이 차는지 본다
+8. 공유를 연다. 참가자 화면에 제출물이 보이는지 본다
+9. 세션을 닫는다. 참가자가 `/home`으로 가는지 본다
+10. 콘솔에서 리허설을 초기화한다
+
+## 스택
+
+Next.js App Router, TypeScript, Tailwind v4, Prisma 6 + Supabase Postgres,
+Auth.js 구글 provider, react-pdf.
+
+색과 글꼴은 yonseicreaiit.com에서 가져왔다. 강조색 `#0ea5e9`, 본문 `#0f172a`,
+바탕 `#f8fafc`. 한글은 Pretendard, 영문은 Outfit.
+
+## 아직 없는 것
+
+만족도, 전사본과 요약, 운영 기록 입력, 데이터 화면, 지난 제출물, 사전 과제, 폼 칸 편집기,
+계정 삭제. 전부 Phase 2다.
