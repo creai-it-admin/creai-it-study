@@ -1,8 +1,9 @@
-// FR-201, FR-202. PDF를 올리면 저장소에 넣고 deck_url에 기록한다. 10MB를 넘으면 거부한다.
+// FR-201. 브라우저가 올리기를 끝내면 경로만 받아 deck_url에 기록한다.
+// 파일 본체는 서버를 안 거친다. Vercel 요청 본문 상한을 피하기 위해서다.
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { MAX_DECK_BYTES, uploadDeck } from "@/lib/storage";
+import { confirmDeck } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -11,21 +12,14 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   if (!admin) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const { id } = await ctx.params;
-  const form = await req.formData();
-  const file = form.get("file");
+  const { path } = (await req.json()) as { path?: string };
 
-  if (!(file instanceof File)) {
-    return NextResponse.json({ error: "PDF 파일이 없습니다" }, { status: 400 });
-  }
-  if (file.type !== "application/pdf") {
-    return NextResponse.json({ error: "PDF만 올릴 수 있습니다" }, { status: 400 });
-  }
-  if (file.size > MAX_DECK_BYTES) {
-    return NextResponse.json({ error: "10MB를 넘는 파일은 올릴 수 없습니다" }, { status: 400 });
+  if (!path || !path.startsWith(`${id}/`)) {
+    return NextResponse.json({ error: "잘못된 경로입니다" }, { status: 400 });
   }
 
   try {
-    const url = await uploadDeck(id, file);
+    const url = await confirmDeck(path);
     await prisma.studySession.update({ where: { id }, data: { deckUrl: url } });
     return NextResponse.json({ ok: true, url });
   } catch (e) {

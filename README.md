@@ -70,6 +70,10 @@ npm run dev
 동의 여부와 운영진 권한은 `middleware.ts`에서 한 번에 막는다. 화면마다 검사를 흩어 놓으면
 하나 빠뜨렸을 때 그 문으로 다 들어온다. 동의 쿠키는 계정을 만들 때 소비하고 바로 지운다.
 
+장표 PDF는 브라우저에서 Supabase로 바로 올라간다. 서버는 일회용 서명 주소를 발급하고
+경로만 받아 기록한다. Vercel의 요청 본문 상한이 4.5MB라 서버를 거치면 4MB짜리 장표가
+아슬아슬하기 때문이다. 지금 상한은 20MB다.
+
 PDF 워커는 `public/pdf.worker.min.mjs`에서 서빙한다. CDN을 못 잡아도 장표는 열려야 한다.
 `npm install`의 postinstall이 react-pdf가 쓰는 버전으로 복사해 둔다.
 

@@ -28,6 +28,7 @@ export function SessionRow({
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<string | null>(null);
 
   const title = weekNo === 0 ? "리허설" : `${weekNo}주차`;
   const dateLabel = new Date(date).toLocaleDateString("ko-KR", {
@@ -36,19 +37,42 @@ export function SessionRow({
     timeZone: "Asia/Seoul",
   });
 
+  // 파일은 서버를 안 거치고 Supabase로 바로 간다. Vercel 요청 본문 상한(4.5MB)을 피한다.
   async function upload(file: File) {
     setBusy(true);
     setError(null);
-    const fd = new FormData();
-    fd.append("file", file);
+    setProgress("주소 받는 중");
     try {
-      const res = await fetch(`/api/admin/session/${id}/deck`, { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "업로드에 실패했습니다");
+      const signRes = await fetch(`/api/admin/session/${id}/deck/sign`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ size: file.size, type: file.type }),
+      });
+      const sign = await signRes.json();
+      if (!signRes.ok) throw new Error(sign.error ?? "주소를 받지 못했습니다");
+
+      setProgress("올리는 중");
+      const put = await fetch(sign.signedUrl, {
+        method: "PUT",
+        headers: { "content-type": "application/pdf" },
+        body: file,
+      });
+      if (!put.ok) throw new Error("올리다 실패했습니다");
+
+      setProgress("확인 중");
+      const saveRes = await fetch(`/api/admin/session/${id}/deck`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ path: sign.path }),
+      });
+      const saved = await saveRes.json();
+      if (!saveRes.ok) throw new Error(saved.error ?? "기록에 실패했습니다");
+
       router.refresh();
     } catch (e) {
       setError((e as Error).message);
     } finally {
+      setProgress(null);
       setBusy(false);
     }
   }
@@ -124,7 +148,7 @@ export function SessionRow({
           }}
         />
         <button className="btn" disabled={busy} onClick={() => fileRef.current?.click()}>
-          {deckUrl ? "장표 바꾸기" : "장표 올리기"}
+          {progress ?? (deckUrl ? "장표 바꾸기" : "장표 올리기")}
         </button>
       </div>
 
