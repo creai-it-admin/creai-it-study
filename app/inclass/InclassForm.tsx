@@ -19,6 +19,8 @@ export function InclassForm() {
   const [loaded, setLoaded] = useState(false);
   const [draftKey, setDraftKey] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wantSubmit = useRef(false);
+  const [reloadTick, setReloadTick] = useState(0);
 
   // 처음 불러오기. 서버 답이 있으면 그걸 쓰고, 없거나 실패하면 브라우저 초안을 쓴다.
   useEffect(() => {
@@ -44,7 +46,8 @@ export function InclassForm() {
           setSubmitted(data.submission?.status === "submitted");
         }
       } catch {
-        // 서버를 못 부르면 폼 자체를 못 그린다. 다음 폴링에서 다시 시도된다.
+        // 서버를 못 부르면 폼을 못 그린다. 5초 뒤 다시 시도한다.
+        if (alive) setTimeout(() => setReloadTick((t) => t + 1), 5000);
       } finally {
         if (alive) setLoaded(true);
       }
@@ -52,9 +55,10 @@ export function InclassForm() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [reloadTick]);
 
   const persist = useCallback(async (next: Record<string, string>, submit = false) => {
+    if (submit) wantSubmit.current = true;
     setSave("saving");
     try {
       const res = await fetch("/api/submission", {
@@ -72,7 +76,10 @@ export function InclassForm() {
           /* noop */
         }
       }
-      if (submit) setSubmitted(true);
+      if (submit) {
+        setSubmitted(true);
+        wantSubmit.current = false;
+      }
     } catch {
       setSave("failed");
       // FR-503. 서버에 못 넣었을 때만 브라우저에 들고 있는다.
@@ -98,7 +105,8 @@ export function InclassForm() {
   // 저장이 실패한 상태면 주기적으로 다시 시도한다.
   useEffect(() => {
     if (save !== "failed") return;
-    const id = setTimeout(() => persist(answers), 5000);
+    // 제출하려다 실패했으면 재시도도 제출로 보낸다. 아니면 영영 초안으로 남는다.
+    const id = setTimeout(() => persist(answers, wantSubmit.current), 5000);
     return () => clearTimeout(id);
   }, [save, answers, persist]);
 

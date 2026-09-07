@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!admin) {
     return (
       <>
-        <Header />
+        {await Header()}
         <main className="mx-auto max-w-3xl px-5 py-20">
           <div className="card p-10 text-center">
             <p className="text-[15px] font-medium">403</p>
@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
   return (
     <>
-      <Header right={<span>운영진</span>} />
+      {await Header()}
       {children}
     </>
   );

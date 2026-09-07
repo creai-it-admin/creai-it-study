@@ -13,7 +13,9 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
-    secureCookie: process.env.NODE_ENV === "production",
+    // NODE_ENV가 아니라 요청 프로토콜로 판정한다.
+    // 프로덕션 빌드를 http://localhost로 돌리면 쿠키 이름이 어긋나 전부 로그인으로 튕긴다.
+    secureCookie: req.nextUrl.protocol === "https:",
   });
 
   const isApi = pathname.startsWith("/api");
@@ -32,11 +34,12 @@ export async function middleware(req: NextRequest) {
 
   // 운영진 아님
   const roles = (token.roles as string[] | undefined) ?? [];
-  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+  if (pathname.startsWith("/api/admin")) {
     if (!roles.includes("admin")) {
       return NextResponse.json({ error: "forbidden" }, { status: 403 });
     }
   }
+  // 화면 요청은 JSON을 뱉지 않고 /admin 레이아웃의 안내 화면으로 넘긴다.
 
   return NextResponse.next();
 }

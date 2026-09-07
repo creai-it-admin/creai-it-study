@@ -10,17 +10,31 @@ import { prisma } from "@/lib/prisma";
 export const CONSENT_COOKIE = "creai_consent";
 
 /**
- * 동의 쿠키를 읽고 그 자리에서 지운다.
- * 안 지우면 같은 브라우저에서 다음 사람이 앞사람 동의를 물려받는다.
+ * 동의 쿠키를 읽는다. 지우지 않는다.
+ * signIn 콜백과 events.createUser가 둘 다 읽어야 하는데, 앞에서 지우면
+ * 신규 계정이 만들어질 때 뒤쪽이 못 읽어서 첫 로그인이 미동의로 남는다.
+ * 대신 쿠키 수명을 5분으로 짧게 둬서 다음 사람이 물려받을 창을 좁힌다.
  */
-async function takeConsentCookie(): Promise<boolean> {
+async function readConsentCookie(): Promise<boolean> {
   try {
     const jar = await cookies();
-    const ok = jar.get(CONSENT_COOKIE)?.value === "1";
-    if (ok) jar.delete(CONSENT_COOKIE);
-    return ok;
+    return jar.get(CONSENT_COOKIE)?.value === "1";
   } catch {
     return false;
+  }
+}
+
+/**
+ * 동의를 계정에 옮겨 적은 뒤에 쿠키를 지운다.
+ * 읽는 자리가 둘(signIn 콜백, events.createUser)이라 앞에서 지우면 뒤가 못 읽는다.
+ * 그래서 쓰고 난 자리에서만 지운다. 안 지우면 같은 브라우저의 다음 사람이 물려받는다.
+ */
+async function dropConsentCookie(): Promise<void> {
+  try {
+    const jar = await cookies();
+    jar.delete(CONSENT_COOKIE);
+  } catch {
+    /* 지우지 못해도 5분이면 만료된다 */
   }
 }
 
@@ -33,7 +47,16 @@ function adminEmails(): string[] {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  providers: [Google],
+  // Auth.js v5는 기본으로 AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET를 찾는다.
+  // 스펙이 정한 이름은 GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET이라 명시적으로 넘긴다.
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
+  secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   callbacks: {
@@ -41,12 +64,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!user.email) return false;
       const email = user.email.toLowerCase();
 
-      const consented = await takeConsentCookie();
+      const consented = await readConsentCookie();
 
       const roles: ("participant" | "admin")[] = ["participant"];
       if (adminEmails().includes(email)) roles.push("admin");
 
-      const existing = await prisma.user.findUnique({ where: { email } });
+      // 구글이 준 이메일은 대소문자가 섞일 수 있다. 정확히 일치로 찾으면 조용히 스킵된다.
+      const existing = await prisma.user.findFirst({
+        where: { email: { equals: email, mode: "insensitive" } },
+      });
       if (existing) {
         await prisma.user.update({
           where: { id: existing.id },
@@ -55,14 +81,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             consentedAt: existing.consentedAt ?? (consented ? new Date() : null),
           },
         });
+        if (consented) await dropConsentCookie();
       }
       // 계정이 아직 없으면 어댑터가 만든 뒤 events.createUser에서 채운다.
       return true;
     },
     async jwt({ token }) {
       if (!token.email) return token;
-      const u = await prisma.user.findUnique({
-        where: { email: token.email.toLowerCase() },
+      const u = await prisma.user.findFirst({
+        where: { email: { equals: token.email, mode: "insensitive" } },
         select: { id: true, roles: true, consentedAt: true, name: true },
       });
       if (u) {
@@ -86,13 +113,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async createUser({ user }) {
       if (!user.email) return;
       const email = user.email.toLowerCase();
-      const consented = await takeConsentCookie();
+      const consented = await readConsentCookie();
       const roles: ("participant" | "admin")[] = ["participant"];
       if (adminEmails().includes(email)) roles.push("admin");
       await prisma.user.update({
         where: { id: user.id! },
         data: { roles, consentedAt: consented ? new Date() : null },
       });
+      if (consented) await dropConsentCookie();
     },
   },
 });

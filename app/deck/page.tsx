@@ -15,7 +15,7 @@ export default async function DeckPage() {
 
   return (
     <>
-      <Header />
+      {await Header()}
       <main className="mx-auto max-w-5xl px-5 py-8">
         <DeckFrame>
           {running?.deckUrl ? (

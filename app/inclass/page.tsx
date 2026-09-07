@@ -11,7 +11,7 @@ export default async function InclassPage() {
 
   return (
     <>
-      <Header />
+      {await Header()}
       <main className="mx-auto max-w-3xl px-5 py-8">
         <InclassForm />
       </main>

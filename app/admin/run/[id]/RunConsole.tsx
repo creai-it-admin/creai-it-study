@@ -8,9 +8,11 @@ type State = {
   session: { id: string; weekNo: number; status: string; sharingOpen: boolean; deckUrl: string | null };
   segment: { kind: string; label: string; startedAt: string | null; plannedMin: number } | null;
   nextSegment: { kind: string; label: string } | null;
+  topic: string | null;
   rosterSize: number;
   people: {
-    userId: string;
+    key: string;
+    userId: string | null;
     name: string;
     onRoster: boolean;
     attendance: string;
@@ -18,6 +20,7 @@ type State = {
     submissionStatus: string;
     filled: number;
     total: number;
+    answers: { fieldId: string; order: number; question: string; text: string }[];
   }[];
 };
 
@@ -31,6 +34,7 @@ export function RunConsole({ id }: { id: string }) {
   const router = useRouter();
   const [state, setState] = useState<State | null>(null);
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const offsetRef = useRef<number | null>(null);
 
@@ -121,10 +125,20 @@ export function RunConsole({ id }: { id: string }) {
           <button className="btn" disabled={busy} onClick={() => control("close")}>
             세션 닫기
           </button>
+          {state.session.deckUrl ? (
+            <a className="btn" href="/deck?pin=1" target="_blank" rel="noreferrer">
+              장표 보기
+            </a>
+          ) : null}
         </div>
       </div>
 
       <div className="card p-5">
+        {state.topic ? (
+          <p className="mb-4 border-b border-line pb-3 text-[13.5px] leading-relaxed text-ink-2">
+            {state.topic}
+          </p>
+        ) : null}
         <div className="mb-4 flex items-baseline justify-between">
           <h2 className="text-[14px] font-semibold">참가자</h2>
           <span className="font-en text-[13px] tabular-nums text-ink-2">
@@ -135,45 +149,70 @@ export function RunConsole({ id }: { id: string }) {
           {state.people.length === 0 ? (
             <p className="text-[13px] text-ink-3">아직 아무도 안 들어왔습니다</p>
           ) : (
-            state.people.map((p) => (
-              <div
-                key={p.userId}
-                className="flex items-center justify-between border-b border-line py-2 text-[13.5px] last:border-b-0"
-              >
-                <span className="flex items-center gap-2">
-                  {p.name}
-                  {!p.onRoster ? (
-                    <span className="rounded bg-[color:var(--warn)]/15 px-1.5 py-0.5 text-[11px] text-[color:var(--warn)]">
-                      명단 밖
+            state.people.map((p) => {
+              const isOpen = open === p.key;
+              return (
+                <div key={p.key} className="border-b border-line last:border-b-0">
+                  <button
+                    className="flex w-full items-center justify-between py-2 text-left text-[13.5px]"
+                    onClick={() => setOpen(isOpen ? null : p.key)}
+                  >
+                    <span className="flex items-center gap-2">
+                      {p.name}
+                      {!p.onRoster ? (
+                        <span className="rounded bg-[color:var(--warn)]/15 px-1.5 py-0.5 text-[11px] text-[color:var(--warn)]">
+                          명단 밖
+                        </span>
+                      ) : null}
                     </span>
+                    <span className="flex items-center gap-4">
+                      <span
+                        className={
+                          p.attendance === "present"
+                            ? "text-[color:var(--ok)]"
+                            : p.attendance === "absent"
+                              ? "text-[color:var(--warn)]"
+                              : "text-ink-3"
+                        }
+                      >
+                        {p.attendance === "present" ? "출석" : p.attendance === "absent" ? "결석" : "미접속"}
+                      </span>
+                      <span
+                        className={
+                          p.submissionStatus === "submitted" ? "text-[color:var(--ok)]" : "text-ink-3"
+                        }
+                      >
+                        {p.submissionStatus === "submitted"
+                          ? "제출함"
+                          : p.submissionStatus === "none"
+                            ? "안 씀"
+                            : `${p.filled} / ${p.total} 칸`}
+                      </span>
+                      <span className="text-[12px] text-ink-3">{isOpen ? "접기" : "펴기"}</span>
+                    </span>
+                  </button>
+                  {isOpen ? (
+                    <div className="flex flex-col gap-3 pb-4 pl-1">
+                      {p.answers.length === 0 ? (
+                        <p className="text-[13px] text-ink-3">이번 회차 폼이 없습니다</p>
+                      ) : (
+                        p.answers.map((a) => (
+                          <div key={a.fieldId}>
+                            <p className="mb-1 text-[12.5px] text-ink-3">
+                              <span className="font-en mr-2">{a.order}</span>
+                              {a.question}
+                            </p>
+                            <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed">
+                              {a.text.trim() || <span className="text-ink-3">아직 비어 있음</span>}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   ) : null}
-                </span>
-                <span className="flex items-center gap-4">
-                  <span
-                    className={
-                      p.attendance === "present"
-                        ? "text-[color:var(--ok)]"
-                        : p.attendance === "absent"
-                          ? "text-[color:var(--warn)]"
-                          : "text-ink-3"
-                    }
-                  >
-                    {p.attendance === "present" ? "출석" : p.attendance === "absent" ? "결석" : "미접속"}
-                  </span>
-                  <span
-                    className={
-                      p.submissionStatus === "submitted" ? "text-[color:var(--ok)]" : "text-ink-3"
-                    }
-                  >
-                    {p.submissionStatus === "submitted"
-                      ? "제출함"
-                      : p.submissionStatus === "none"
-                        ? "안 씀"
-                        : `${p.filled} / ${p.total} 칸`}
-                  </span>
-                </span>
-              </div>
-            ))
+                </div>
+              );
+            })
           )}
         </div>
         {strangers.length > 0 ? (
