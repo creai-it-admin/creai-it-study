@@ -9,12 +9,10 @@ type State = {
   segment: { kind: string; label: string; startedAt: string | null; plannedMin: number } | null;
   nextSegment: { kind: string; label: string } | null;
   topic: string | null;
-  rosterSize: number;
   people: {
     key: string;
     userId: string | null;
     name: string;
-    onRoster: boolean;
     attendance: string;
     firstSeenAt: string | null;
     submissionStatus: string;
@@ -87,10 +85,8 @@ export function RunConsole({ id }: { id: string }) {
       : 0;
 
   const title = state.session.weekNo === 0 ? "리허설" : `${state.session.weekNo}주차`;
-  const total = state.rosterSize;
   const submittedCount = state.people.filter((p) => p.submissionStatus === "submitted").length;
   const presentCount = state.people.filter((p) => p.attendance === "present").length;
-  const strangers = state.people.filter((p) => !p.onRoster);
 
   return (
     <div className="flex flex-col gap-5">
@@ -142,7 +138,7 @@ export function RunConsole({ id }: { id: string }) {
         <div className="mb-4 flex items-baseline justify-between">
           <h2 className="text-[14px] font-semibold">참가자</h2>
           <span className="font-en text-[13px] tabular-nums text-ink-2">
-            출석 {presentCount} / {total} · 제출 {submittedCount} / {total}
+            출석 {presentCount}명 · 제출 {submittedCount}명
           </span>
         </div>
         <div className="flex flex-col">
@@ -157,14 +153,7 @@ export function RunConsole({ id }: { id: string }) {
                     className="flex w-full items-center justify-between py-2 text-left text-[13.5px]"
                     onClick={() => setOpen(isOpen ? null : p.key)}
                   >
-                    <span className="flex items-center gap-2">
-                      {p.name}
-                      {!p.onRoster ? (
-                        <span className="rounded bg-[color:var(--warn)]/15 px-1.5 py-0.5 text-[11px] text-[color:var(--warn)]">
-                          명단 밖
-                        </span>
-                      ) : null}
-                    </span>
+                    <span>{p.name}</span>
                     <span className="flex items-center gap-4">
                       <span
                         className={
@@ -215,11 +204,6 @@ export function RunConsole({ id }: { id: string }) {
             })
           )}
         </div>
-        {strangers.length > 0 ? (
-          <p className="mt-3 text-[12.5px] text-[color:var(--warn)]">
-            명단에 없는 계정이 {strangers.length}명 들어와 있습니다.
-          </p>
-        ) : null}
       </div>
 
       {state.session.weekNo === 0 ? (

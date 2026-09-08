@@ -28,10 +28,9 @@ npm run dev
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | 장표 PDF 업로드용 |
 | `SUPABASE_STORAGE_BUCKET` | 공개 버킷 이름. 기본 `decks` |
 | `ADMIN_EMAILS` | 쉼표로 구분. 여기 있는 계정은 첫 로그인에 운영진이 된다 |
-| `PARTICIPANT_EMAILS` | 쉼표로 구분. 그 기수 참가자 명단. 결석 처리와 "몇 명 중 몇 명"의 기준이다 |
 
-**퍼블릭 레포다.** `.env`는 커밋하지 않는다. 참가자 이메일은 코드나 시드가 아니라
-`PARTICIPANT_EMAILS` 환경 변수로만 들어간다.
+**퍼블릭 레포다.** `.env`는 커밋하지 않는다. 참가자 이메일은 코드에도 시드에도 환경 변수에도
+안 들어간다. 각자 구글로 가입하면 그때 계정이 생긴다.
 
 `ADMIN_EMAILS`에 이메일을 나중에 추가하면 그 사람이 **다시 로그인해야** 운영진이 된다.
 역할은 로그인 시점에 DB에 쓰이기 때문이다.
