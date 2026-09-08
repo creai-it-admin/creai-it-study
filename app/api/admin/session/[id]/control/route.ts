@@ -80,7 +80,11 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   }
 
   if (action === "reset") {
-    // 리허설을 다시 돌리기 위한 초기화.
+    // 리허설을 다시 돌리기 위한 초기화. 실제 회차에서는 못 부른다.
+    // 화면에서만 막으면 API를 직접 부르는 것을 못 막는다.
+    if (s.weekNo !== 0) {
+      return NextResponse.json({ error: "리허설 회차에서만 초기화할 수 있습니다" }, { status: 400 });
+    }
     await prisma.$transaction([
       prisma.segment.updateMany({
         where: { sessionId: id },

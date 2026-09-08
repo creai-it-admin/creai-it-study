@@ -112,7 +112,7 @@ export function SessionRow({
               진행 콘솔
             </a>
           ) : (
-            <button className="btn btn-primary" disabled={busy || !deckUrl} onClick={() => control("start")}>
+            <button className="btn btn-primary" disabled={busy || !deckUrl || fieldCount === 0} onClick={() => control("start")}>
               세션 시작
             </button>
           )}
@@ -152,8 +152,14 @@ export function SessionRow({
         </button>
       </div>
 
-      {!deckUrl ? (
-        <p className="text-[12.5px] text-ink-3">장표를 올려야 세션을 시작할 수 있습니다.</p>
+      {!deckUrl || fieldCount === 0 ? (
+        <p className="text-[12.5px] text-ink-3">
+          {!deckUrl && fieldCount === 0
+            ? "장표와 폼 칸이 있어야 세션을 시작할 수 있습니다."
+            : !deckUrl
+              ? "장표를 올려야 세션을 시작할 수 있습니다."
+              : "이 회차 폼 칸이 아직 없습니다. 시드로 넣어야 합니다."}
+        </p>
       ) : null}
       {error ? <p className="text-[12.5px] text-[color:var(--warn)]">{error}</p> : null}
     </div>

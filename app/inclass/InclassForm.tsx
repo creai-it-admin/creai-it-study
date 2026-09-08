@@ -21,6 +21,7 @@ export function InclassForm() {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wantSubmit = useRef(false);
   const [reloadTick, setReloadTick] = useState(0);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   // 처음 불러오기. 서버 답이 있으면 그걸 쓰고, 없거나 실패하면 브라우저 초안을 쓴다.
   useEffect(() => {
@@ -30,6 +31,7 @@ export function InclassForm() {
         const res = await fetch("/api/submission", { cache: "no-store" });
         const data = await res.json();
         if (!alive) return;
+        setLoadFailed(false);
         if (data.formDef) {
           // 초안 키를 사람과 폼별로 나눈다. 같은 브라우저를 다른 계정이 써도 안 섞인다.
           const key = `creai_draft:${data.submissionId}`;
@@ -47,7 +49,10 @@ export function InclassForm() {
         }
       } catch {
         // 서버를 못 부르면 폼을 못 그린다. 5초 뒤 다시 시도한다.
-        if (alive) setTimeout(() => setReloadTick((t) => t + 1), 5000);
+        if (alive) {
+          setLoadFailed(true);
+          setTimeout(() => setReloadTick((t) => t + 1), 5000);
+        }
       } finally {
         if (alive) setLoaded(true);
       }
@@ -59,13 +64,30 @@ export function InclassForm() {
 
   const persist = useCallback(async (next: Record<string, string>, submit = false) => {
     if (submit) wantSubmit.current = true;
+    // 서버로 보내기 전에 먼저 브라우저에 남긴다.
+    // 실패를 감지했을 때만 남기면, 요청이 응답 없이 매달릴 때 아무 데도 안 남는다.
+    if (draftKey) {
+      try {
+        localStorage.setItem(draftKey, JSON.stringify(next));
+      } catch {
+        /* 저장소가 막혀 있어도 계속 쓴다 */
+      }
+    }
     setSave("saving");
     try {
-      const res = await fetch("/api/submission", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ answers: next, submit }),
-      });
+      const ac = new AbortController();
+      const bail = setTimeout(() => ac.abort(), 10000);
+      let res: Response;
+      try {
+        res = await fetch("/api/submission", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ answers: next, submit }),
+          signal: ac.signal,
+        });
+      } finally {
+        clearTimeout(bail);
+      }
       if (!res.ok) throw new Error("save failed");
       setSave("saved");
       // 서버에 들어갔으면 초안을 지운다. 안 지우면 오래된 초안이 나중에 서버 답을 덮는다.
@@ -82,14 +104,6 @@ export function InclassForm() {
       }
     } catch {
       setSave("failed");
-      // FR-503. 서버에 못 넣었을 때만 브라우저에 들고 있는다.
-      if (draftKey) {
-        try {
-          localStorage.setItem(draftKey, JSON.stringify(next));
-        } catch {
-          /* 저장소가 막혀 있어도 계속 쓴다 */
-        }
-      }
     }
   }, [draftKey]);
 
@@ -118,7 +132,13 @@ export function InclassForm() {
   if (!loaded) return <div className="card p-10 text-center text-[13px] text-ink-3">불러오는 중</div>;
 
   if (!topic) {
-    return <div className="card p-10 text-center text-[14px] text-ink-2">이번 회차 인클 주제가 아직 없습니다</div>;
+    return (
+      <div className="card p-10 text-center text-[14px] text-ink-2">
+        {loadFailed
+          ? "연결이 끊겼습니다. 5초마다 다시 시도합니다. 쓰던 글은 이 브라우저에 남아 있습니다."
+          : "이번 회차 인클 주제가 아직 없습니다"}
+      </div>
+    );
   }
 
   return (
@@ -143,7 +163,6 @@ export function InclassForm() {
               className="field min-h-[110px] resize-y"
               value={answers[f.id] ?? ""}
               onChange={(e) => onChange(f.id, e.target.value)}
-              disabled={submitted}
             />
           </div>
         ))}
@@ -151,17 +170,16 @@ export function InclassForm() {
 
       <div className="flex items-center justify-between">
         <span className="text-[12.5px] text-ink-3">
-          {submitted ? "제출했습니다" : "공유가 열리면 다른 사람 것이 보입니다"}
+          {submitted ? "제출했습니다. 공유가 열리기 전까지 고칠 수 있습니다" : "공유가 열리면 다른 사람 것이 보입니다"}
         </span>
         <button
           className="btn btn-primary"
-          disabled={submitted}
           onClick={() => {
             if (timer.current) clearTimeout(timer.current);
             persist(answers, true);
           }}
         >
-          {submitted ? "제출했습니다" : "제출하기"}
+          {submitted ? "다시 제출하기" : "제출하기"}
         </button>
       </div>
     </div>

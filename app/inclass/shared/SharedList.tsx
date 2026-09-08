@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLiveState } from "@/components/useLiveState";
 import { SegmentBar } from "@/components/SegmentBar";
@@ -63,6 +64,16 @@ export function SharedList() {
       {!open ? (
         <div className="card p-10 text-center text-[14px] text-ink-2">
           공유가 열리면 다른 사람 것이 보입니다
+        </div>
+      ) : null}
+
+      {/* 아직 제출 안 한 사람이 폼으로 돌아갈 길. 없으면 여기서 갇힌다. */}
+      {items.some((i) => i.mine && i.status !== "submitted") ? (
+        <div className="card flex items-center justify-between gap-4 p-4">
+          <span className="text-[13.5px] text-ink-2">아직 제출하지 않았습니다</span>
+          <Link href="/inclass" className="btn btn-primary">
+            내 폼으로 돌아가기
+          </Link>
         </div>
       ) : null}
 

@@ -20,8 +20,12 @@ export async function GET() {
   if (!formDef) return NextResponse.json({ open: running.sharingOpen, items: [] });
 
   // 공유가 닫혀 있으면 자기 것만 준다.
+  // 열려 있으면 제출된 것 전부와 자기 것을 준다. 자기 초안을 못 보면 돌아갈 데가 없다.
   const where = running.sharingOpen
-    ? { formDefId: formDef.id, status: "submitted" as const }
+    ? {
+        formDefId: formDef.id,
+        OR: [{ status: "submitted" as const }, { userId: session.user.id }],
+      }
     : { formDefId: formDef.id, userId: session.user.id };
 
   const subs = await prisma.submission.findMany({
