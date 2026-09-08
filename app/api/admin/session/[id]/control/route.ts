@@ -19,11 +19,32 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   const now = new Date();
 
   if (action === "start") {
-    // 한 번에 하나만 running이다.
-    await prisma.studySession.updateMany({
-      where: { status: "running", id: { not: id } },
-      data: { status: "closed" },
+    // 화면에서만 막으면 API를 직접 부르는 것을 못 막는다.
+    if (!s.deckUrl) {
+      return NextResponse.json({ error: "장표를 올려야 시작할 수 있습니다" }, { status: 400 });
+    }
+    const fieldCount = await prisma.formField.count({
+      where: { formDef: { sessionId: id } },
     });
+    if (fieldCount === 0) {
+      return NextResponse.json({ error: "폼 칸이 있어야 시작할 수 있습니다" }, { status: 400 });
+    }
+
+    // 한 번에 하나만 running이다. 닫으면서 열린 구간도 같이 닫는다.
+    // 안 닫으면 그 회차 마지막 구간의 ended_at이 영영 비어 구간 소요 시간이 한 칸 빈다.
+    const others = await prisma.studySession.findMany({
+      where: { status: "running", id: { not: id } },
+      include: { segments: true },
+    });
+    for (const o of others) {
+      const open = o.segments.filter((x) => x.startedAt && !x.endedAt);
+      await prisma.$transaction([
+        ...open.map((x) =>
+          prisma.segment.update({ where: { id: x.id }, data: { endedAt: now } })
+        ),
+        prisma.studySession.update({ where: { id: o.id }, data: { status: "closed" } }),
+      ]);
+    }
     await prisma.$transaction([
       prisma.studySession.update({ where: { id }, data: { status: "running", sharingOpen: false } }),
       prisma.segment.update({

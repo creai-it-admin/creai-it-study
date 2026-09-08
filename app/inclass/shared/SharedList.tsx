@@ -67,8 +67,9 @@ export function SharedList() {
         </div>
       ) : null}
 
-      {/* 아직 제출 안 한 사람이 폼으로 돌아갈 길. 없으면 여기서 갇힌다. */}
-      {items.some((i) => i.mine && i.status !== "submitted") ? (
+      {/* 아직 제출 안 한 사람이 폼으로 돌아갈 길. 없으면 여기서 갇힌다.
+          폼을 한 번도 안 연 사람은 제출물 행 자체가 없으므로 "내 것이 없을 때"도 포함한다. */}
+      {!items.some((i) => i.mine && i.status === "submitted") ? (
         <div className="card flex items-center justify-between gap-4 p-4">
           <span className="text-[13.5px] text-ink-2">아직 제출하지 않았습니다</span>
           <Link href="/inclass" className="btn btn-primary">

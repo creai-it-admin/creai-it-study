@@ -111,6 +111,18 @@ export function SessionRow({
             <a className="btn btn-primary" href={`/admin/run/${id}`}>
               진행 콘솔
             </a>
+          ) : status === "closed" ? (
+            // 닫힌 회차를 다시 시작하면 구간 시각이 덮인다. 실수로 못 누르게 확인을 받는다.
+            <button
+              className="btn"
+              disabled={busy}
+              onClick={() => {
+                if (confirm("이미 끝난 회차입니다. 다시 시작하면 구간 시각이 덮입니다. 계속할까요?"))
+                  control("start");
+              }}
+            >
+              다시 시작
+            </button>
           ) : (
             <button className="btn btn-primary" disabled={busy || !deckUrl || fieldCount === 0} onClick={() => control("start")}>
               세션 시작

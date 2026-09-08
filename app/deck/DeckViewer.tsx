@@ -48,9 +48,20 @@ export function DeckViewer({ url }: { url: string }) {
     return (
       <div className="card p-10 text-center">
         <p className="mb-4 text-[14px] text-ink-2">장표를 화면에서 열지 못했습니다.</p>
-        <a className="btn btn-primary" href={url} target="_blank" rel="noreferrer">
-          장표 내려받기
-        </a>
+        <div className="flex items-center justify-center gap-2">
+          <button
+            className="btn"
+            onClick={() => {
+              setFailed(false);
+              setReady(false);
+            }}
+          >
+            다시 시도
+          </button>
+          <a className="btn btn-primary" href={url} target="_blank" rel="noreferrer">
+            장표 내려받기
+          </a>
+        </div>
       </div>
     );
   }
