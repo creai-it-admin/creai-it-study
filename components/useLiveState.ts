@@ -22,8 +22,9 @@ export type LiveState = {
  * 다음 구간이 바뀔 때까지 건드리지 않는다.
  * 폴링이 실패하면 조용히 다시 시도한다. 화면을 초기화하지 않는다.
  */
-export function useLiveState(opts?: { navigate?: boolean }) {
+export function useLiveState(opts?: { navigate?: boolean; enterRunning?: boolean }) {
   const navigate = opts?.navigate ?? true;
+  const enterRunning = opts?.enterRunning ?? false;
   const router = useRouter();
   const [state, setState] = useState<LiveState | null>(null);
   const [offsetMs, setOffsetMs] = useState(0);
@@ -32,10 +33,13 @@ export function useLiveState(opts?: { navigate?: boolean }) {
 
   useEffect(() => {
     let alive = true;
+    let busy = false;
 
     async function tick() {
+      if (busy) return;
+      busy = true;
       try {
-        const res = await fetch("/api/state", { cache: "no-store" });
+        const res = await fetch("/api/state", { cache: "no-store", signal: AbortSignal.timeout(10000) });
         if (!res.ok) return;
         const next: LiveState = await res.json();
         if (!alive) return;
@@ -51,12 +55,15 @@ export function useLiveState(opts?: { navigate?: boolean }) {
         const key = `${next.sessionId ?? "none"}:${next.segment ?? "none"}:${next.sharingOpen}`;
         if (lastKeyRef.current === null) {
           lastKeyRef.current = key;
+          if (navigate && enterRunning && next.sessionId) router.replace(next.route);
         } else if (lastKeyRef.current !== key) {
           lastKeyRef.current = key;
           if (navigate) router.push(next.route);
         }
       } catch {
         // 조용히 다시 시도한다.
+      } finally {
+        busy = false;
       }
     }
 
@@ -66,7 +73,7 @@ export function useLiveState(opts?: { navigate?: boolean }) {
       alive = false;
       clearInterval(id);
     };
-  }, [navigate, router]);
+  }, [navigate, enterRunning, router]);
 
   return { state, offsetMs };
 }

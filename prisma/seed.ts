@@ -48,17 +48,13 @@ async function main() {
 
     // 1주차와 리허설에만 폼을 넣는다. 나머지 회차 폼은 비어 있다.
     if (s.weekNo === 1 || s.weekNo === 0) {
-      const form = await prisma.formDef.upsert({
-        where: { sessionId: session.id },
-        create: { sessionId: session.id, topicMd: WEEK1_TOPIC },
-        update: { topicMd: WEEK1_TOPIC },
-      });
-      for (const [i, q] of WEEK1_FIELDS.entries()) {
-        await prisma.formField.upsert({
-          where: { formDefId_order: { formDefId: form.id, order: i + 1 } },
-          create: { formDefId: form.id, order: i + 1, question: q },
-          update: { question: q },
-        });
+      // 재실행해도 운영진이 편집한 주제·질문과 답변 관계를 덮어쓰지 않는다.
+      const existingForm = await prisma.formDef.findUnique({ where: { sessionId: session.id } });
+      if (!existingForm) {
+        await prisma.formDef.create({ data: {
+          sessionId: session.id, topicMd: WEEK1_TOPIC,
+          fields: { create: WEEK1_FIELDS.map((question, index) => ({ order: index + 1, question })) },
+        } });
       }
     }
   }

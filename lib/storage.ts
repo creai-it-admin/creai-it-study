@@ -12,7 +12,7 @@ function client() {
 }
 
 function bucketName() {
-  return process.env.SUPABASE_STORAGE_BUCKET ?? "decks";
+  return process.env.SUPABASE_STORAGE_BUCKET?.trim() || "decks";
 }
 
 /** 브라우저가 파일을 바로 던질 수 있는 일회용 주소를 만든다. */

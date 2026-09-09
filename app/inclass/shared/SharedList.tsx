@@ -20,6 +20,9 @@ export function SharedList() {
   const [topic, setTopic] = useState<string | null>(null);
   const [fields, setFields] = useState<Field[]>([]);
   const [items, setItems] = useState<Item[]>([]);
+  // null은 아직 서버 답을 못 받은 상태다. false로 두면 첫 폴링이 실패했을 때
+  // 아직 제출 안 한 사람이 폼으로 돌아갈 길을 잃는다. 모를 때는 띄우는 쪽으로 둔다.
+  const [live, setLive] = useState<boolean | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -35,6 +38,7 @@ export function SharedList() {
         setTopic(data.topicMd ?? null);
         setFields(data.fields ?? []);
         setItems(data.items ?? []);
+        setLive(Boolean(data.live));
       } catch {
         /* 조용히 다시 시도한다 */
       } finally {
@@ -68,8 +72,10 @@ export function SharedList() {
       ) : null}
 
       {/* 아직 제출 안 한 사람이 폼으로 돌아갈 길. 없으면 여기서 갇힌다.
-          폼을 한 번도 안 연 사람은 제출물 행 자체가 없으므로 "내 것이 없을 때"도 포함한다. */}
-      {!items.some((i) => i.mine && i.status === "submitted") ? (
+          폼을 한 번도 안 연 사람은 제출물 행 자체가 없으므로 "내 것이 없을 때"도 포함한다.
+          회차가 끝나면 items가 통째로 비므로 live로 걸러야 제출한 사람에게 안 뜬다.
+          서버가 끝났다고 말한 경우에만 감춘다. 폴링이 실패해 모르는 동안은 띄운다. */}
+      {live !== false && !items.some((i) => i.mine && i.status === "submitted") ? (
         <div className="card flex items-center justify-between gap-4 p-4">
           <span className="text-[13.5px] text-ink-2">아직 제출하지 않았습니다</span>
           <Link href="/inclass" className="btn btn-primary">

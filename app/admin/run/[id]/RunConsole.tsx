@@ -32,24 +32,33 @@ export function RunConsole({ id }: { id: string }) {
   const router = useRouter();
   const [state, setState] = useState<State | null>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const controlBusy = useRef(false);
+  const requestVersion = useRef(0);
   const [open, setOpen] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const offsetRef = useRef<number | null>(null);
 
   useEffect(() => {
     let alive = true;
+    let polling = false;
     async function tick() {
+      if (polling || controlBusy.current) return;
+      polling = true;
+      const version = ++requestVersion.current;
       try {
-        const res = await fetch(`/api/admin/state?id=${id}`, { cache: "no-store" });
+        const res = await fetch(`/api/admin/state?id=${id}`, { cache: "no-store", signal: AbortSignal.timeout(10000) });
         if (!res.ok) return;
         const data: State = await res.json();
-        if (!alive) return;
+        if (!alive || version !== requestVersion.current) return;
         if (offsetRef.current === null) {
           offsetRef.current = new Date(data.serverTime).getTime() - Date.now();
         }
         setState(data);
       } catch {
         /* 조용히 다시 시도한다 */
+      } finally {
+        polling = false;
       }
     }
     tick();
@@ -63,15 +72,34 @@ export function RunConsole({ id }: { id: string }) {
   }, [id]);
 
   async function control(action: string) {
+    if (controlBusy.current || !state) return;
+    controlBusy.current = true;
+    ++requestVersion.current; // Ignore polling responses that predate this command.
     setBusy(true);
+    setError(null);
     try {
-      await fetch(`/api/admin/session/${id}/control`, {
+      const res = await fetch(`/api/admin/session/${id}/control`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action, expectedSegment: state.segment?.kind, expectedStartedAt: state.segment?.startedAt }),
+        signal: AbortSignal.timeout(10000),
       });
-      if (action === "close" || action === "reset") router.push("/admin");
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error ?? "요청을 처리하지 못했습니다");
+      if (action === "close" || action === "reset") {
+        router.push("/admin");
+      } else {
+        const refreshed = await fetch(`/api/admin/state?id=${id}`, {
+          cache: "no-store", signal: AbortSignal.timeout(10000),
+        });
+        if (!refreshed.ok) throw new Error("요청은 처리됐지만 현재 상태를 불러오지 못했습니다. 잠시 후 상태를 확인해 주세요.");
+        setState(await refreshed.json());
+      }
+    } catch (e) {
+      setError(e instanceof Error && e.name !== "TimeoutError"
+        ? e.message : "응답을 확인하지 못했습니다. 잠시 후 현재 구간을 확인해 주세요.");
     } finally {
+      controlBusy.current = false;
       setBusy(false);
     }
   }
@@ -95,6 +123,7 @@ export function RunConsole({ id }: { id: string }) {
         <span className="text-[13px] text-ink-2">{state.session.status === "running" ? "진행 중" : "끝남"}</span>
       </div>
 
+      {error ? <p role="alert" className="text-[13px] text-[color:var(--warn)]">{error}</p> : null}
       <div className="card flex flex-wrap items-center justify-between gap-4 p-5">
         <div className="flex items-baseline gap-4">
           <span className="text-[16px] font-semibold">{state.segment?.label ?? "시작 전"}</span>
@@ -108,17 +137,17 @@ export function RunConsole({ id }: { id: string }) {
           {state.nextSegment ? (
             <span className="text-[12.5px] text-ink-3">다음은 {state.nextSegment.label}</span>
           ) : null}
-          <button className="btn btn-primary" disabled={busy || !state.nextSegment} onClick={() => control("next")}>
+          <button className="btn btn-primary" disabled={busy || state.session.status !== "running" || !state.nextSegment} onClick={() => control("next")}>
             다음 구간으로
           </button>
           <button
             className="btn"
-            disabled={busy}
+            disabled={busy || state.session.status !== "running"}
             onClick={() => control(state.session.sharingOpen ? "closeSharing" : "openSharing")}
           >
             {state.session.sharingOpen ? "공유 닫기" : "공유 열기"}
           </button>
-          <button className="btn" disabled={busy} onClick={() => control("close")}>
+          <button className="btn" disabled={busy || state.session.status !== "running"} onClick={() => control("close")}>
             세션 닫기
           </button>
           {state.session.deckUrl ? (

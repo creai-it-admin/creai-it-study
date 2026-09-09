@@ -32,6 +32,8 @@ export async function Header({ right }: { right?: React.ReactNode } = {}) {
           <Logo sub="AI 스터디 0기" />
         </Link>
         <div className="flex items-center gap-3 text-[13px] text-ink-2">
+          {name ? <Link href="/mine" className="hover:text-ink">내 제출물</Link> : null}
+          {isAdmin ? <Link href="/admin" className="hover:text-ink">회차 관리</Link> : null}
           {showDeck ? (
             <Link href="/deck" className="hover:text-ink">
               장표

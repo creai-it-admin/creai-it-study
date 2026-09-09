@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -112,12 +113,12 @@ export function SessionRow({
               진행 콘솔
             </a>
           ) : status === "closed" ? (
-            // 닫힌 회차를 다시 시작하면 구간 시각이 덮인다. 실수로 못 누르게 확인을 받는다.
+            // 닫힌 회차를 다시 시작하면 그 회차 구간 시각이 전부 지워진다. 실수로 못 누르게 확인을 받는다.
             <button
               className="btn"
               disabled={busy}
               onClick={() => {
-                if (confirm("이미 끝난 회차입니다. 다시 시작하면 구간 시각이 덮입니다. 계속할까요?"))
+                if (confirm("이미 끝난 회차입니다. 다시 시작하면 이 회차의 구간 시각이 전부 지워지고 1부부터 다시 잽니다. 계속할까요?"))
                   control("start");
               }}
             >
@@ -148,6 +149,8 @@ export function SessionRow({
           )}
         </span>
         <span>폼 칸 {fieldCount}개</span>
+        <Link className="btn" href={`/admin/session/${id}`}>{status === "scheduled" ? "주제·폼 편집" : "주제·폼 보기"}</Link>
+        {status === "closed" ? <Link className="btn" href={`/admin/data#${id}`}>회차 결과</Link> : null}
         <input
           ref={fileRef}
           type="file"
@@ -170,7 +173,7 @@ export function SessionRow({
             ? "장표와 폼 칸이 있어야 세션을 시작할 수 있습니다."
             : !deckUrl
               ? "장표를 올려야 세션을 시작할 수 있습니다."
-              : "이 회차 폼 칸이 아직 없습니다. 시드로 넣어야 합니다."}
+              : "주제·폼 편집에서 질문을 추가해 주세요."}
         </p>
       ) : null}
       {error ? <p className="text-[12.5px] text-[color:var(--warn)]">{error}</p> : null}

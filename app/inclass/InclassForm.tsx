@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLiveState } from "@/components/useLiveState";
 import { SegmentBar } from "@/components/SegmentBar";
+import { DraftSync, SaveError, type Draft } from "@/lib/draft-sync";
 
 type Field = { id: string; order: number; question: string };
 type SaveState = "idle" | "saving" | "saved" | "failed";
@@ -17,112 +18,95 @@ export function InclassForm() {
   const [submitted, setSubmitted] = useState(false);
   const [save, setSave] = useState<SaveState>("idle");
   const [loaded, setLoaded] = useState(false);
-  const [draftKey, setDraftKey] = useState<string | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const wantSubmit = useRef(false);
-  const [reloadTick, setReloadTick] = useState(0);
+  const sync = useRef<DraftSync | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [localFailed, setLocalFailed] = useState(false);
 
-  // 처음 불러오기. 서버 답이 있으면 그걸 쓰고, 없거나 실패하면 브라우저 초안을 쓴다.
   useEffect(() => {
     let alive = true;
-    (async () => {
+    let retry: ReturnType<typeof setTimeout>;
+    const ac = new AbortController();
+    async function load() {
       try {
-        const res = await fetch("/api/submission", { cache: "no-store" });
+        const res = await fetch("/api/submission", {
+          cache: "no-store", signal: AbortSignal.any([ac.signal, AbortSignal.timeout(10000)]),
+        });
+        if (!res.ok) throw new Error("load failed");
         const data = await res.json();
         if (!alive) return;
         setLoadFailed(false);
         if (data.formDef) {
-          // 초안 키를 사람과 폼별로 나눈다. 같은 브라우저를 다른 계정이 써도 안 섞인다.
           const key = `creai_draft:${data.submissionId}`;
-          setDraftKey(key);
-          let local: Record<string, string> = {};
+          let local: Draft | null = null;
           try {
-            local = JSON.parse(localStorage.getItem(key) ?? "{}");
-          } catch {
-            local = {};
-          }
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              // Keep drafts written by the previous demo version.
+              local = parsed.answers && typeof parsed.version === "string"
+                ? parsed : { answers: parsed, submit: false, version: data.submission.version };
+              if (!local || typeof local.answers !== "object" || !local.answers ||
+                  Object.values(local.answers).some((value) => typeof value !== "string")) local = null;
+            }
+          } catch { /* A blocked browser store must not prevent loading the form. */ }
+          const initial: Draft = {
+            answers: Object.fromEntries(data.formDef.fields.map((f: Field) =>
+              [f.id, local?.answers[f.id] ?? data.submission.answers[f.id] ?? ""])),
+            submit: local?.submit === true,
+            version: local?.version ?? data.submission.version,
+          };
           setTopic(data.formDef.topicMd);
           setFields(data.formDef.fields);
-          setAnswers({ ...(data.submission?.answers ?? {}), ...local });
-          setSubmitted(data.submission?.status === "submitted");
+          setAnswers(initial.answers);
+          setSubmitted(data.submission.status === "submitted");
+          const controller = new DraftSync(initial, {
+            write(draft) {
+              try { localStorage.setItem(key, JSON.stringify(draft)); setLocalFailed(false); }
+              catch { setLocalFailed(true); }
+            },
+            clear() { try { localStorage.removeItem(key); } catch { /* noop */ } },
+            async send(draft) {
+              const response = await fetch("/api/submission", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ ...draft, submissionId: data.submissionId }),
+                signal: AbortSignal.timeout(10000),
+              });
+              const result = await response.json();
+              if (!response.ok) {
+                throw new SaveError(result.error ?? "저장하지 못했습니다", result.version,
+                  response.status >= 400 && response.status < 500 && response.status !== 429);
+              }
+              return result;
+            },
+            status(value, message) { if (alive) { setSave(value); setSaveError(message ?? null); } },
+            submitted() { if (alive) setSubmitted(true); },
+          });
+          sync.current = controller;
+          if (local) controller.restore();
         }
       } catch {
-        // 서버를 못 부르면 폼을 못 그린다. 5초 뒤 다시 시도한다.
-        if (alive) {
-          setLoadFailed(true);
-          setTimeout(() => setReloadTick((t) => t + 1), 5000);
-        }
+        if (alive) { setLoadFailed(true); retry = setTimeout(load, 5000); }
       } finally {
         if (alive) setLoaded(true);
       }
-    })();
+    }
+    void load();
     return () => {
       alive = false;
+      ac.abort();
+      clearTimeout(retry);
+      sync.current?.stop();
+      sync.current = null;
     };
-  }, [reloadTick]);
+  }, []);
 
-  const persist = useCallback(async (next: Record<string, string>, submit = false) => {
-    if (submit) wantSubmit.current = true;
-    // 서버로 보내기 전에 먼저 브라우저에 남긴다.
-    // 실패를 감지했을 때만 남기면, 요청이 응답 없이 매달릴 때 아무 데도 안 남는다.
-    if (draftKey) {
-      try {
-        localStorage.setItem(draftKey, JSON.stringify(next));
-      } catch {
-        /* 저장소가 막혀 있어도 계속 쓴다 */
-      }
-    }
-    setSave("saving");
-    try {
-      const ac = new AbortController();
-      const bail = setTimeout(() => ac.abort(), 10000);
-      let res: Response;
-      try {
-        res = await fetch("/api/submission", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ answers: next, submit }),
-          signal: ac.signal,
-        });
-      } finally {
-        clearTimeout(bail);
-      }
-      if (!res.ok) throw new Error("save failed");
-      setSave("saved");
-      // 서버에 들어갔으면 초안을 지운다. 안 지우면 오래된 초안이 나중에 서버 답을 덮는다.
-      if (draftKey) {
-        try {
-          localStorage.removeItem(draftKey);
-        } catch {
-          /* noop */
-        }
-      }
-      if (submit) {
-        setSubmitted(true);
-        wantSubmit.current = false;
-      }
-    } catch {
-      setSave("failed");
-    }
-  }, [draftKey]);
-
-  // FR-502. 입력을 멈추고 2초가 지나면 초안을 저장한다.
   function onChange(fieldId: string, text: string) {
     const next = { ...answers, [fieldId]: text };
     setAnswers(next);
-    setSave("saving");
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => persist(next), 2000);
+    sync.current?.edit(next);
   }
-
-  // 저장이 실패한 상태면 주기적으로 다시 시도한다.
-  useEffect(() => {
-    if (save !== "failed") return;
-    // 제출하려다 실패했으면 재시도도 제출로 보낸다. 아니면 영영 초안으로 남는다.
-    const id = setTimeout(() => persist(answers, wantSubmit.current), 5000);
-    return () => clearTimeout(id);
-  }, [save, answers, persist]);
 
   const label =
     save === "saving" ? "저장 중" : save === "saved" ? "저장됨" : save === "failed" ? "저장 안 됨" : "";
@@ -135,7 +119,7 @@ export function InclassForm() {
     return (
       <div className="card p-10 text-center text-[14px] text-ink-2">
         {loadFailed
-          ? "연결이 끊겼습니다. 5초마다 다시 시도합니다. 쓰던 글은 이 브라우저에 남아 있습니다."
+          ? "폼을 불러오지 못했습니다. 5초마다 다시 시도합니다. 로그인이 만료됐다면 다시 로그인해 주세요."
           : "이번 회차 인클 주제가 아직 없습니다"}
       </div>
     );
@@ -148,6 +132,8 @@ export function InclassForm() {
         <span className={`text-[12.5px] ${labelColor}`}>{label}</span>
       </div>
 
+      {saveError ? <p role="alert" className="text-[13px] text-[color:var(--warn)]">{saveError}</p> : null}
+      {localFailed ? <p role="alert" className="text-[13px] text-[color:var(--warn)]">이 브라우저에 초안을 보관할 수 없습니다. 저장됨을 확인하기 전에는 새로고침하지 마세요.</p> : null}
       <div className="card p-5">
         <p className="text-[15px] leading-relaxed font-medium">{topic}</p>
       </div>
@@ -155,11 +141,12 @@ export function InclassForm() {
       <div className="flex flex-col gap-4">
         {fields.map((f, i) => (
           <div key={f.id} className="card p-5">
-            <label className="mb-2 block text-[14px] font-medium">
+            <label htmlFor={`answer-${f.id}`} className="mb-2 block text-[14px] font-medium">
               <span className="font-en mr-2 text-ink-3">{i + 1}</span>
               {f.question}
             </label>
             <textarea
+              id={`answer-${f.id}`}
               className="field min-h-[110px] resize-y"
               value={answers[f.id] ?? ""}
               onChange={(e) => onChange(f.id, e.target.value)}
@@ -170,13 +157,12 @@ export function InclassForm() {
 
       <div className="flex items-center justify-between">
         <span className="text-[12.5px] text-ink-3">
-          {submitted ? "제출했습니다. 공유가 열리기 전까지 고칠 수 있습니다" : "공유가 열리면 다른 사람 것이 보입니다"}
+          {submitted ? "제출했습니다. 제출한 뒤에도 고칠 수 있습니다" : "공유가 열리면 다른 사람 것이 보입니다"}
         </span>
         <button
           className="btn btn-primary"
           onClick={() => {
-            if (timer.current) clearTimeout(timer.current);
-            persist(answers, true);
+            sync.current?.edit(answers, true);
           }}
         >
           {submitted ? "다시 제출하기" : "제출하기"}

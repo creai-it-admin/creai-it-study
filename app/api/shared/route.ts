@@ -10,14 +10,16 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  // live 는 "지금 돌아갈 폼이 있는 회차인가"다. 세션이 닫히면 거짓이 된다.
+  // 이 값이 없으면 클라이언트가 "회차가 끝났다"와 "내 제출물이 없다"를 구분하지 못한다.
   const running = await getRunningSession();
-  if (!running) return NextResponse.json({ open: false, items: [] });
+  if (!running) return NextResponse.json({ live: false, open: false, items: [] });
 
   const formDef = await prisma.formDef.findUnique({
     where: { sessionId: running.id },
     include: { fields: { orderBy: { order: "asc" } } },
   });
-  if (!formDef) return NextResponse.json({ open: running.sharingOpen, items: [] });
+  if (!formDef) return NextResponse.json({ live: false, open: running.sharingOpen, items: [] });
 
   // 공유가 닫혀 있으면 자기 것만 준다.
   // 열려 있으면 제출된 것 전부와 자기 것을 준다. 자기 초안을 못 보면 돌아갈 데가 없다.
@@ -35,6 +37,7 @@ export async function GET() {
   });
 
   return NextResponse.json({
+    live: true,
     open: running.sharingOpen,
     topicMd: formDef.topicMd,
     fields: formDef.fields,

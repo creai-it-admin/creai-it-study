@@ -17,6 +17,7 @@ export function DeckViewer({ url }: { url: string }) {
   const [page, setPage] = useState(1);
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [width, setWidth] = useState(900);
 
   useEffect(() => {
@@ -27,12 +28,12 @@ export function DeckViewer({ url }: { url: string }) {
   }, []);
 
   // 15초 안에 안 열리면 내려받기 링크를 보여준다. 워커가 조용히 죽는 경우가 있다.
+  // attempt가 없으면 재시도할 때 ready가 이미 false라 이 효과가 다시 안 돌고 타임아웃이 안 걸린다.
   useEffect(() => {
-    const id = setTimeout(() => {
-      if (!ready) setFailed(true);
-    }, 15000);
+    if (ready) return;
+    const id = setTimeout(() => setFailed(true), 15000);
     return () => clearTimeout(id);
-  }, [ready]);
+  }, [ready, attempt]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -54,6 +55,7 @@ export function DeckViewer({ url }: { url: string }) {
             onClick={() => {
               setFailed(false);
               setReady(false);
+              setAttempt((a) => a + 1);
             }}
           >
             다시 시도
@@ -76,6 +78,7 @@ export function DeckViewer({ url }: { url: string }) {
 
       <div className="card flex flex-col items-center gap-4 p-4">
         <Document
+          key={attempt}
           file={url}
           onLoadSuccess={({ numPages }) => {
             setNumPages(numPages);
