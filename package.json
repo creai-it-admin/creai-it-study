@@ -3,26 +3,30 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/serve.mjs dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/serve.mjs start",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "typecheck": "tsc --noEmit",
-    "postinstall": "node -e \"require('fs').copyFileSync(require.resolve('pdfjs-dist/build/pdf.worker.min.mjs',{paths:[require.resolve('react-pdf')]}),'public/pdf.worker.min.mjs')\"",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "test": "node --import tsx --test tests/*.test.ts"
+    "test": "node --import tsx --test tests/*.test.ts",
+    "auth:password-setup": "tsx scripts/password-setup.ts",
+    "test:auth:integration": "node --import tsx --test tests/password-auth.integration.ts",
+    "auth:admin": "tsx scripts/grant-admin.ts",
+    "storage:setup": "tsx scripts/storage-setup.ts",
+    "test:session:integration": "node --import tsx --test tests/session-control.integration.ts",
+    "test:study:integration": "node --import tsx --test tests/studies.integration.ts",
+    "reports:worker": "tsx scripts/report-worker.ts"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.11.3",
     "@prisma/client": "^6.19.3",
     "@supabase/supabase-js": "^2.115.0",
     "next": "16.3.4",
     "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "react-pdf": "^10.5.0"
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

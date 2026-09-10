@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function MinePage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
-  const submissions = await getMySubmissions(session.user.id);
+  const submissions = await getMySubmissions(session.user.id, session.user.roles);
   return <>
     {await Header()}
     <main className="mx-auto max-w-4xl px-5 py-8">
@@ -18,7 +18,7 @@ export default async function MinePage() {
         <div className="flex flex-col gap-5">{submissions.map((sub) => {
           const answers = new Map(sub.answers.map((a) => [a.formFieldId, a.text]));
           return <article key={sub.id} className="card p-5">
-            <h2 className="text-[17px] font-semibold">{sessionTitle(sub.formDef.session.weekNo)}</h2>
+            <h2 className="text-[17px] font-semibold">{sub.formDef.session.study.name} · {sessionTitle(sub.formDef.session.weekNo)}</h2>
             <p className="mt-1 text-[12px] text-ink-2">제출 {formatDate(sub.submittedAt)}</p>
             <p className="my-4 whitespace-pre-wrap border-b border-line pb-4 text-[14px]">{sub.formDef.topicMd}</p>
             <dl className="flex flex-col gap-5">{sub.formDef.fields.map((field, i) => <div key={field.id}>

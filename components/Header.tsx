@@ -22,18 +22,19 @@ export async function Header({ right }: { right?: React.ReactNode } = {}) {
 
   // FR-403. 1부가 끝난 뒤에도 장표를 다시 열 수 있어야 한다.
   // 주소를 직접 치게 두면 그 요구가 사실상 없는 것과 같다.
-  const running = name ? await getRunningSession() : null;
-  const showDeck = !!running?.deckUrl;
+  const running = session?.user ? await getRunningSession(session.user) : null;
+  const showDeck = !!running?.deckPath;
 
   return (
     <header className="border-b border-line bg-surface">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-5">
+      <div className="mx-auto flex min-h-14 flex-wrap gap-3 py-3 max-w-5xl items-center justify-between px-5">
         <Link href="/">
-          <Logo sub="AI 스터디 0기" />
+          <Logo sub="AI 스터디" />
         </Link>
-        <div className="flex items-center gap-3 text-[13px] text-ink-2">
+        <div className="flex flex-wrap items-center gap-3 text-[13px] text-ink-2">
           {name ? <Link href="/mine" className="hover:text-ink">내 제출물</Link> : null}
-          {isAdmin ? <Link href="/admin" className="hover:text-ink">회차 관리</Link> : null}
+          {isAdmin ? <Link href="/admin" className="hover:text-ink">스터디 관리</Link> : null}
+          {running ? <><Link href="/inclass" className="hover:text-ink">인클래스</Link><Link href="/inclass/shared" className="hover:text-ink">공유</Link></> : null}
           {showDeck ? (
             <Link href="/deck" className="hover:text-ink">
               장표

@@ -1,18 +1,20 @@
 import { prisma } from "@/lib/prisma";
+import { sessionVisibilityWhere } from "@/lib/study-access";
 
-export function getMySubmissions(userId: string) {
+export function getMySubmissions(userId: string, roles: readonly string[] = []) {
   return prisma.submission.findMany({
-    where: { userId, status: "submitted", formDef: { session: { status: "closed" } } },
+    where: { userId, status: "submitted", formDef: { session: { status: "closed", ...sessionVisibilityWhere({roles}) } } },
     orderBy: [{ formDef: { session: { date: "asc" } } }, { submittedAt: "asc" }],
-    include: { answers: true, formDef: { include: { fields: { orderBy: { order: "asc" } }, session: true } } },
+    include: { answers: true, formDef: { include: { fields: { orderBy: { order: "asc" } }, session: {include:{study:true}} } } },
   });
 }
 
-export function getClosedSessionResults() {
+export function getClosedSessionResults(studyId?:string) {
   return prisma.studySession.findMany({
-    where: { status: "closed" }, orderBy: [{ date: "asc" }, { weekNo: "asc" }],
+    where: { status: "closed", ...(studyId?{studyId}:{}) }, orderBy: [{ date: "asc" }, { weekNo: "asc" }],
     include: {
-      segments: true,
+      study: true,
+      recordingParts: {select:{durationMs:true,uploadedAt:true}},
       attendances: { include: { user: { select: { id: true, name: true, email: true } } } },
       formDef: { include: { submissions: {
         select: { userId: true, status: true, submittedAt: true, user: { select: { id: true, name: true, email: true } } },

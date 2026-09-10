@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLiveState } from "@/components/useLiveState";
-import { SegmentBar } from "@/components/SegmentBar";
+import { SessionStatus } from "@/components/SessionStatus";
 import { DraftSync, SaveError, type Draft } from "@/lib/draft-sync";
 
 type Field = { id: string; order: number; question: string };
@@ -11,7 +11,7 @@ type SaveState = "idle" | "saving" | "saved" | "failed";
 
 
 export function InclassForm() {
-  const { state, offsetMs } = useLiveState();
+  const { state } = useLiveState();
   const [topic, setTopic] = useState<string | null>(null);
   const [fields, setFields] = useState<Field[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -128,7 +128,7 @@ export function InclassForm() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <SegmentBar state={state} offsetMs={offsetMs} />
+        <SessionStatus state={state} />
         <span className={`text-[12.5px] ${labelColor}`}>{label}</span>
       </div>
 

@@ -5,8 +5,8 @@ import "./globals.css";
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "AI 스터디 0기",
-  description: "CREAI+IT AI 스터디 0기 운영",
+  title: "AI 스터디",
+  description: "CREAI+IT AI 스터디 운영",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

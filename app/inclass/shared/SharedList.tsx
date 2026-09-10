@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLiveState } from "@/components/useLiveState";
-import { SegmentBar } from "@/components/SegmentBar";
+import { SessionStatus } from "@/components/SessionStatus";
 
 type Field = { id: string; order: number; question: string };
 type Item = {
@@ -15,7 +15,7 @@ type Item = {
 };
 
 export function SharedList() {
-  const { state, offsetMs } = useLiveState();
+  const { state } = useLiveState();
   const [open, setOpen] = useState(false);
   const [topic, setTopic] = useState<string | null>(null);
   const [fields, setFields] = useState<Field[]>([]);
@@ -57,7 +57,7 @@ export function SharedList() {
 
   return (
     <div className="flex flex-col gap-5">
-      <SegmentBar state={state} offsetMs={offsetMs} />
+      <SessionStatus state={state} />
 
       {topic ? (
         <div className="card p-5">

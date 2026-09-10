@@ -12,7 +12,7 @@ export async function GET() {
 
   // live 는 "지금 돌아갈 폼이 있는 회차인가"다. 세션이 닫히면 거짓이 된다.
   // 이 값이 없으면 클라이언트가 "회차가 끝났다"와 "내 제출물이 없다"를 구분하지 못한다.
-  const running = await getRunningSession();
+  const running = await getRunningSession(session.user);
   if (!running) return NextResponse.json({ live: false, open: false, items: [] });
 
   const formDef = await prisma.formDef.findUnique({

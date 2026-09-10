@@ -10,7 +10,7 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const state = await getLiveState();
+  const state = await getLiveState(session.user);
 
   // FR-601. 그 회차에 처음 화면을 연 사람을 present로 찍는다.
   // 명단을 두지 않는다. 들어온 사람이 곧 출석이다.

@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import {test,after} from 'node:test';
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import {runInNewContext} from 'node:vm';
+import ts from 'typescript';
+import {prisma} from '../lib/prisma';
+import * as schema from '../lib/reports/schema';
+import * as prompt from '../lib/reports/prompt';
+import * as render from '../lib/reports/render';
+import * as control from '../lib/session-control';
+if(process.env.DATABASE_URL!=='postgresql://study_local@127.0.0.1:55439/study_test')throw Error('Isolated DB required');
+after(()=>prisma.$disconnect());
+const require=createRequire(import.meta.url);
+test('server pipeline resumes upload without re-generation, reclaims expired leases',async()=>{
+ let modelCalls=0,uploadCalls=0,failUpload=true;
+ const study=await prisma.study.create({data:{name:'Report integration'}});
+ const row=await prisma.studySession.create({data:{studyId:study.id,weekNo:1,date:new Date(),status:'closed',endedAt:new Date()}});
+ const part=await prisma.recordingPart.create({data:{id:crypto.randomUUID(),sessionId:row.id,path:crypto.randomUUID(),mimeType:'audio/wav',bytes:100,recordedAt:new Date(),uploadedAt:new Date(),durationMs:1000,transcript:'원하는 결과를 정합시다.'}});
+ const evidence=[{partId:part.id,quote:part.transcript!}];
+ const report:schema.Report={version:'1',title:'목표',subtitle:'위임의 기준',overview:'원하는 결과를 정한다.',overviewEvidence:evidence,learning:[],activity:null,discussions:[],actions:[],openQuestions:[],limitations:[]};
+ const module={exports:{} as typeof import('../lib/recording-processing')};
+ const dependencies:Record<string,unknown>={'./prisma':{prisma},'./storage':{uploadReport:async()=>{uploadCalls++;if(failUpload)throw Error('upload unavailable');return `${row.id}/reports/editorial-v1.html`;}},'./reports/generate':{REPORT_MODEL:'gpt-5.6-sol',REPORT_REASONING:'medium',generateReport:async()=>{modelCalls++;return report;}},'./reports/prompt':prompt,'./reports/schema':schema,'./reports/render':render,'./session-control':control};
+ runInNewContext(ts.transpileModule(readFileSync('lib/recording-processing.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{module,exports:module.exports,process,Error,Date,Buffer,Blob,FormData,AbortSignal,fetch,require:(name:string)=>dependencies[name]??require(name)});
+ const api=module.exports;
+ try{
+  await assert.rejects(api.processRecording(row.id),/upload unavailable/);
+  let state=await prisma.studySession.findUniqueOrThrow({where:{id:row.id}});
+  assert.equal(state.processingState,'error');assert.ok(state.reportData);assert.equal(state.reportPath,null);assert.equal(modelCalls,1);
+  failUpload=false;await api.enqueueRecording(row.id);
+  assert.equal((await api.processRecording(row.id)).done,true);
+  state=await prisma.studySession.findUniqueOrThrow({where:{id:row.id}});
+  assert.equal(state.processingState,'ready');assert.equal(state.reportModel,'gpt-5.6-sol');assert.equal(state.reportReasoning,'medium');assert.ok(state.reportPath);
+  assert.equal(modelCalls,1);assert.equal(uploadCalls,2);
+  await api.processRecording(row.id);assert.equal(uploadCalls,2);
+  await prisma.studySession.update({where:{id:row.id},data:{processingState:'processing',processingLeaseUntil:new Date(Date.now()+60000),processingToken:'other'}});
+  await assert.rejects(api.processRecording(row.id),/처리 중/);
+  await prisma.studySession.update({where:{id:row.id},data:{processingAttempts:3,processingLeaseUntil:new Date(Date.now()-1)}});
+  await api.nextRecordingJob();
+  state=await prisma.studySession.findUniqueOrThrow({where:{id:row.id}});assert.equal(state.processingState,'error');
+  await api.enqueueRecording(row.id);assert.equal((await prisma.studySession.findUniqueOrThrow({where:{id:row.id}})).processingAttempts,0);
+ }finally{await prisma.studySession.delete({where:{id:row.id}});await prisma.study.delete({where:{id:study.id}});}
+});

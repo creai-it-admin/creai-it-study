@@ -17,7 +17,7 @@ export default async function LoginPage({
   // 뒤로 가기가 영영 안 먹는 것처럼 보인다. 그래서 안내만 띄운다.
   if (session?.user?.consented) {
     return (
-      <main className="flex min-h-dvh items-center justify-center px-5">
+      <main className="flex min-h-dvh items-center justify-center px-5 py-8">
         <div className="card w-full max-w-[420px] p-8">
           <div className="mb-6">
             <Logo />
@@ -34,11 +34,11 @@ export default async function LoginPage({
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center px-5">
+    <main className="flex min-h-dvh items-center justify-center px-5 py-8">
       <div className="card w-full max-w-[420px] p-8">
         <div className="mb-7 flex flex-col items-start gap-3">
           <Logo />
-          <h1 className="text-[22px] font-semibold tracking-tight">AI 스터디 0기</h1>
+          <h1 className="text-[22px] font-semibold tracking-tight">AI 스터디</h1>
         </div>
 
         {sp.consent ? (
@@ -47,7 +47,7 @@ export default async function LoginPage({
           </p>
         ) : null}
 
-        <LoginForm />
+        <LoginForm consentRequired={!!sp.consent} />
       </div>
     </main>
   );

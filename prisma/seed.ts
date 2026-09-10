@@ -24,27 +24,13 @@ const WEEK1_FIELDS = [
   "선을 어디에 그어야 할지 모르겠는 지점 하나",
 ];
 
-const SEGMENTS = [
-  { kind: "part1" as const, plannedMin: 40 },
-  { kind: "part2" as const, plannedMin: 40 },
-  { kind: "break_" as const, plannedMin: 10 },
-  { kind: "part3" as const, plannedMin: 30 },
-];
-
 async function main() {
+  const study = await prisma.study.upsert({where:{id:'study-zero'},update:{},create:{id:'study-zero',name:'0기 스터디'}});
   for (const s of SESSIONS) {
-    const existing = await prisma.studySession.findFirst({ where: { weekNo: s.weekNo } });
+    const existing = await prisma.studySession.findUnique({ where: { studyId_weekNo: {studyId:study.id,weekNo:s.weekNo} } });
     const session =
       existing ??
-      (await prisma.studySession.create({ data: { weekNo: s.weekNo, date: new Date(s.date) } }));
-
-    for (const seg of SEGMENTS) {
-      await prisma.segment.upsert({
-        where: { sessionId_kind: { sessionId: session.id, kind: seg.kind } },
-        create: { sessionId: session.id, kind: seg.kind, plannedMin: seg.plannedMin },
-        update: { plannedMin: seg.plannedMin },
-      });
-    }
+      (await prisma.studySession.create({ data: { studyId:study.id,weekNo: s.weekNo, date: new Date(s.date) } }));
 
     // 1주차와 리허설에만 폼을 넣는다. 나머지 회차 폼은 비어 있다.
     if (s.weekNo === 1 || s.weekNo === 0) {

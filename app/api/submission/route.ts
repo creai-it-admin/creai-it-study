@@ -1,3 +1,4 @@
+import {sessionAccessWhere,type StudyViewer} from '@/lib/study-access';
 // FR-502 자동 저장, FR-504 제출. 자기 것만 쓸 수 있다.
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -5,11 +6,12 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-async function ownSubmission(userId: string) {
+async function ownSubmission(user: StudyViewer) {
+  const userId=user.id;
   return prisma.$transaction(async (tx) => {
     // 폼을 여는 요청도 편집·시작·종료와 엇갈리지 않게 한다.
     await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock_shared(731204)`;
-    const running = await tx.studySession.findFirst({ where: { status: "running" }, orderBy: { date: "asc" } });
+    const running = await tx.studySession.findFirst({ where: { status: "running", ...sessionAccessWhere(user) }, orderBy: { date: "asc" } });
     if (!running) return null;
     const formDef = await tx.formDef.findUnique({
       where: { sessionId: running.id }, include: { fields: { orderBy: { order: "asc" } } },
@@ -27,7 +29,7 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const data = await ownSubmission(session.user.id);
+  const data = await ownSubmission(session.user);
   if (!data) return NextResponse.json({ formDef: null });
 
   return NextResponse.json({
@@ -59,7 +61,7 @@ export async function POST(req: Request) {
     // Serialize writes to this submission, including requests whose browser timed out.
     await tx.$queryRaw`SELECT "id" FROM "Submission" WHERE "id" = ${body.submissionId} FOR UPDATE`;
     const submission = await tx.submission.findFirst({
-      where: { id: body.submissionId, userId: session.user.id },
+      where: { id: body.submissionId, userId: session.user.id, formDef:{session:sessionAccessWhere(session.user)} },
       include: { answers: true, formDef: { include: { fields: true, session: true } } },
     });
     if (!submission) return NextResponse.json({ error: "제출물을 찾을 수 없습니다." }, { status: 404 });

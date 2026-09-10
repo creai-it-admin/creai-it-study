@@ -27,22 +27,22 @@ function hookHarness(enterRunning: boolean) {
   return { routes, tick: () => tick(), stop: () => cleanup(), set: (value: Partial<typeof next>) => { next = { ...next, ...value }; } };
 }
 
-test("home catches a session that started before its first poll completed", async () => {
+test("home stays put when a session starts", async () => {
   const h = hookHarness(true);
   await new Promise((resolve) => setImmediate(resolve));
-  assert.deepEqual(h.routes, ["/deck"]);
+  assert.deepEqual(h.routes, []);
   await h.tick();
-  assert.deepEqual(h.routes, ["/deck"]);
+  assert.deepEqual(h.routes, []);
   h.stop();
 });
 
-test("manually opening another participant page does not redirect on first poll", async () => {
+test("state changes do not interrupt participant navigation", async () => {
   const h = hookHarness(false);
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(h.routes, []);
   h.set({ segment: "part2", route: "/inclass" });
   await h.tick();
   await h.tick();
-  assert.deepEqual(h.routes, ["/inclass"]);
+  assert.deepEqual(h.routes, []);
   h.stop();
 });

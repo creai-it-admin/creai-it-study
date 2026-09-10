@@ -42,6 +42,8 @@ enum AttendanceState {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
+  passwordHash  String?
+  authVersion   Int      @default(0)
   emailVerified DateTime?
   name          String?
   image         String?
@@ -53,6 +55,7 @@ model User {
   sessions    Session[]
   submissions Submission[]
   attendances Attendance[]
+  memberships StudyMembership[]
 }
 
 // --- Auth.js 어댑터가 요구하는 테이블 ---
@@ -95,19 +98,60 @@ model VerificationToken {
 
 // --- 스터디 도메인 ---
 
+model Study {
+  id        String @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  sessions  StudySession[]
+  members   StudyMembership[]
+}
+
+model StudyMembership {
+  studyId String
+  userId String
+  joinedAt DateTime @default(now())
+  study Study @relation(fields:[studyId],references:[id],onDelete:Cascade)
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@id([studyId,userId])
+  @@index([userId])
+}
+
 model StudySession {
   id          String             @id @default(cuid())
+  studyId     String
+  study       Study @relation(fields: [studyId], references: [id], onDelete: Restrict)
   weekNo      Int
   date        DateTime
   status      StudySessionStatus @default(scheduled)
   sharingOpen Boolean            @default(false)
   deckUrl     String?
+  deckPath    String?
+  startedAt   DateTime?
+  endedAt     DateTime?
+  recordingState String @default("idle")
+  recorderKey String?
+  recorderUserId String?
+  processingState String @default("pending")
+  processingLeaseUntil DateTime?
+  processingError String?
+  summary String?
+  reportData Json?
+  reportPath String?
+  reportGeneratedAt DateTime?
+  reportModel String?
+  reportReasoning String?
+  reportPromptVersion String?
+  processingAttempts Int @default(0)
+  processingNextAttemptAt DateTime?
+  processingToken String?
+  recordingParts RecordingPart[]
 
   segments    Segment[]
   formDef     FormDef?
   attendances Attendance[]
 
   @@index([status])
+  @@unique([studyId, weekNo])
 }
 
 model Segment {
@@ -183,4 +227,25 @@ model Attendance {
   user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([sessionId, userId])
+}
+
+// Shared across server instances; no IP addresses or emails are retained here.
+model AuthRateLimit {
+  key       String   @id
+  attempts  Int
+  expiresAt DateTime
+}
+
+model RecordingPart {
+  id         String @id
+  sessionId  String
+  path       String @unique
+  mimeType   String
+  bytes      Int
+  recordedAt DateTime
+  durationMs Int
+  uploadedAt DateTime?
+  transcript String?
+  session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  @@index([sessionId, recordedAt])
 }

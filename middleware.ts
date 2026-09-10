@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const PUBLIC = ["/login", "/api/auth", "/api/consent"];
+const PUBLIC = ["/login", "/api/auth"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
   const isApi = pathname.startsWith("/api");
 
   // 로그인 안 됨
-  if (!token) {
+  if (!token || token.authMethod !== "password") {
     if (isApi) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     return NextResponse.redirect(new URL("/login", req.url));
   }
