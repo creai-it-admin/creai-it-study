@@ -23,7 +23,7 @@ export async function Header({ right }: { right?: React.ReactNode } = {}) {
   // FR-403. 1부가 끝난 뒤에도 장표를 다시 열 수 있어야 한다.
   // 주소를 직접 치게 두면 그 요구가 사실상 없는 것과 같다.
   const running = session?.user ? await getRunningSession(session.user) : null;
-  const showDeck = !!running?.deckPath;
+  const showDeck = !!running?.deckPath||!!running?._count.materials;
 
   return (
     <header className="border-b border-line bg-surface">

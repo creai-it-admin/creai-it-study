@@ -1,7 +1,7 @@
 import {sessionAccessWhere,type StudyViewer} from './study-access';
 import {prisma} from '@/lib/prisma';
 export async function getRunningSession(user:StudyViewer){
-  return prisma.studySession.findFirst({where:{status:'running',...sessionAccessWhere(user)},orderBy:{date:'asc'},include:{study:true}});
+  return prisma.studySession.findFirst({where:{status:'running',...sessionAccessWhere(user)},orderBy:{date:'asc'},include:{study:true,_count:{select:{materials:true}}}});
 }
 export async function getLiveState(user:StudyViewer){
   const session=await getRunningSession(user);

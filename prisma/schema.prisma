@@ -145,6 +145,7 @@ model StudySession {
   processingNextAttemptAt DateTime?
   processingToken String?
   recordingParts RecordingPart[]
+  materials SessionMaterial[]
 
   segments    Segment[]
   formDef     FormDef?
@@ -152,6 +153,24 @@ model StudySession {
 
   @@index([status])
   @@unique([studyId, weekNo])
+}
+
+enum MaterialKind {
+  education
+  presentation
+}
+
+model SessionMaterial {
+  id        String @id @default(cuid())
+  sessionId String
+  kind      MaterialKind
+  title     String
+  path      String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  session   StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, kind])
 }
 
 model Segment {

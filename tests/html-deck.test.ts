@@ -9,3 +9,8 @@ test('single-file interactive HTML is accepted, external sibling files are rejec
  assert.equal(validDeckPath('session/../other/decks/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.html','session'),false);
  assert.equal(validDeckPath('another/decks/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.html','session'),false);
 });
+
+test('embedded image identifiers in data-src are not external file references',()=>{
+ assert.doesNotThrow(()=>validateHtml('<html><img data-src="embedded-image"/><script>const image="data:image/png;base64,AA";</script></html>'));
+ assert.throws(()=>validateHtml('<html><img data-src="embedded-image" src="./missing.png"/></html>'));
+});

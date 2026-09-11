@@ -33,7 +33,7 @@ export async function createDeckUploadUrl(sessionId:string){return createPrivate
 export function validateHtml(html:string){
  if(!/<(?:!doctype\s+html|html|head|body)[\s>]/i.test(html)||html.includes('\0'))throw Error('HTML 문서 파일을 올려 주세요.');
  // A single file must include its own local scripts, images and styles.
- const refs=[...html.matchAll(/\b(?:src|href)\s*=\s*["']([^"']+)["']/gi)].map(m=>m[1]);
+ const refs=[...html.matchAll(/(?<![\w:-])(?:src|href)\s*=\s*["']([^"']+)["']/gi)].map(m=>m[1]);
  if(refs.some(ref=>!ref.startsWith('#')&&!/^(?:https?:|data:|blob:|mailto:|tel:|about:)/i.test(ref)))throw Error('이미지·스크립트·스타일을 포함한 단일 HTML 파일을 올려 주세요. 상대 경로 파일은 함께 업로드되지 않습니다.');
 }
 export async function confirmDeck(path:string){

@@ -1,3 +1,4 @@
+import {materialSelect} from '@/lib/materials';
 import Link from 'next/link';
 import {notFound,redirect} from 'next/navigation';
 import {requireAdmin} from '@/lib/auth';
@@ -7,9 +8,9 @@ export const dynamic='force-dynamic';
 export default async function StudyPage({params}:{params:Promise<{id:string}>}){
  if(!await requireAdmin())redirect('/routes/login');
  const {id}=await params;
- const study=await prisma.study.findUnique({where:{id},include:{sessions:{orderBy:{weekNo:'asc'},include:{formDef:{include:{_count:{select:{fields:true}}}}}}}});
+ const study=await prisma.study.findUnique({where:{id},include:{sessions:{orderBy:{weekNo:'asc'},include:{materials:{select:materialSelect,orderBy:{createdAt:'asc'}},formDef:{include:{_count:{select:{fields:true}}}}}}}});
  if(!study)notFound();
- const row=(session:typeof study.sessions[number])=><SessionRow key={session.id} id={session.id} weekNo={session.weekNo} date={session.date.toISOString()} status={session.status} deckPath={session.deckPath} fieldCount={session.formDef?._count.fields??0}/>;
+ const row=(session:typeof study.sessions[number])=><SessionRow key={session.id} id={session.id} weekNo={session.weekNo} date={session.date.toISOString()} status={session.status} deckPath={session.deckPath} materials={session.materials} fieldCount={session.formDef?._count.fields??0}/>;
  return <main className="mx-auto max-w-4xl px-5 py-8">
   <Link className="text-sm text-accent-strong" href="/routes/admin">← 스터디 목록</Link>
   <div className="mb-6 mt-4 flex flex-wrap items-center justify-between gap-4"><h1 className="text-xl font-semibold">{study.name}</h1><Link className="btn" href={`/routes/admin/data?study=${study.id}`}>이 스터디 회차 결과</Link></div>

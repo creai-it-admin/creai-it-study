@@ -18,6 +18,7 @@ export async function GET(req: Request) {
     where: { id },
     include: {
       study:true,
+      _count:{select:{materials:true}},
       formDef: {
         include: {
           fields: { orderBy: { order: "asc" } },
@@ -74,7 +75,7 @@ export async function GET(req: Request) {
       weekNo: s.weekNo,
       status: s.status,
       sharingOpen: s.sharingOpen,
-      hasDeck: !!s.deckPath,
+      hasDeck: !!s.deckPath||s._count.materials>0,
       recordingState: s.recordingState,
       hasOwner: !!s.recorderKey,
     },
