@@ -17,7 +17,7 @@ function load(file: string, dependencies: Record<string, unknown>) {
   return module.exports;
 }
 
-for (const path of ["/admin", "/admin/data", "/admin/session/example", "/api/admin/session/example/form"]) {
+for (const path of ["/routes/admin", "/routes/admin/data", "/routes/admin/session/example", "/api/admin/session/example/form"]) {
   test(`participant gets HTTP 403 for ${path}`, async () => {
     const api = load("middleware.ts", { "next-auth/jwt": { getToken: async () => ({ authMethod: "password", consented: true, roles: ["participant"] }) } });
     const result = await api.middleware({ nextUrl: new URL(`http://localhost${path}`), url: `http://localhost${path}` });
@@ -26,9 +26,9 @@ for (const path of ["/admin", "/admin/data", "/admin/session/example", "/api/adm
 }
 test("lookalike public path does not bypass the login gate", async () => {
   const api = load("middleware.ts", { "next-auth/jwt": { getToken: async () => null } });
-  const result = await api.middleware({ nextUrl: new URL("http://localhost/login-private"), url: "http://localhost/login-private" });
+  const result = await api.middleware({ nextUrl: new URL("http://localhost/routes/login-private"), url: "http://localhost/routes/login-private" });
   assert.equal(result.status, 307);
-  assert.equal(result.headers.get("location"), "http://localhost/login");
+  assert.equal(result.headers.get("location"), "http://localhost/routes/login");
 });
 test("history query enforces current user, submitted status and closed session", async () => {
   const history = load("lib/history.ts", { "@/lib/prisma": { prisma: {

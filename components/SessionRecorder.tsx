@@ -8,6 +8,7 @@ export function SessionRecorder({id,status,recordingState,hasOwner,onChange}:{id
  const router=useRouter();
  const [mode,setMode]=useState<'idle'|'recording'|'paused'>('idle');
  const [busy,setBusy]=useState(false),[pending,setPending]=useState(0),[error,setError]=useState('');
+ const [confirmEnd,setConfirmEnd]=useState(false);
  const capture=useRef<AudioCapture|null>(null),key=useRef(''),upload=useRef<Promise<void>|null>(null),release=useRef<(()=>void)|null>(null),mounted=useRef(true);
  const active=useRef(false),pendingRef=useRef(0),busyRef=useRef(false);
  async function count(){const n=(await listTakes(id)).length;pendingRef.current=n;if(mounted.current)setPending(n);}
@@ -85,7 +86,7 @@ export function SessionRecorder({id,status,recordingState,hasOwner,onChange}:{id
   await flush();
   if((await listTakes(id)).length)throw Error('아직 저장 중인 녹음이 있습니다. 저장 재시도 후 종료해 주세요.');
   await control('end');release.current?.();release.current=null;
-  router.push(`/sessions/${id}`);
+  router.push(`/routes/sessions/${id}`);
  }
  async function retry(){await capture.current?.retryPersistence();await flush();}
  function download(){const blob=capture.current?.lastBlob;if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`recording-recovery-${Date.now()}.${blob.type==='audio/mp4'?'mp4':'webm'}`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
@@ -94,7 +95,14 @@ export function SessionRecorder({id,status,recordingState,hasOwner,onChange}:{id
   <p className="text-sm text-ink-2">한 기기에서 이 녹음 탭을 열어 두세요. 장표와 인클래스는 새 탭에서 사용할 수 있고, 일시정지 중에도 계속 열람할 수 있습니다.</p>
   {status!=='closed'&&<div className="flex flex-wrap gap-2">
    {mode==='recording'?<button className="btn" disabled={busy} onClick={()=>void run(pause)}>녹음 일시정지</button>:<button className="btn btn-primary" disabled={busy} onClick={()=>void run(start)}>{hasOwner?'녹음 재개':'녹음 시작'}</button>}
-   {(hasOwner||status==='running')&&<button className="btn" disabled={busy} onClick={()=>{if(confirm('녹음을 저장하고 세션을 종료할까요? 종료한 세션은 다시 녹음하지 않습니다.'))void run(end);}}>녹음 종료 · 세션 마치기</button>}
+   {(hasOwner||status==='running')&&<button className="btn" disabled={busy||confirmEnd} onClick={()=>setConfirmEnd(true)}>녹음 종료 · 세션 마치기</button>}
+  </div>}
+  {confirmEnd&&status!=='closed'&&<div role="group" aria-label="세션 종료 확인" className="rounded-xl border border-ink/15 p-4">
+   <p className="text-sm">녹음을 저장하고 세션을 종료할까요? 종료한 세션은 다시 녹음하지 않습니다.</p>
+   <div className="mt-3 flex gap-2">
+    <button className="btn btn-primary" disabled={busy} onClick={()=>{setConfirmEnd(false);void run(end);}}>저장하고 세션 종료</button>
+    <button className="btn" disabled={busy} onClick={()=>setConfirmEnd(false)}>계속 진행</button>
+   </div>
   </div>}
   <p className="text-xs text-ink-2">{busy?'처리 중…':pending?`이 기기에 보관 중인 녹음 ${pending}개 · 저장 완료 전 창을 닫지 마세요.`:mode==='recording'?'녹음은 주기적으로 이 기기에 보관하고 서버에 저장합니다.':'보관된 녹음은 저장 재시도로 복구할 수 있습니다.'}</p>
   {mode!=='recording'&&hasOwner&&status!=='closed'&&<p className="text-xs text-ink-2">{recordingState==='recording'?'서버에는 녹음 중으로 기록되어 있습니다. 다른 기기의 녹음을 먼저 확인하세요.':'녹음이 일시정지되어 있습니다.'} 새로고침·기기 종료 직전의 아직 저장되지 않은 음성은 복구되지 않을 수 있습니다.</p>}

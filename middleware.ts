@@ -4,11 +4,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const PUBLIC = ["/login", "/api/auth"];
+const PUBLIC = ["/routes/login", "/api/auth", "/landing"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
+  if (pathname === "/" || PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
 
   const token = await getToken({
     req,
@@ -23,13 +23,13 @@ export async function middleware(req: NextRequest) {
   // 로그인 안 됨
   if (!token || token.authMethod !== "password") {
     if (isApi) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/routes/login", req.url));
   }
 
   // 동의 안 함. 화면이든 API든 여기서 다 막는다.
   if (!token.consented) {
     if (isApi) return NextResponse.json({ error: "consent required" }, { status: 403 });
-    return NextResponse.redirect(new URL("/login?consent=1", req.url));
+    return NextResponse.redirect(new URL("/routes/login?consent=1", req.url));
   }
 
   // 운영진 아님
@@ -39,9 +39,9 @@ export async function middleware(req: NextRequest) {
       return NextResponse.json({ error: "forbidden" }, { status: 403 });
     }
   }
-  if ((pathname === "/admin" || pathname.startsWith("/admin/")) && !roles.includes("admin")) {
+  if ((pathname === "/routes/admin" || pathname.startsWith("/routes/admin/")) && !roles.includes("admin")) {
     // 숫자 403을 화면에 쓰는 것만으로는 HTTP 403 응답이 되지 않는다.
-    return new NextResponse(`<!doctype html><html lang="ko"><meta charset="utf-8"><title>접근 제한</title><main><h1>403</h1><p>운영진만 볼 수 있는 화면입니다.</p><a href="/">현재 세션으로 돌아가기</a></main></html>`, {
+    return new NextResponse(`<!doctype html><html lang="ko"><meta charset="utf-8"><title>접근 제한</title><main><h1>403</h1><p>운영진만 볼 수 있는 화면입니다.</p><a href="/routes">현재 세션으로 돌아가기</a></main></html>`, {
       status: 403, headers: { "content-type": "text/html; charset=utf-8" },
     });
   }

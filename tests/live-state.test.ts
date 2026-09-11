@@ -5,7 +5,7 @@ import { runInNewContext } from "node:vm";
 import ts from "typescript";
 
 function hookHarness(enterRunning: boolean) {
-  let next = { sessionId: "session", segment: "part1", sharingOpen: false, route: "/deck", serverTime: new Date().toISOString() };
+  let next = { sessionId: "session", segment: "part1", sharingOpen: false, route: "/routes/deck", serverTime: new Date().toISOString() };
   const routes: string[] = [];
   let tick!: () => Promise<void>;
   let cleanup!: () => void;
@@ -40,7 +40,7 @@ test("state changes do not interrupt participant navigation", async () => {
   const h = hookHarness(false);
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(h.routes, []);
-  h.set({ segment: "part2", route: "/inclass" });
+  h.set({ segment: "part2", route: "/routes/inclass" });
   await h.tick();
   await h.tick();
   assert.deepEqual(h.routes, []);

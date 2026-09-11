@@ -6,7 +6,10 @@ import {REPORT_PROMPT_VERSION} from './reports/prompt';
 import {parseReport} from './reports/schema';
 import {renderReport} from './reports/render';
 import {SessionError} from './session-control';
-export async function transcribeAudio(blob:Blob,mime:string){
+export async function transcribeAudio(blob:Blob,mime:string,durationMs?:number){
+ // Stopping during a recorder rollover can produce a tiny, sub-100ms tail
+ // that the transcription API rejects. Keep its audio, but add no transcript.
+ if(durationMs!==undefined&&durationMs>=0&&durationMs<100&&blob.size<=1024)return '';
  const file=new FormData();
  file.set('model',process.env.OPENAI_TRANSCRIBE_MODEL||'gpt-4o-mini-transcribe');
  file.set('language','ko');
@@ -36,7 +39,7 @@ export async function processRecording(sessionId:string){
   const part=await prisma.recordingPart.findFirst({where:{sessionId,uploadedAt:{not:null},transcript:null},orderBy:[{recordedAt:'asc'},{id:'asc'}]});
   if(part){
    if(!process.env.OPENAI_API_KEY)throw Error('서버에 OPENAI_API_KEY를 설정해 주세요.');
-   const text=await transcribeAudio(await downloadMedia(part.path),part.mimeType);
+   const text=await transcribeAudio(await downloadMedia(part.path),part.mimeType,part.durationMs);
    await prisma.$transaction(async tx=>{
     const updated=await tx.studySession.updateMany({where:owned,data:{processingState:'pending',...release}});
     if(!updated.count)throw new SessionError('다른 작업이 처리를 이어받았습니다.');

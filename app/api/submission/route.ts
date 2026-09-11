@@ -12,11 +12,11 @@ async function ownSubmission(user: StudyViewer) {
     // 폼을 여는 요청도 편집·시작·종료와 엇갈리지 않게 한다.
     await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock_shared(731204)`;
     const running = await tx.studySession.findFirst({ where: { status: "running", ...sessionAccessWhere(user) }, orderBy: { date: "asc" } });
-    if (!running) return null;
+    if (!running) return { reason: "no_running_session" } as const;
     const formDef = await tx.formDef.findUnique({
       where: { sessionId: running.id }, include: { fields: { orderBy: { order: "asc" } } },
     });
-    if (!formDef) return null;
+    if (!formDef) return { reason: "no_form" } as const;
     const submission = await tx.submission.upsert({
       where: { formDefId_userId: { formDefId: formDef.id, userId } },
       create: { formDefId: formDef.id, userId }, update: {}, include: { answers: true },
@@ -30,7 +30,7 @@ export async function GET() {
   if (!session?.user?.id) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const data = await ownSubmission(session.user);
-  if (!data) return NextResponse.json({ formDef: null });
+  if ("reason" in data) return NextResponse.json({ formDef: null, reason: data.reason });
 
   return NextResponse.json({
     submissionId: data.submission.id,

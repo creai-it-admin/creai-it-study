@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 390" fill="none">
+<defs><linearGradient id="paper" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#dbe7f6"/></linearGradient><filter id="shadow"><feDropShadow dy="9" stdDeviation="9" flood-opacity=".12"/></filter></defs>
+<g filter="url(#shadow)"><rect x="33" y="34" width="276" height="329" rx="9" fill="#b8cce5" transform="rotate(4 33 34)"/><rect x="25" y="20" width="276" height="329" rx="9" fill="url(#paper)"/><path d="M25 72H301" stroke="#bacbe2"/><text x="48" y="51" fill="#27486f" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="2">CREAI+IT / FIELD NOTES</text>
+<circle cx="275" cy="46" r="5" fill="#188fe1"/><text x="48" y="117" fill="#142d50" font-family="sans-serif" font-size="24" font-weight="700">좋은 질문의 시작.</text><text x="48" y="144" fill="#62789a" font-family="sans-serif" font-size="12">내가 원하는 결과는 무엇일까?</text>
+<rect x="48" y="174" width="17" height="17" rx="4" stroke="#27486f"/><path d="m52 182 4 4 7-9" stroke="#27486f" stroke-width="2"/><path d="M78 178h168M78 189h113" stroke="#9eb5d4" stroke-width="3" stroke-linecap="round"/>
+<rect x="48" y="213" width="17" height="17" rx="4" stroke="#27486f"/><path d="M78 217h155M78 228h133" stroke="#9eb5d4" stroke-width="3" stroke-linecap="round"/>
+<path d="M49 266h224" stroke="#bacbe2"/><text x="48" y="297" fill="#142d50" font-family="sans-serif" font-size="12">의도는 내가. 실행은 함께.</text><path d="M204 302c35-29 62-10 40 3-20 12-39-18 9-28" stroke="#188fe1" stroke-width="3" stroke-linecap="round"/></g>
+</svg>

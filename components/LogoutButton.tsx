@@ -12,7 +12,7 @@ export function LogoutButton() {
     setBusy(true);
     setFailed(false);
     try {
-      await signOut({ redirectTo: "/login" });
+      await signOut({ redirectTo: "/routes/login" });
     } catch {
       setFailed(true);
       setBusy(false);

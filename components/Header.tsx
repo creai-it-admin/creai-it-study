@@ -28,15 +28,15 @@ export async function Header({ right }: { right?: React.ReactNode } = {}) {
   return (
     <header className="border-b border-line bg-surface">
       <div className="mx-auto flex min-h-14 flex-wrap gap-3 py-3 max-w-5xl items-center justify-between px-5">
-        <Link href="/">
+        <Link href="/routes">
           <Logo sub="AI 스터디" />
         </Link>
         <div className="flex flex-wrap items-center gap-3 text-[13px] text-ink-2">
-          {name ? <Link href="/mine" className="hover:text-ink">내 제출물</Link> : null}
-          {isAdmin ? <Link href="/admin" className="hover:text-ink">스터디 관리</Link> : null}
-          {running ? <><Link href="/inclass" className="hover:text-ink">인클래스</Link><Link href="/inclass/shared" className="hover:text-ink">공유</Link></> : null}
+          {name ? <Link href="/routes/mine" className="hover:text-ink">내 제출물</Link> : null}
+          {isAdmin ? <Link href="/routes/admin" className="hover:text-ink">스터디 관리</Link> : null}
+          {running ? <><Link href="/routes/inclass" className="hover:text-ink">인클래스</Link><Link href="/routes/inclass/shared" className="hover:text-ink">공유</Link></> : null}
           {showDeck ? (
-            <Link href="/deck" className="hover:text-ink">
+            <Link href="/routes/deck" className="hover:text-ink">
               장표
             </Link>
           ) : null}

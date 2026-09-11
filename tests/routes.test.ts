@@ -18,6 +18,30 @@ function load(file: string, dependencies: Record<string, unknown>) {
   return module.exports;
 }
 
+test("inclass distinguishes a session not started from a missing form without creating submissions", async () => {
+  for (const running of [null, { id: "week-one" }]) {
+    const api = load("app/api/submission/route.ts", {
+      "@/lib/auth": { auth: async () => ({ user: { id: "user" } }) },
+      "@/lib/prisma": { prisma: { $transaction: (fn: any) => fn({
+        $queryRaw: async () => [],
+        studySession: { findFirst: async ({ where }: any) => {
+          assert.equal(where.status, "running");
+          return running;
+        } },
+        formDef: { findUnique: async () => {
+          assert.ok(running, "a scheduled session must not be treated as a missing form");
+          return null;
+        } },
+        submission: { upsert: async () => assert.fail("empty state must not create a submission") },
+      }) } },
+    });
+    const result = await api.GET();
+    assert.deepEqual(await result.json(), {
+      formDef: null, reason: running ? "no_form" : "no_running_session",
+    });
+  }
+});
+
 function submissionHarness() {
   let writes = 0;
   const row = {

@@ -9,6 +9,6 @@ export async function getLiveState(user:StudyViewer){
     serverTime:new Date().toISOString(),sessionId:session?.id??null,weekNo:session?.weekNo??null,
     studyName:session?.study.name??null,
     recordingState:session?.recordingState??'idle',sharingOpen:session?.sharingOpen??false,
-    route:'/home',
+    route:'/routes/home',
   };
 }

@@ -1,15 +1,27 @@
-// 라우팅 규칙. 위에서부터 판정한다.
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-
-export const dynamic = "force-dynamic";
-
-export default async function Entry() {
-  const session = await auth();
-  // 1. 로그인 안 됨
-  if (!session?.user) redirect("/login");
-  // 동의가 아직 안 찍힌 계정은 로그인 화면으로 되돌린다.
-  if (!session.user.consented) redirect("/login?consent=1");
-
-  redirect("/home");
-}
+import type {Metadata} from 'next';
+import Link from 'next/link';
+import {Experience} from '@/components/landing/Experience';
+import {StudyGuide} from '@/components/landing/StudyGuide';
+import './landing.css';
+export const metadata:Metadata={title:'CREAI+IT Study — AI, 나의 방식으로.',description:'함께 배우고, 직접 시도하고, 막힌 지점을 나눕니다. 도구가 바뀌어도 남는 나만의 판단력을 기르는 CREAI+IT 스터디.'};
+export default function Landing(){return <div className="landing">
+ <a href="#main" className="landing-skip">본문으로 바로가기</a>
+ <header className="landing-nav"><Link href="/" className="landing-logo" aria-label="CREAI+IT Study 홈"><span className="brand-symbol" aria-hidden="true"><img src="/landing/creaiit-symbol.png" alt="" width="250" height="354"/></span>CREAI<span>+</span>IT<small>STUDY</small></Link><nav aria-label="주요 메뉴"><a href="#experience">스터디 경험</a><a href="#records">남는 기록</a><a href="#join">참여 안내</a></nav><Link href="/routes" className="nav-enter">멤버 로그인 <span>↗</span></Link></header>
+ <main id="main">
+  <section className="landing-hero" aria-labelledby="hero-title">
+   <div className="hero-grid" aria-hidden="true"/>
+   <div className="hero-art hero-notes" aria-hidden="true"><img src="/landing/field-notes.svg" width="340" height="390" alt=""/></div>
+   <div className="hero-art hero-orbit" aria-hidden="true"><img src="/landing/creaiit-symbol.png" width="250" height="354" alt=""/></div>
+   <div className="hero-art hero-conversation" aria-hidden="true"><img src="/landing/conversation.svg" width="360" height="310" alt=""/></div>
+   <div className="hero-spark" aria-hidden="true">✳</div>
+   <div className="hero-copy"><p className="eyebrow"><span/> A STUDY FOR WHAT COMES NEXT</p><h1 id="hero-title">AI, 이제<br/><em>나의 방식으로.</em></h1><p className="hero-description">함께 배우고, 직접 시도하고, 막힌 지점을 나눕니다.<br/>도구가 바뀌어도 남는 나만의 판단력을 기르는 스터디.</p><a className="landing-button accent" href="#experience">스터디 경험하기 <span>↗</span></a></div>
+   <div className="hero-bottom"><span>질문에서 시작해, 나의 가능성으로.</span><a href="#philosophy">SCROLL TO EXPLORE <span>↓</span></a><span>LEARN TOGETHER. THINK FOR YOURSELF.</span></div>
+  </section>
+  <section id="philosophy" className="philosophy landing-wrap"><div><span className="eyebrow">01 — OUR POINT OF VIEW</span><p className="section-aside">새로운 도구보다,<br/>새로워지는 나의 관점.</p></div><div><h2>좋은 AI 활용은<br/><span>좋은 판단</span>에서 시작되니까.</h2><p>무엇을 맡길지, 어떤 결과를 원하는지, 어디에서 직접 확인할지.<br className="desktop-break"/> CREAI+IT는 그 기준을 내 일 안에서 찾아가는 곳입니다.</p><div className="philosophy-line"><span>내가 정하는 방향</span><b>+</b><span>AI로 넓히는 가능성</span></div></div></section>
+  <section id="experience" className="experience landing-wrap"><div className="section-heading"><div><span className="eyebrow">02 — THE STUDY EXPERIENCE</span><h2>혼자 쓰던 AI를,<br/>함께 더 깊이.</h2></div><p>질문 하나를 가져오세요.<br/>다음 시도는 함께 만들어갑니다.</p></div><Experience/></section>
+  <section id="records" className="records-section"><div className="records-inner landing-wrap"><div className="records-copy"><span className="eyebrow">03 — LEARNING THAT STAYS</span><h2>모임은 끝나도,<br/>배움은 <em>이어서.</em></h2><p>그날의 질문과 대화를 다시 꺼내볼 수 있도록.<br/>활동의 결과와 세션 리포트가 내 스터디에 쌓입니다.</p><ul><li><span>01</span>배운 원리와 나눈 대화를 한눈에</li><li><span>02</span>제안과 합의한 과제를 구분해서</li><li><span>03</span>HTML 복사로, 나만의 복습을 이어서</li></ul><a href="/routes" className="text-link">내 스터디 기록 보러 가기 ↗</a></div><div className="report-scene"><div className="report-behind"/><article className="report-preview"><div className="report-top"><strong>CREAI+IT.</strong><span>THE STUDY JOURNAL</span></div><p className="report-meta">학습 흐름을 보여주는 리포트 예시</p><h3>AI에게 맡길 일,<br/>내가 판단할 일.</h3><p className="report-intro">출처를 확인하는 데 시간이 오래 걸렸다면,<br/>다음 리서치는 어떻게 달라질 수 있을까?</p><div className="report-rule"/><div className="report-entry"><span>오늘의 발견</span><p>원하는 결과와 품질 기준을<br/>실행 전에 먼저 정하기.</p></div><div className="report-entry"><span>대화에서 나온 제안</span><p>출처와 근거를 표로 모아보자.<small>아직 합의되지 않은 아이디어</small></p></div><div className="report-task"><span>다음에 시도할 것 ↗</span><p>실제 업무 하나에서 맡길 일과<br/>직접 확인할 지점을 적어오기.</p></div><details><summary>대화 근거 펼쳐보기 <span>+</span></summary><p>“모두 다음 주까지 실제 업무 하나에서 맡길 일과 직접 확인할 지점을 적어오기로 합의했습니다.”</p><small>기능 검증용 리허설의 테스트 발화입니다.</small></details></article><span className="report-caption">A CONVERSATION BECOMES YOUR NEXT STEP.</span></div></div></section>
+  <section id="join" className="join-section landing-wrap"><div className="section-heading"><div><span className="eyebrow">04 — A SMALL GROUP, A NEW START</span><h2>작게 모여,<br/>가능성을 크게.</h2></div><p>서로의 질문을 충분히 들을 수 있는 규모.<br/>내 일에 적용해볼 수 있는 시간.</p></div><div className="join-facts"><div><span>함께하는 사람</span><strong>6<small>명</small></strong><p>각자의 시도가 서로의 배움으로</p></div><div><span>함께하는 기간</span><strong>4<small>회</small></strong><p>한 주의 배움을 다음 시도로</p></div><div><span>한 번의 만남</span><strong>2<small>시간</small></strong><p>배우고, 적용하고, 이야기하는 시간</p></div></div><div className="cohort-info"><div><span className="cohort-tag">0기 운영 안내</span><p>토요일 10:00–12:00 · 신촌 커피빈 · 전체 참가비 3만원</p><p className="cohort-dates">9/12 · 9/19 · 10/3 · 10/10 <span>9/26 추석 휴회</span></p></div><div><p>다음 기수 모집은 추후 안내됩니다.</p><span>이미 배정된 멤버는 로그인 후 스터디에 참여해 주세요.</span><Link href="/routes" className="text-link">내 스터디 입장 ↗</Link></div></div></section>
+  <section className="landing-ending"><div className="landing-wrap"><span className="eyebrow">STAY CURIOUS. MAKE IT YOURS.</span><h2>당신의 다음 질문이,<br/>새로운 시작이 되도록.</h2><a href="#experience" className="landing-button ink">우리의 스터디 다시 보기 <span>↗</span></a><span className="ending-mark" aria-hidden="true">+</span></div></section>
+ </main>
+ <footer className="landing-footer landing-wrap"><a href="#main" className="landing-logo"><span className="brand-symbol" aria-hidden="true"><img src="/landing/creaiit-symbol.png" alt="" width="250" height="354"/></span>CREAI<span>+</span>IT<small>STUDY</small></a><p>Learn together. Think for yourself.</p><a href="#main">BACK TO TOP ↑</a></footer><StudyGuide/>
+ </div>;}

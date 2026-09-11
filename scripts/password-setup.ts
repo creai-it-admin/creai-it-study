@@ -10,7 +10,7 @@ async function main() {
   try {
     const email=await rl.question('본인 확인을 마친 계정의 이메일: ');
     const token=await issuePasswordSetup(email);
-    const url=new URL('/login/password',process.env.NEXTAUTH_URL ?? 'http://localhost:3000');
+    const url=new URL('/routes/login/password',process.env.NEXTAUTH_URL ?? 'http://localhost:3000');
     url.hash=new URLSearchParams({token}).toString();
     stdout.write(`본인에게만 전달하세요. 1시간 후 만료되는 일회용 링크입니다.\n${url}\n`);
   } finally {rl.close();await prisma.$disconnect();}
