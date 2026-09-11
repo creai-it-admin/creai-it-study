@@ -11,5 +11,5 @@ export default async function Entry() {
   // 동의가 아직 안 찍힌 계정은 로그인 화면으로 되돌린다.
   if (!session.user.consented) redirect("/routes/login?consent=1");
 
-  redirect("/routes/home");
+  redirect(session.user.roles.includes("admin") ? "/routes/admin" : "/routes/home");
 }

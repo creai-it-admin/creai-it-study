@@ -21,7 +21,7 @@ npm run dev
 
 | 이름 | 무엇 |
 | --- | --- |
-| `NEXTAUTH_URL` | 로컬은 `http://localhost:3000` |
+| `NEXTAUTH_URL` | 로컬은 실행 포트에 맞춘 주소. Vercel Production은 `https://creai-it-study.vercel.app`; localhost 값을 배포에 복사하지 않는다 |
 | `NEXTAUTH_SECRET` | `openssl rand -base64 32`로 만든다 |
 | `DATABASE_URL` / `DIRECT_URL` | Supabase Postgres 접속 문자열 |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | 서버의 장표·녹음 저장소 접근 |
@@ -79,7 +79,7 @@ Google provider와 동의 쿠키는 제거했다. 기존 Google 계정과 스터
 | --- | --- | --- |
 | 공통 | `/routes/login` | 이메일/비밀번호 로그인 및 회원가입 |
 | 공개 | `/` | 로그인 없이 볼 수 있는 랜딩 페이지 |
-| 공통 | `/routes` | 로그인·동의를 확인하고 `/routes/home`으로 보낸다 |
+| 공통 | `/routes` | 로그인·동의를 확인하고 운영진은 `/routes/admin`, 참가자는 `/routes/home`으로 보낸다 |
 | 참가자 | `/routes/home` | 현재 세션 자료와 지난 세션 리포트 |
 | 참가자 | `/routes/deck` | HTML 장표를 각자 넘긴다. `?session=id`로 지난 자료도 열람 |
 | 참가자 | `/routes/inclass` | 오늘 폼을 쓰고 제출한다 |

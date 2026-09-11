@@ -45,7 +45,7 @@ export function LoginForm({consentRequired=false}:{consentRequired?:boolean}) {
       }
       const result = await signIn('credentials',{email,password,agreed:String(agreed),redirect:false,redirectTo:'/routes'});
       if (result?.error || !result?.ok) {setError('이메일 또는 비밀번호를 확인해 주세요. 반복 시도했다면 15분 뒤 다시 시도해 주세요.');return;}
-      window.location.assign('/routes');
+      window.location.replace('/routes');
     } catch {
       setError('연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.');
     } finally {setBusy(false);}
