@@ -23,6 +23,6 @@ export default async function DeckPage({searchParams}:{searchParams:Promise<{ses
    const items=session.materials.filter(m=>m.kind===kind);if(!items.length)return null;
    return <div key={kind} className="rounded-lg border border-line p-3"><p className="mb-2 text-xs font-semibold text-ink-2">{materialLabels[kind]}</p><div className="flex flex-wrap gap-2">{items.map(m=><Link key={m.id} aria-current={selected?.id===m.id?'page':undefined} className={`btn text-sm ${selected?.id===m.id?'btn-primary':''}`} href={materialHref(session.id,m.id)}>{m.title}</Link>)}</div></div>;
   })}</nav>}
-  {session&&(selected||session.deckPath)?<DeckViewer key={selected?.id??session.id} sessionId={session.id} materialId={selected?.id} title={selected?.title??'교육 장표'}/>:<div className="card p-10 text-center text-sm text-ink-2">올라온 HTML 자료가 없습니다.</div>}
+  {session&&(selected||session.deckPath)?<DeckViewer key={selected?.id??session.id} src={`/api/sessions/${session.id}/deck${selected?`?material=${encodeURIComponent(selected.id)}`:''}`} title={selected?.title??'교육 장표'}/>:<div className="card p-10 text-center text-sm text-ink-2">올라온 HTML 자료가 없습니다.</div>}
  </DeckFrame></main></>;
 }

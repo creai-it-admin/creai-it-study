@@ -51,3 +51,6 @@ export async function uploadReport(sessionId:string,html:string){
  if(error)throw Error('리포트를 저장소에 올리지 못했습니다. 요약 결과는 보관되어 재시도할 수 있습니다.');
  return path;
 }
+
+export const validOtPath=(path:unknown,studyId:string):path is string=>validDeckPath(path,`studies/${studyId}/orientation`);
+export async function createOtUploadUrl(studyId:string){return createDeckUploadUrl(`studies/${studyId}/orientation`);}
