@@ -54,7 +54,7 @@ export function LoginForm({consentRequired=false}:{consentRequired?:boolean}) {
     <div className="flex gap-2" aria-label="계정 메뉴">
       {(['signin','signup'] as const).map(value=><button key={value} type="button" disabled={busy} aria-pressed={mode===value} className={`btn flex-1 ${mode===value?'btn-primary':''}`} onClick={()=>{setMode(value);setError('');setNotice('');}}>{value==='signin'?'로그인':'회원가입'}</button>)}
     </div>
-    <form onSubmit={submit} className="flex flex-col gap-4">
+    <form method="post" onSubmit={submit} className="flex flex-col gap-4">
       {mode==='signup' && <label className="text-sm">이름<input className="field mt-1" name="name" autoComplete="name" required maxLength={80} disabled={busy}/></label>}
       <label className="text-sm">이메일<input className="field mt-1" name="email" type="email" autoComplete="username" required maxLength={254} disabled={busy}/></label>
       <label className="text-sm">비밀번호<input key={mode} className="field mt-1" name="password" type="password" autoComplete={mode==='signup'?'new-password':'current-password'} required minLength={10} maxLength={128} disabled={busy}/>{mode==='signup'&&<span className="mt-1 block text-xs text-ink-2">10~128자. 기억하기 쉬운 긴 문장도 사용할 수 있습니다.</span>}</label>

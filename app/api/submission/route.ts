@@ -65,6 +65,7 @@ export async function POST(req: Request) {
       include: { answers: true, formDef: { include: { fields: true, session: true } } },
     });
     if (!submission) return NextResponse.json({ error: "제출물을 찾을 수 없습니다." }, { status: 404 });
+    if (submission.firstSharedAt || (submission.formDef.session.activityStatus && submission.formDef.session.activityStatus !== "locked")) return NextResponse.json({error:"회차의 새 인클래스 화면에서 작성해 주세요."},{status:409});
     if (submission.formDef.session.status !== "running") {
       return NextResponse.json({ error: "회차가 종료되어 저장하지 못했습니다. 초안은 이 브라우저에 보관됩니다." }, { status: 409 });
     }

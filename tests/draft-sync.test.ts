@@ -109,3 +109,34 @@ test("late success after leaving the page cannot clear a remounted page's draft"
   await request;
   assert.equal(h.local()?.answers.a, "keep");
 });
+
+test("a final submission keeps its intent through a lost response and clears it before later autosave", async () => {
+  const sent: Draft[] = [];
+  const h = setup(async draft => {
+    sent.push(structuredClone(draft));
+    if(sent.length===1)throw new Error("lost response");
+    return {version:`v${sent.length}`,submitted:draft.submit};
+  });
+  h.sync.edit({a:"revision"},true,"complete");
+  await h.sync.flush();
+  assert.equal(h.local()?.intent,"complete");
+  await h.sync.flush();
+  assert.deepEqual(sent[0],sent[1]);
+  assert.equal(h.local(),null);
+  h.sync.edit({a:"later draft"});
+  await h.sync.flush();
+  assert.equal(sent[2].submit,false);
+  assert.equal(sent[2].intent,undefined);
+  h.sync.stop();
+});
+
+test("a restored first-share draft keeps the requested transition", async () => {
+  const initial:Draft={answers:{a:"first result"},submit:true,intent:"share",version:"v1"};
+  let sent:Draft|undefined;
+  const h=setup(async draft=>{sent=draft;return{version:"v2",submitted:true}},initial);
+  h.sync.restore();
+  await new Promise(resolve=>setTimeout(resolve,10));
+  assert.equal(sent?.intent,"share");
+  assert.equal(h.local(),null);
+  h.sync.stop();
+});

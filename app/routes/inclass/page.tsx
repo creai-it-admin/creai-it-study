@@ -1,20 +1,5 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { Header } from "@/components/Header";
-import { InclassForm } from "./InclassForm";
-
-export const dynamic = "force-dynamic";
-
-export default async function InclassPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/routes/login");
-
-  return (
-    <>
-      {await Header()}
-      <main className="mx-auto max-w-3xl px-5 py-8">
-        <InclassForm />
-      </main>
-    </>
-  );
-}
+import {requireUser} from '@/lib/auth';
+import {redirect} from 'next/navigation';
+import {getRunningSession} from '@/lib/session-state';
+export const dynamic='force-dynamic';
+export default async function InclassPage(){const user=await requireUser();if(!user)redirect('/routes/login');const s=await getRunningSession(user);redirect(s?`/routes/sessions/${s.id}/activity`:'/routes/home')}

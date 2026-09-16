@@ -1,5 +1,5 @@
 export type Answers = Record<string, string>;
-export type Draft = { answers: Answers; submit: boolean; version: string };
+export type Draft = { answers: Answers; submit: boolean; intent?: "share" | "complete"; version: string };
 export type SaveResult = { version: string; submitted: boolean };
 export class SaveError extends Error {
   constructor(message: string, public version?: string, public permanent = false) {
@@ -30,8 +30,8 @@ export class DraftSync {
     this.draft = { ...initial };
   }
 
-  edit(answers: Answers, submit = false) {
-    this.draft = { ...this.draft, answers, submit: this.draft.submit || submit };
+  edit(answers: Answers, submit = false, intent?: "share" | "complete") {
+    this.draft = { ...this.draft, answers, submit: this.draft.submit || submit, ...((intent ?? this.draft.intent)?{intent:intent ?? this.draft.intent}:{}) };
     this.generation++;
     this.io.write(this.draft);
     // A conflict needs an explicit submission after the user has reviewed their text.
@@ -63,6 +63,7 @@ export class DraftSync {
       if (this.stopped) return; // A remounted page owns the durable draft now.
       if (generation === this.generation && job.answers === this.draft.answers && job.submit === this.draft.submit) {
         this.draft.submit = false;
+        delete this.draft.intent;
         this.io.clear();
         this.io.status("saved");
       } else {

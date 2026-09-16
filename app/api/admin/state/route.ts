@@ -14,6 +14,12 @@ export async function GET(req: Request) {
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
+  if (new URL(req.url).searchParams.get("summary") === "1") {
+    const s = await prisma.studySession.findUnique({where:{id}, select:{id:true, studyId:true, weekNo:true, status:true, sharingOpen:true, recordingState:true, recorderKey:true, deckPath:true, study:{select:{name:true}}, _count:{select:{materials:true}}}});
+    if(!s)return NextResponse.json({error:"not found"},{status:404});
+    return NextResponse.json({session:{id:s.id,studyId:s.studyId,studyName:s.study.name,weekNo:s.weekNo,status:s.status,sharingOpen:s.sharingOpen,recordingState:s.recordingState,hasOwner:!!s.recorderKey,hasDeck:!!s.deckPath||!!s._count.materials},topic:null,people:[]});
+  }
+
   const s = await prisma.studySession.findUnique({
     where: { id },
     include: {

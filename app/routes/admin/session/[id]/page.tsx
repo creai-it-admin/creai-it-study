@@ -17,7 +17,8 @@ export default async function SessionPreparation({ params }: { params: Promise<{
     <Link href={`/routes/admin/studies/${session.studyId}`} className="text-[13px] text-accent-strong">{session.study.name} 회차 목록</Link>
     <h1 className="mt-4 mb-2 text-[20px] font-semibold">{session.weekNo === 0 ? "리허설" : `${session.weekNo}주차`} 주제와 폼</h1>
     <p className="mb-6 text-[14px] text-ink-2">시작 전 회차의 주제와 질문을 준비합니다. 작성 기록이 생기면 폼을 잠가 답변을 보존합니다.</p>
+    <Link className="btn mb-5" href={`/routes/sessions/${id}/activity`} target="_blank">참가자 화면 미리보기 ↗</Link>
     <FormEditor key={id} sessionId={id} initialTopic={session.formDef?.topicMd ?? ""} initialFields={session.formDef?.fields ?? []}
-      initialVersion={formVersion(session.formDef)} lockedReason={formLockedReason(session.status, session.formDef?._count.submissions ?? 0)} />
+      initialVersion={formVersion(session.formDef)} lockedReason={formLockedReason(session.status, session.formDef?._count.submissions ?? 0, session.activityStatus)} />
   </main>;
 }

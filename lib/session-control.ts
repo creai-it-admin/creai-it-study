@@ -31,7 +31,7 @@ export async function controlSession(id:string,body:{action?:unknown;recorderKey
       if(session.status!=='running')throw new SessionError('진행 중인 세션만 종료할 수 있습니다.');
       const pending=await tx.recordingPart.count({where:{sessionId:id,uploadedAt:null}});
       if(pending)throw new SessionError('아직 저장하지 못한 녹음이 있습니다. 저장을 완료한 뒤 종료해 주세요.');
-      return tx.studySession.update({where:{id},data:{status:'closed',recordingState:'ended',endedAt:new Date(),sharingOpen:false}});
+      return tx.studySession.update({where:{id},data:{status:'closed',recordingState:'ended',endedAt:new Date(),...(session.activityStatus==='open'||session.activityStatus==='closed'?{}:{sharingOpen:false})}});
     }
     if(session.status!=='running'||!session.recorderKey)throw new SessionError('먼저 녹음을 시작해 주세요.');
     return tx.studySession.update({where:{id},data:{recordingState:action==='pause'?'paused':'recording'}});

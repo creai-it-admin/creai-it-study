@@ -56,6 +56,7 @@ model User {
   submissions Submission[]
   attendances Attendance[]
   memberships StudyMembership[]
+  activityFeedback ActivityFeedback[]
 }
 
 // --- Auth.js 어댑터가 요구하는 테이블 ---
@@ -125,6 +126,7 @@ model StudySession {
   date        DateTime
   status      StudySessionStatus @default(scheduled)
   sharingOpen Boolean            @default(false)
+  activityStatus String           @default("locked")
   deckUrl     String?
   deckPath    String?
   startedAt   DateTime?
@@ -202,6 +204,7 @@ model FormField {
   formDefId String
   order     Int
   question  String
+  stage     String @default("before")
 
   formDef FormDef  @relation(fields: [formDefId], references: [id], onDelete: Cascade)
   answers Answer[]
@@ -215,6 +218,12 @@ model Submission {
   userId      String
   status      SubmissionStatus @default(draft)
   submittedAt DateTime?
+  firstSharedAt DateTime?
+  completedAt DateTime?
+  firstSnapshot Json?
+  firstResult String @default("")
+  revisedResult String @default("")
+  feedback ActivityFeedback[]
   updatedAt   DateTime         @updatedAt
 
   formDef FormDef  @relation(fields: [formDefId], references: [id], onDelete: Cascade)
@@ -268,4 +277,16 @@ model RecordingPart {
   transcript String?
   session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   @@index([sessionId, recordedAt])
+}
+
+model ActivityFeedback {
+  id String @id @default(cuid())
+  submissionId String
+  authorId String
+  text String
+  updatedAt DateTime @updatedAt
+  submission Submission @relation(fields:[submissionId], references:[id], onDelete:Cascade)
+  author User @relation(fields:[authorId], references:[id], onDelete:Cascade)
+  @@unique([submissionId, authorId])
+  @@index([authorId])
 }

@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Field = { id?: string; question: string; key: string };
+type Field = { id?: string; question: string; stage?: string; key: string };
 export function FormEditor({ sessionId, initialTopic, initialFields, initialVersion, lockedReason }: {
-  sessionId: string; initialTopic: string; initialFields: { id: string; question: string }[];
+  sessionId: string; initialTopic: string; initialFields: { id: string; question: string; stage?: string }[];
   initialVersion: string; lockedReason: string | null;
 }) {
   const router = useRouter();
@@ -35,13 +35,13 @@ export function FormEditor({ sessionId, initialTopic, initialFields, initialVers
     try {
       const response = await fetch(`/api/admin/session/${sessionId}/form`, {
         method: "PUT", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ version, topicMd: topic, fields: fields.map(({ id, question }) => ({ id, question })) }),
+        body: JSON.stringify({ version, topicMd: topic, fields: fields.map(({ id, question, stage }) => ({ id, question, stage:stage??"before" })) }),
         signal: AbortSignal.timeout(10000),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "저장하지 못했습니다");
       setTopic(result.form.topicMd);
-      setFields(result.form.fields.map((f: { id: string; question: string }) => ({ ...f, key: f.id })));
+      setFields(result.form.fields.map((f: { id: string; question: string; stage?:string }) => ({ ...f, key: f.id })));
       setVersion(result.version); setDirty(false); setError(false); setMessage("저장했습니다");
       router.refresh();
     } catch (e) {
@@ -65,10 +65,11 @@ export function FormEditor({ sessionId, initialTopic, initialFields, initialVers
             <button type="button" className="btn" aria-label={`질문 ${index + 1} 삭제`} onClick={() => { setFields(fields.filter((_, i) => i !== index)); changed(); }}>삭제</button>
           </div> : null}
         </div>
+        <select aria-label={`질문 ${index + 1} 작성 시점`} className="field mb-3" value={field.stage??"before"} onChange={e=>{setFields(fields.map((f,i)=>i===index?{...f,stage:e.target.value}:f));changed();}}><option value="before">피드백 전 · 첫 결과와 함께</option><option value="after">피드백 후 · 수정 결과와 함께</option></select>
         <textarea id={`question-${field.key}`} className="field min-h-20" value={field.question} onChange={(e) => { setFields(fields.map((f, i) => i === index ? { ...f, question: e.target.value } : f)); changed(); }} />
         <p className="mt-2 text-[12px] text-ink-3">참가자에게 긴 답변칸으로 표시됩니다.</p>
       </div>)}
-      {!lockedReason ? <button className="btn self-start" type="button" onClick={() => { setFields([...fields, { key: crypto.randomUUID(), question: "" }]); changed(); }}>질문 추가</button> : null}
+      {!lockedReason ? <button className="btn self-start" type="button" onClick={() => { setFields([...fields, { key: crypto.randomUUID(), question: "", stage:"before" }]); changed(); }}>질문 추가</button> : null}
     </fieldset>
     {!lockedReason ? <div className="flex items-center gap-4">
       <button type="button" className="btn btn-primary" disabled={busy || !topic.trim() || fields.some((f) => !f.question.trim())} onClick={save}>{busy ? "저장 중" : "폼 저장"}</button>
