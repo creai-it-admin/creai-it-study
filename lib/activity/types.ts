@@ -11,5 +11,5 @@ export type ActivityData = {
 };
 export const FIRST_RESULT='$firstResult', REVISED_RESULT='$revisedResult';
 export function activityProgress(sub:{firstSharedAt?:unknown;completedAt?:unknown;answers?:{text:string}[];firstResult?:string}|null|undefined){
- return sub?.completedAt?'수정 완료':sub?.firstSharedAt?'첫 결과 공유':sub?.answers?.some(a=>a.text.trim())||sub?.firstResult?.trim()?'작성 중':'미시작';
+ return sub?.completedAt?'활동 완료':sub?.firstSharedAt?'첫 결과 공유':sub?.answers?.some(a=>a.text.trim())||sub?.firstResult?.trim()?'작성 중':'미시작';
 }

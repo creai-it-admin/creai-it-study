@@ -63,11 +63,11 @@ export async function mutateActivity(id:string,user:StudyViewer,body:unknown){
    if(form.fields.some(f=>f.stage==='before'&&values[f.id]!==snapshot.answers[f.id])||values[FIRST_RESULT]!==snapshot.result)throw new ActivityError('첫 공유본은 보존됩니다. 수정 내용은 아래의 수정 결과에 남겨 주세요.',409);
   }
   if(b.action==='share'&&!sub?.firstSharedAt){
-   if(form.fields.some(f=>f.stage==='before'&&!values[f.id].trim())||!values[FIRST_RESULT].trim())throw new ActivityError('피드백 전 질문과 첫 결과를 모두 작성해 주세요.');
+   if(form.fields.some(f=>f.stage==='before'&&!values[f.id].trim())||!values[FIRST_RESULT].trim())throw new ActivityError('공유 전 질문과 사례·첫 결과를 모두 작성해 주세요.');
   }
   if(b.action==='complete'){
    if(!sub?.firstSharedAt)throw new ActivityError('먼저 첫 결과를 공유해 주세요.');
-   if(form.fields.some(f=>f.stage==='after'&&!values[f.id].trim())||!values[REVISED_RESULT].trim())throw new ActivityError('수정 결과와 피드백 후 답변을 작성해 주세요.');
+   if(form.fields.some(f=>f.stage==='after'&&!values[f.id].trim())||!values[REVISED_RESULT].trim())throw new ActivityError('토론 메모 또는 다시 받은 결과와 피드백 후 답변을 작성해 주세요.');
   }
   if(!sub)sub=await tx.submission.create({data:{formDefId:form.id,userId:user.id},include:{answers:true}});
   for(const f of form.fields)await tx.answer.upsert({where:{submissionId_formFieldId:{submissionId:sub.id,formFieldId:f.id}},create:{submissionId:sub.id,formFieldId:f.id,text:values[f.id]},update:{text:values[f.id]}});
