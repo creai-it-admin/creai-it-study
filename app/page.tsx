@@ -1,27 +1,97 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import {Experience} from '@/components/landing/Experience';
-import {StudyGuide} from '@/components/landing/StudyGuide';
+import Image from 'next/image';
+import { StudyGuide } from '@/components/landing/StudyGuide';
+import { LearningExchange, UnderstandingArt } from '@/components/landing/LearningExchange';
 import './landing.css';
-export const metadata:Metadata={title:'CREAI+IT Study — AI, 나의 방식으로.',description:'함께 배우고, 직접 시도하고, 막힌 지점을 나눕니다. 도구가 바뀌어도 남는 나만의 판단력을 기르는 CREAI+IT 스터디.'};
-export default function Landing(){return <div className="landing">
- <a href="#main" className="landing-skip">본문으로 바로가기</a>
- <header className="landing-nav"><Link href="/" className="landing-logo" aria-label="CREAI+IT Study 홈"><span className="brand-symbol" aria-hidden="true"><img src="/landing/creaiit-symbol.png" alt="" width="250" height="354"/></span>CREAI<span>+</span>IT<small>STUDY</small></Link><nav aria-label="주요 메뉴"><a href="#experience">스터디 경험</a><a href="#records">남는 기록</a><a href="#join">참여 안내</a></nav><Link href="/routes" className="nav-enter">멤버 로그인 <span>↗</span></Link></header>
- <main id="main">
-  <section className="landing-hero" aria-labelledby="hero-title">
-   <div className="hero-grid" aria-hidden="true"/>
-   <div className="hero-art hero-notes" aria-hidden="true"><img src="/landing/field-notes.svg" width="340" height="390" alt=""/></div>
-   <div className="hero-art hero-orbit" aria-hidden="true"><img src="/landing/creaiit-symbol.png" width="250" height="354" alt=""/></div>
-   <div className="hero-art hero-conversation" aria-hidden="true"><img src="/landing/conversation.svg" width="360" height="310" alt=""/></div>
-   <div className="hero-spark" aria-hidden="true">✳</div>
-   <div className="hero-copy"><p className="eyebrow"><span/> A STUDY FOR WHAT COMES NEXT</p><h1 id="hero-title">AI, 이제<br/><em>나의 방식으로.</em></h1><p className="hero-description">함께 배우고, 직접 시도하고, 막힌 지점을 나눕니다.<br/>도구가 바뀌어도 남는 나만의 판단력을 기르는 스터디.</p><a className="landing-button accent" href="#experience">스터디 경험하기 <span>↗</span></a></div>
-   <div className="hero-bottom"><span>질문에서 시작해, 나의 가능성으로.</span><a href="#philosophy">SCROLL TO EXPLORE <span>↓</span></a><span>LEARN TOGETHER. THINK FOR YOURSELF.</span></div>
-  </section>
-  <section id="philosophy" className="philosophy landing-wrap"><div><span className="eyebrow">01 — OUR POINT OF VIEW</span><p className="section-aside">새로운 도구보다,<br/>새로워지는 나의 관점.</p></div><div><h2>좋은 AI 활용은<br/><span>좋은 판단</span>에서 시작되니까.</h2><p>무엇을 맡길지, 어떤 결과를 원하는지, 어디에서 직접 확인할지.<br className="desktop-break"/> CREAI+IT는 그 기준을 내 일 안에서 찾아가는 곳입니다.</p><div className="philosophy-line"><span>내가 정하는 방향</span><b>+</b><span>AI로 넓히는 가능성</span></div></div></section>
-  <section id="experience" className="experience landing-wrap"><div className="section-heading"><div><span className="eyebrow">02 — THE STUDY EXPERIENCE</span><h2>혼자 쓰던 AI를,<br/>함께 더 깊이.</h2></div><p>질문 하나를 가져오세요.<br/>다음 시도는 함께 만들어갑니다.</p></div><Experience/></section>
-  <section id="records" className="records-section"><div className="records-inner landing-wrap"><div className="records-copy"><span className="eyebrow">03 — LEARNING THAT STAYS</span><h2>모임은 끝나도,<br/>배움은 <em>이어서.</em></h2><p>그날의 질문과 대화를 다시 꺼내볼 수 있도록.<br/>활동의 결과와 세션 리포트가 내 스터디에 쌓입니다.</p><ul><li><span>01</span>배운 원리와 나눈 대화를 한눈에</li><li><span>02</span>제안과 합의한 과제를 구분해서</li><li><span>03</span>HTML 복사로, 나만의 복습을 이어서</li></ul><a href="/routes" className="text-link">내 스터디 기록 보러 가기 ↗</a></div><div className="report-scene"><div className="report-behind"/><article className="report-preview"><div className="report-top"><strong>CREAI+IT.</strong><span>THE STUDY JOURNAL</span></div><p className="report-meta">학습 흐름을 보여주는 리포트 예시</p><h3>AI에게 맡길 일,<br/>내가 판단할 일.</h3><p className="report-intro">출처를 확인하는 데 시간이 오래 걸렸다면,<br/>다음 리서치는 어떻게 달라질 수 있을까?</p><div className="report-rule"/><div className="report-entry"><span>오늘의 발견</span><p>원하는 결과와 품질 기준을<br/>실행 전에 먼저 정하기.</p></div><div className="report-entry"><span>대화에서 나온 제안</span><p>출처와 근거를 표로 모아보자.<small>아직 합의되지 않은 아이디어</small></p></div><div className="report-task"><span>다음에 시도할 것 ↗</span><p>실제 업무 하나에서 맡길 일과<br/>직접 확인할 지점을 적어오기.</p></div><details><summary>대화 근거 펼쳐보기 <span>+</span></summary><p>“모두 다음 주까지 실제 업무 하나에서 맡길 일과 직접 확인할 지점을 적어오기로 합의했습니다.”</p><small>기능 검증용 리허설의 테스트 발화입니다.</small></details></article><span className="report-caption">A CONVERSATION BECOMES YOUR NEXT STEP.</span></div></div></section>
-  <section id="join" className="join-section landing-wrap"><div className="section-heading"><div><span className="eyebrow">04 — A SMALL GROUP, A NEW START</span><h2>작게 모여,<br/>가능성을 크게.</h2></div><p>서로의 질문을 충분히 들을 수 있는 규모.<br/>내 일에 적용해볼 수 있는 시간.</p></div><div className="join-facts"><div><span>함께하는 사람</span><strong>6<small>명</small></strong><p>각자의 시도가 서로의 배움으로</p></div><div><span>함께하는 기간</span><strong>4<small>회</small></strong><p>한 주의 배움을 다음 시도로</p></div><div><span>한 번의 만남</span><strong>2<small>시간</small></strong><p>배우고, 적용하고, 이야기하는 시간</p></div></div><div className="cohort-info"><div><span className="cohort-tag">0기 운영 안내</span><p>토요일 10:00–12:00 · 신촌 커피빈 · 전체 참가비 3만원</p><p className="cohort-dates">9/12 · 9/19 · 10/3 · 10/10 <span>9/26 추석 휴회</span></p></div><div><p>다음 기수 모집은 추후 안내됩니다.</p><span>이미 배정된 멤버는 로그인 후 스터디에 참여해 주세요.</span><Link href="/routes" className="text-link">내 스터디 입장 ↗</Link></div></div></section>
-  <section className="landing-ending"><div className="landing-wrap"><span className="eyebrow">STAY CURIOUS. MAKE IT YOURS.</span><h2>당신의 다음 질문이,<br/>새로운 시작이 되도록.</h2><a href="#experience" className="landing-button ink">우리의 스터디 다시 보기 <span>↗</span></a><span className="ending-mark" aria-hidden="true">+</span></div></section>
- </main>
- <footer className="landing-footer landing-wrap"><a href="#main" className="landing-logo"><span className="brand-symbol" aria-hidden="true"><img src="/landing/creaiit-symbol.png" alt="" width="250" height="354"/></span>CREAI<span>+</span>IT<small>STUDY</small></a><p>Learn together. Think for yourself.</p><a href="#main">BACK TO TOP ↑</a></footer><StudyGuide/>
- </div>;}
+
+export const metadata: Metadata = {
+  title: 'CREAI+IT Study — AI 시대를 이끄는 사람들.',
+  description: 'AI의 변화를 읽는 지식과 최신 AI를 활용하는 경험. 4주 교육으로 기반을 만들고, 소규모 커뮤니티에서 서로 배우며 계속 발전합니다.',
+};
+
+const curriculum = [
+  { week: '01', title: '지금의 AI, 그리고 내가 쓸 수 있는 도구', question: '지금 무엇이 가능하고, 어디서 시작할까?', body: '현재 AI의 수준과 가능성을 짚고, Claude Code·Codex 같은 코딩 에이전트의 기본 사용과 주요 기능을 이해합니다.', detail: '파일과 실행 도구, 서브에이전트, 지침과 스킬, 외부 서비스 연결. 각 기능이 어떤 일을 가능하게 하는지 실제 예시로 살펴봅니다.' },
+  { week: '02', title: 'AI와 함께 일하는 구조', question: '어떻게 내 업무를 맡기고, 함께 완성할까?', body: 'PRD로 목표와 완료 기준을 정하고, 사람과 AI의 역할·작업 순서·검토 지점을 설계합니다.', detail: '방향을 던지고, 함께 조정하고, 구체화해 맡긴 뒤 결과를 보며 수정합니다. 실제 작업 과정을 통해 이 루프가 어떻게 움직이는지 배웁니다.' },
+  { week: '03', title: '더 어려운 일을 맡기며 배우는 법', question: '모델이 발전할 때, 나도 함께 발전하려면?', body: '도전적인 일을 맡긴 경험에서 가능성과 한계를 확인하고, 시행착오를 더 나은 활용 방식으로 바꿉니다.', detail: '어디서 실패했는지, 맥락이나 일의 구조를 어떻게 바꿔야 하는지 살펴봅니다. 새 모델과 기능을 만날 때 기존의 한계를 다시 확인하고, 얻은 교훈을 쌓아갑니다.' },
+  { week: '04', title: 'AI 기술과 산업을 읽는 관점', question: '가치는 어디에서 생기고, 누가 영향력을 갖는가?', body: 'AI 밸류체인과 참여자별 협상력, 핵심 기술 개념을 이해하고 앞선 활용 경험을 더 넓은 맥락에 연결합니다.', detail: '반도체·인프라·모델·애플리케이션의 관계를 살펴봅니다. 기술의 특성이 비용과 경쟁에 어떻게 연결되는지 이해하며, 새로운 소식을 해석할 기준을 만듭니다.' },
+];
+
+function Brand() {
+  return <><span className="brand-symbol" aria-hidden="true"><img src="/landing/creaiit-symbol.png" alt="" width="250" height="354" /></span>CREAI<span>+</span>IT<small>STUDY</small></>;
+}
+
+export default function Landing() {
+  return <div className="landing landing-renewed">
+    <a href="#main" className="landing-skip">본문으로 바로가기</a>
+    <header className="landing-nav">
+      <Link href="/" className="landing-logo" aria-label="CREAI+IT Study 홈"><Brand /></Link>
+      <nav aria-label="주요 메뉴"><a href="#vision">우리가 지향하는 사람</a><a href="#curriculum">4주 교육</a><a href="#community">이후 커뮤니티</a></nav>
+      <Link href="/routes" className="nav-enter">멤버 로그인 <span>↗</span></Link>
+    </header>
+    <main id="main">
+      <section className="track-hero" aria-labelledby="hero-title">
+        <div className="horizon-art" aria-hidden="true">
+          <Image src="/landing/horizon.png" alt="" fill sizes="100vw" preload />
+        </div>
+        <div className="track-hero-inner landing-wrap">
+          <div className="track-hero-copy">
+            <p className="eyebrow">CREAI+IT STUDY / LEARN. APPLY. EVOLVE.</p>
+            <h1 id="hero-title">AI 시대를<br/><em>이끄는 사람들.</em></h1>
+            <p className="track-hero-description">기술의 변화를 읽고, 최전선의 지능을 자신의 역량으로.<br/>함께 배우고 도전하며, 새로운 가능성을 만드는<br/>사람들로 성장합니다.</p>
+            <a href="#curriculum" className="landing-button accent">4주 교육부터 살펴보기 <span>↓</span></a>
+            <p className="track-hero-caption">4주간의 교육, 그리고 계속 배우는 커뮤니티.</p>
+          </div>
+        </div>
+        <div className="track-hero-bottom landing-wrap"><span>가능성을 넓히는 배움의 시작.</span><a href="#vision">SCROLL TO EXPLORE ↓</a></div>
+      </section>
+
+      <div className="journey-index landing-wrap" aria-label="스터디의 두 과정">
+        <a href="#curriculum"><span>01 / FOUNDATION</span><strong>4주, 기반을 만들다.</strong><b aria-hidden="true">↘</b></a>
+        <a href="#community"><span>02 / COMMUNITY</span><strong>그 이후, 함께 넓히다.</strong><b aria-hidden="true">↗</b></a>
+      </div>
+
+      <section id="vision" className="landing-wrap vision-section">
+        <div className="section-heading"><div><span className="eyebrow">THE PERSON WE WANT TO BECOME</span><h2>깊이 이해하고.<br/><em>담대하게 활용하고.</em></h2></div><p>AI가 무엇을 바꾸는지 이해하고,<br/>그 힘으로 자신의 일과 조직에 변화를 만드는 사람.<br/>우리가 함께 성장해 나갈 방향입니다.</p></div>
+        <UnderstandingArt />
+        <div className="understanding-grid">
+          <article><span className="understanding-number">01</span><h3>변화를 읽는 지식적 이해</h3><p>AI는 어떻게 작동하고, 산업은 어떻게 바뀌는가.<br/>새로운 소식의 의미를 해석하고 스스로 판단할 수 있는 지식의 기반을 만듭니다.</p><div className="understanding-topics">기술의 원리와 한계 · 밸류체인 · 협상력</div></article>
+          <article><span className="understanding-number">02</span><h3>가능성을 넓히는 활용에 대한 이해</h3><p>계속 진화하는 최신 AI, frontier intelligence.<br/>그 힘을 내 일에 연결하는 도구와 방법을 배우고, 실제 경험을 통해 활용 범위를 넓힙니다.</p><div className="understanding-topics">도구의 이해 · 업무 설계 · 위임과 검토</div></article>
+        </div>
+        <p className="vision-connection"><span aria-hidden="true">+</span> 지식으로 활용을 판단하고, 경험으로 지식을 갱신합니다.</p>
+      </section>
+
+      <section id="curriculum" className="curriculum-section">
+        <div className="landing-wrap curriculum-layout">
+          <div className="curriculum-intro"><span className="eyebrow">01 / FOUNDATION</span><h2>가능성을<br/> 여는 <em>4주.</em></h2><p>개념에서 도구로. 도구에서 나의 일로.<br/>알고, 설계하고, 도전하고, 이해합니다.</p><div className="curriculum-facts">주 1회 · 회당 2시간 · 소규모 교육</div>
+            <div className="curriculum-rhythm"><div><span><b>1–3주</b> 활용 중심</span><i aria-hidden="true"/><small>지식 20% · 활용 80%</small></div><div><span><b>4주</b> 기술·산업 이해 중심</span><i aria-hidden="true"/><small>지식 80% · 활용 20%</small></div></div>
+          </div>
+          <div className="curriculum-list">{curriculum.map(item => <article className="curriculum-row" key={item.week}>
+            <div className="curriculum-week">W<span>{item.week}</span></div>
+            <div><p className="curriculum-question">{item.question}</p><h3>{item.title}</h3><p className="curriculum-body">{item.body}</p><details><summary>다루는 내용 <span aria-hidden="true">＋</span></summary><p>{item.detail}</p></details></div>
+          </article>)}</div>
+        </div>
+        <div className="landing-wrap foundation-result"><span>4주 뒤 가져갈 기반</span><p>변화의 의미를 설명하고,<br/>내 일에서 무엇을 맡길지 판단하고,<br/><strong>더 나은 활용을 스스로 배워나가는 힘.</strong></p><a href="#community" aria-label="교육 이후의 커뮤니티 보기">↓</a></div>
+      </section>
+
+      <section id="community" className="community-section">
+        <div className="landing-wrap">
+          <div className="section-heading"><div><span className="eyebrow">02 / COMMUNITY</span><h2>나의 시도가,<br/><em>우리의 다음이 되다.</em></h2></div><p>교육이 끝나면, 서로의 경험으로 더 멀리.<br/>변화와 시행착오를 함께 해석하며<br/>배움을 이어가는 월 구독 커뮤니티.</p></div>
+          <LearningExchange />
+          <div className="community-format"><strong>주 1회 온라인 콜</strong><span>약 1시간</span><span>5–6인 소규모</span><span>진행자 1인</span></div>
+          <div className="community-records"><span>배움이 이어지도록</span><p>주중의 경험 공유와 피드백, 중요한 변화를 짚는 브리핑,<br/>대화에서 얻은 판단과 질문을 남기는 기록으로 연결합니다.</p></div>
+          <div className="contribution"><span aria-hidden="true">↗</span><div><h3>배우는 사람이, 누군가의 배움을 돕는 사람으로.</h3><p>먼저 익힌 방법과 시행착오를 나누고, 다른 구성원의 질문에 관점을 더합니다. 스터디에서 성장한 사람이 다시 스터디에 기여하며, 함께 배울 수 있는 경험이 쌓입니다.</p></div></div>
+          <p className="community-planning">커뮤니티는 교육 이후의 운영 방향입니다. 시작 일정과 세부 참여 조건은 별도로 안내합니다.</p>
+        </div>
+      </section>
+
+      <section id="join" className="landing-wrap track-join">
+        <span className="eyebrow">YOUR NEXT STEP</span><h2>새로운 시대의 가능성,<br/>그 시작에 함께 서다.</h2>
+        <p>4주 교육으로 시작하고, 커뮤니티에서 배움을 이어갑니다.<br/>다음 교육 기수의 일정과 참가비, 커뮤니티 구독료는 추후 안내합니다.</p>
+        <div className="track-join-actions"><a href="#curriculum" className="landing-button ink">4주 커리큘럼 보기 <span>↑</span></a><Link href="/routes" className="text-link">이미 참여 중이라면, 내 스터디로 ↗</Link></div>
+      </section>
+    </main>
+    <footer className="landing-footer landing-wrap"><a href="#main" className="landing-logo"><Brand /></a><p>Learn. Apply. Evolve. Together.</p><a href="#main">BACK TO TOP ↑</a></footer>
+    <StudyGuide />
+  </div>;
+}

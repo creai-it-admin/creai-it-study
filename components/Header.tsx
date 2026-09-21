@@ -34,6 +34,7 @@ export async function Header({ right }: { right?: React.ReactNode } = {}) {
         <div className="flex flex-wrap items-center gap-3 text-[13px] text-ink-2">
           {name ? <Link href="/routes/mine" className="hover:text-ink">내 활동 기록</Link> : null}
           {isAdmin ? <Link href="/routes/admin" className="hover:text-ink">스터디 관리</Link> : null}
+          {isAdmin ? <Link href="/docs" className="hover:text-ink">Docsboard</Link> : null}
           {running ? <><Link href={`/routes/sessions/${running.id}/activity`} className="hover:text-ink">인클래스</Link></> : null}
           {showDeck ? (
             <Link href="/routes/deck" className="hover:text-ink">
