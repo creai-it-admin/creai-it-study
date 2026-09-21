@@ -76,8 +76,10 @@
 .curriculum-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:100px;align-items:start}
 .curriculum-intro{position:sticky;top:65px}
 .curriculum-intro .eyebrow{color:#496f8a;margin-bottom:30px}
-.landing .curriculum-intro h2{font-size:clamp(45px,5.4vw,76px)}
+.landing .curriculum-intro h2{font-size:clamp(40px,4.2vw,60px)}
 .curriculum-intro>p{font-size:15px;line-height:1.9;color:#51677a;margin:25px 0}
+.curriculum-intro>p.foundation-ambition{font-size:22px;font-weight:550;letter-spacing:-.04em;color:var(--dark);margin:24px 0 18px}
+.curriculum-intro>p.foundation-bridge{font-size:13px;margin:18px 0 25px}
 .curriculum-facts{font-size:11px;color:#4b657b}
 .curriculum-rhythm{display:grid;gap:25px;margin-top:45px;max-width:290px}
 .curriculum-rhythm span{font-size:12px;display:block}
@@ -177,7 +179,7 @@
  .vision-section{padding-block:70px 60px}.section-heading{display:block;margin-bottom:30px}.section-heading .eyebrow{margin-bottom:22px}.section-heading>p{font-size:14px;margin-top:25px}
  .understanding-art{height:180px;margin:28px -20px 15px}.understanding-art svg{width:160%;max-width:none;left:-30%}.understanding-art>div{font-size:57px;gap:14px}.understanding-art span{padding:3px 13px}.understanding-art i{font-size:44px;padding:0 6px}
  .understanding-grid{grid-template-columns:1fr;gap:28px}.understanding-grid h3{font-size:22px;margin:14px 0}.understanding-grid p{font-size:14px}.understanding-topics{font-size:11px;margin-top:18px}.vision-connection{font-size:14px;gap:15px;align-items:flex-start;margin-top:30px;padding-top:20px}
- .curriculum-section{padding-block:65px 50px}.curriculum-layout{grid-template-columns:1fr;gap:40px}.curriculum-intro{position:static}.landing .curriculum-intro h2{font-size:52px}.curriculum-intro h2 br{display:none}.curriculum-intro .eyebrow{margin-bottom:20px}.curriculum-intro>p{font-size:14px;margin:23px 0 16px}
+ .curriculum-section{padding-block:65px 50px}.curriculum-layout{grid-template-columns:1fr;gap:40px}.curriculum-intro{position:static}.landing .curriculum-intro h2{font-size:clamp(36px,10.5vw,52px)}.curriculum-intro .eyebrow{margin-bottom:20px}.curriculum-intro>p{font-size:14px;margin:23px 0 16px}.curriculum-intro>p.foundation-ambition{font-size:20px}.curriculum-intro>p.foundation-bridge{font-size:13px}
  .curriculum-rhythm{grid-template-columns:1fr 1fr;gap:25px;max-width:none;margin-top:28px}.curriculum-rhythm span{font-size:11px}.curriculum-rhythm b{margin-right:6px}.curriculum-rhythm small{font-size:9px}
  .curriculum-row{grid-template-columns:40px minmax(0,1fr);gap:18px;padding:25px 0 28px}.curriculum-week>span{font-size:36px}.curriculum-question{font-size:11px;line-height:1.7}.curriculum-row h3{font-size:22px}.curriculum-body{font-size:14px}.curriculum-row details>p{font-size:13px;padding-left:12px}
  .foundation-result{grid-template-columns:1fr;gap:20px;margin-top:20px;padding-top:25px}.foundation-result p{font-size:22px}.foundation-result>a{width:44px;height:44px;font-size:27px;margin-top:5px}

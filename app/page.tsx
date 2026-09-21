@@ -63,7 +63,7 @@ export default function Landing() {
 
       <section id="curriculum" className="curriculum-section">
         <div className="landing-wrap curriculum-layout">
-          <div className="curriculum-intro"><span className="eyebrow">01 / FOUNDATION</span><h2>가능성을<br/> 여는 <em>4주.</em></h2><p>개념에서 도구로. 도구에서 나의 일로.<br/>알고, 설계하고, 도전하고, 이해합니다.</p><div className="curriculum-facts">주 1회 · 회당 2시간 · 소규모 교육</div>
+          <div className="curriculum-intro"><span className="eyebrow">01 / FOUNDATION EDUCATION</span><h2>AI 시대,<br/><em>압도적인 인재로.</em></h2><p className="foundation-ambition">그 도약의 기반을 다지는 4주.</p><p>기술의 변화를 읽는 깊이와 최전선의 AI를 자기 일에 연결하는 힘. 두 기반을 함께 세워, AI가 발전할수록 더 큰 일을 해내는 사람으로 성장하고자 합니다.</p><p className="foundation-bridge">도구를 이해하고, 일할 구조를 설계하고, 어려운 위임에서 배우고, 기술과 산업을 읽는 것. 네 주의 교육은 이 목표를 향합니다.</p><div className="curriculum-facts">4주 · 주 1회 · 회당 2시간 · 소규모 교육</div>
             <div className="curriculum-rhythm"><div><span><b>1–3주</b> 활용 중심</span><i aria-hidden="true"/><small>지식 20% · 활용 80%</small></div><div><span><b>4주</b> 기술·산업 이해 중심</span><i aria-hidden="true"/><small>지식 80% · 활용 20%</small></div></div>
           </div>
           <div className="curriculum-list">{curriculum.map(item => <article className="curriculum-row" key={item.week}>
@@ -71,7 +71,7 @@ export default function Landing() {
             <div><p className="curriculum-question">{item.question}</p><h3>{item.title}</h3><p className="curriculum-body">{item.body}</p><details><summary>다루는 내용 <span aria-hidden="true">＋</span></summary><p>{item.detail}</p></details></div>
           </article>)}</div>
         </div>
-        <div className="landing-wrap foundation-result"><span>4주 뒤 가져갈 기반</span><p>변화의 의미를 설명하고,<br/>내 일에서 무엇을 맡길지 판단하고,<br/><strong>더 나은 활용을 스스로 배워나가는 힘.</strong></p><a href="#community" aria-label="교육 이후의 커뮤니티 보기">↓</a></div>
+        <div className="landing-wrap foundation-result"><span>압도적인 성장의 출발점</span><p>변화를 읽는 지식.<br/>AI와 일을 완성하는 활용력.<br/><strong>스스로 한계를 넓혀가는 학습의 기준.</strong></p><a href="#community" aria-label="교육 이후의 커뮤니티 보기">↓</a></div>
       </section>
 
       <section id="community" className="community-section">
