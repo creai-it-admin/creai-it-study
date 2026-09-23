@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { StudyGuide } from '@/components/landing/StudyGuide';
+import { ProjectExamples } from '@/components/landing/ProjectExamples';
 import { LearningExchange, UnderstandingArt } from '@/components/landing/LearningExchange';
 import './landing.css';
 
@@ -82,6 +83,7 @@ export default function Landing() {
             <li><span>02</span><div><h4>만들며 피드백 받기</h4><p>AI에게 맡겨보고, 막힌 결과와 지시를 함께 살피며 다음 시도를 바꿉니다.</p></div></li>
             <li><span>03</span><div><h4>결과와 배운 점 공유하기</h4><p>만든 것을 보여주고, 어디까지 맡겼고 어디서 직접 판단했는지 나눕니다.</p></div></li>
           </ol>
+          <ProjectExamples />
           <div className="project-foot"><p>4주 교육 안에서 진행합니다. 주제는 배운 뒤 함께 구체화합니다.</p><Link href="/apply" className="text-link">내 프로젝트로 시작하기 ↗</Link></div>
         </section>
         <div className="landing-wrap foundation-result"><span>압도적인 성장의 출발점</span><p>변화를 읽는 지식.<br/>AI와 일을 완성하는 활용력.<br/><strong>스스로 한계를 넓혀가는 학습의 기준.</strong></p><a href="#community" aria-label="교육 이후의 커뮤니티 보기">↓</a></div>
