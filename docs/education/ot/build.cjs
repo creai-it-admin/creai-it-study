@@ -15,6 +15,6 @@ function html(single=0){
  const scripts=single?['assets/react.min.js','assets/react-dom.min.js','cohort.js','components.js','slides.js'].map(src=>`<script src="${src}"></script>`).join(''):['assets/react.min.js','assets/react-dom.min.js','cohort.js'].map(name=>`<script>${safe(read(name))}</script>`).join('')+`<script>${safe(system)}</script><script>${safe(slides)}</script>`;
  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="CREAI+IT EDU Foundation 교육 공통 OT"><title>CREAI+IT EDU · Foundation OT${single?' · '+single:''}</title><style>${css}</style>${scripts}<script>${tokenScript}</script></head><body${single?` class="single" data-single="${single}"`:''}><main class="viewport" id="viewport" aria-label="OT 슬라이드"><div class="stage" id="stage"><div id="slide-root"></div></div></main>${single?'':chrome}<script>${safe(read('viewer.js'))}</script></body></html>`;
 }
-for(let i=1;i<=7;i++)fs.writeFileSync(path.join(dir,`slide-${i}.html`),html(i));
+for(let i=1;i<=8;i++)fs.writeFileSync(path.join(dir,`slide-${i}.html`),html(i));
 fs.writeFileSync(path.join(dir,'index.html'),html());
-console.log('Built 7 slides + self-contained index.html');
+console.log('Built 8 slides + self-contained index.html');

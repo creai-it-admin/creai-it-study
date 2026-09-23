@@ -1,6 +1,6 @@
 # CREAI+IT EDU · Foundation OT
 
-`index.html`은 폰트와 실행 코드를 포함한 7장짜리 단일 HTML 발표본입니다. 이 파일 하나로 전달하거나 HTML 장표 업로드에 사용할 수 있습니다.
+`index.html`은 폰트와 실행 코드를 포함한 8장짜리 단일 HTML 발표본입니다. 이 파일 하나로 전달하거나 HTML 장표 업로드에 사용할 수 있습니다.
 
 - **이동:** ← / →, Home / End
 - **목차:** G · **발표 노트:** N · **전체화면:** F (지원 브라우저)
@@ -15,3 +15,5 @@
 
 운영진: `/routes/admin/library`에서 조회·새 버전 등록·기수 적용. 원본을 수정한 뒤 새 버전으로 올려야 하며, 기존 기수의 자료는 자동으로 바뀌지 않습니다.
 첫 등록 재실행: `npx tsx scripts/register-foundation-ot.ts` (이미 등록되어 있으면 유지).
+
+프로젝트 반영 v2: 3–4주차 병행 구간과 개인 프로젝트 안내를 추가했습니다. 등록: `npx tsx scripts/register-foundation-ot-v2.ts`.
