@@ -8,7 +8,7 @@ const PUBLIC = ["/routes/login", "/api/auth", "/landing"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (pathname === "/" || PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
+  if (pathname === "/apply" || pathname === "/api/applications" || pathname === "/" || PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
 
   const token = await getToken({
     req,

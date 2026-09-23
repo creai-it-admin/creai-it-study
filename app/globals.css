@@ -1,18 +1,52 @@
 @import "tailwindcss";
 
-/* 색과 글꼴은 yonseicreaiit.com CSS 번들에서 그대로 뽑았다. */
+/*
+ * Daylight Glass. 브랜드 색(#0ea5e9, #0f172a)과 글꼴(Pretendard, Outfit)은 yonseicreaiit.com에서 가져왔다.
+ * 흐림은 떠 있는 크롬(헤더)에만 쓴다. 읽고 쓰는 카드와 입력칸은 거의 불투명하게 두어 긴 글의 대비를 지킨다.
+ * 랜딩(/)은 landing.css의 자체 팔레트를 쓰며 이 토큰을 따르지 않는다.
+ */
 :root {
-  --bg: #f8fafc;
-  --surface: #ffffff;
+  /* 바탕: 단색 위에 옅은 하늘빛 필드를 깔아 유리 층이 비칠 곳을 만든다. */
+  --bg: #eef3f8;
+  --ground:
+    radial-gradient(1100px 560px at 6% -12%, rgb(56 189 248 / .26), transparent 62%),
+    radial-gradient(900px 520px at 100% 0%, rgb(125 211 252 / .24), transparent 58%),
+    radial-gradient(1200px 800px at 50% 115%, rgb(186 230 253 / .45), transparent 60%),
+    linear-gradient(180deg, #f5f8fc, #edf2f7);
+
   --ink: #0f172a;
-  --ink-2: #64748b;
-  --ink-3: #9ca3af;
-  --line: #e2e8f0;
+  --ink-2: #55657b;
+  --ink-3: #748196;
+  --line: rgb(15 23 42 / .08);
+  --line-strong: rgb(15 23 42 / .14);
+
   --accent: #0ea5e9;
-  --accent-strong: #0284c7;
-  --accent-soft: #e0f2fe;
-  --ok: #10b981;
-  --warn: #f59e0b;
+  --accent-strong: #0369a1;
+  --accent-soft: rgb(14 165 233 / .12);
+
+  /* 상태 글자색은 흰 바탕에서 4.5:1 이상. */
+  --ok: #047857;
+  --warn: #b45309;
+  --warn-soft: rgb(254 243 199 / .72);
+  --danger: #b91c1c;
+  --rec: #e11d48;
+
+  /* 재질 */
+  --paper: #fff;
+  --surface: rgb(255 255 255 / .78);
+  --chrome: rgb(255 255 255 / .55);
+  --control: rgb(255 255 255 / .7);
+  --field: rgb(255 255 255 / .72);
+  --primary: linear-gradient(180deg, #0284c7, #075985);
+  --primary-hover: linear-gradient(180deg, #0369a1, #0c4a6e);
+  --blur-chrome: blur(24px) saturate(180%);
+
+  --shadow-card: 0 0 0 1px rgb(15 23 42 / .05), inset 0 1px 0 rgb(255 255 255 / .9), 0 1px 2px rgb(15 23 42 / .04), 0 16px 36px -18px rgb(15 23 42 / .18);
+  --shadow-chrome: 0 1px 0 rgb(15 23 42 / .06), 0 10px 30px -18px rgb(15 23 42 / .25);
+  --shadow-control: inset 0 1px 0 rgb(255 255 255 / .95), 0 1px 2px rgb(15 23 42 / .06);
+  --shadow-primary: inset 0 1px 0 rgb(255 255 255 / .28), 0 8px 18px -8px rgb(2 132 199 / .7);
+  --shadow-field: inset 0 1px 2px rgb(15 23 42 / .05);
+  --focus-ring: 0 0 0 4px rgb(14 165 233 / .18);
 
   --font-kr: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
     "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
@@ -20,70 +54,179 @@
 }
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
+  --color-paper: var(--paper);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
   --color-accent-soft: var(--accent-soft);
   --color-ok: var(--ok);
   --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-rec: var(--rec);
 }
 
-html,
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-kr);
-  -webkit-font-smoothing: antialiased;
+@theme static {
+  --radius-control: 12px;
+  --radius-inner: 14px;
+  --radius-card: 20px;
 }
 
-.font-en {
+/* 투명도를 줄여 달라는 설정이나 흐림을 지원하지 않는 브라우저에서는 불투명한 재질로 바꾼다. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --surface: var(--paper);
+    --chrome: var(--paper);
+    --control: var(--paper);
+    --field: var(--paper);
+    --blur-chrome: none;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --chrome: rgb(255 255 255 / .92); }
+}
+
+@utility font-en {
   font-family: var(--font-en);
 }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
+@layer base {
+  html {
+    background: var(--bg);
+    accent-color: var(--accent);
+  }
+  body {
+    color: var(--ink);
+    font-family: var(--font-kr);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* 스크롤과 무관하게 고정해, 긴 화면에서도 같은 빛 위에 층이 놓이게 한다. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--ground);
+    pointer-events: none;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  @media print {
+    html { background: var(--paper); }
+    body::before { display: none; }
+  }
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-}
-.btn:hover:not(:disabled) { border-color: var(--ink-3); }
-.btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-.btn-primary:hover:not(:disabled) { background: var(--accent-strong); border-color: var(--accent-strong); }
-.btn:disabled { opacity: .45; cursor: not-allowed; }
+@layer components {
+  .chrome {
+    background: var(--chrome);
+    border-bottom: 1px solid rgb(255 255 255 / .75);
+    box-shadow: var(--shadow-chrome);
+    -webkit-backdrop-filter: var(--blur-chrome);
+    backdrop-filter: var(--blur-chrome);
+  }
 
-.field {
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  padding: 10px 12px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--ink);
-}
-.field:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  .card {
+    background: var(--surface);
+    border: 1px solid rgb(255 255 255 / .85);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
 
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* 카드 안에 들어가는 구획: 자료 묶음, 확인 단계, 동의 항목 */
+  .inset {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-inner);
+    background: rgb(255 255 255 / .5);
+  }
+
+  .notice-warn {
+    border: 1px solid rgb(245 158 11 / .4);
+    border-radius: var(--radius-inner);
+    background: var(--warn-soft);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgb(14 165 233 / .2);
+    border-radius: 999px;
+    padding: 4px 12px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+  }
+  .pill-muted {
+    border-color: transparent;
+    background: rgb(15 23 42 / .05);
+    color: var(--ink-2);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid rgb(15 23 42 / .09);
+    border-radius: var(--radius-control);
+    padding: 10px 16px;
+    background: var(--control);
+    box-shadow: var(--shadow-control);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .15s, border-color .15s, box-shadow .15s;
+  }
+  .btn:hover:not(:disabled) {
+    border-color: var(--line-strong);
+    background: rgb(255 255 255 / .92);
+  }
+  .btn-primary {
+    border-color: #0369a1;
+    background: var(--primary);
+    box-shadow: var(--shadow-primary);
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    border-color: #075985;
+    background: var(--primary-hover);
+  }
+  .btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+  }
+
+  .field {
+    width: 100%;
+    border: 1px solid rgb(15 23 42 / .11);
+    border-radius: var(--radius-control);
+    padding: 10px 12px;
+    background: var(--field);
+    box-shadow: var(--shadow-field);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.7;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .field::placeholder {
+    color: var(--ink-3);
+  }
+  .field:focus {
+    /* 투명 외곽선은 고대비 모드에서 초점 표시로 바뀐다. */
+    outline: 2px solid transparent;
+    border-color: var(--accent);
+    box-shadow: var(--shadow-field), var(--focus-ring);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .field {
+      transition: none;
+    }
+  }
+}

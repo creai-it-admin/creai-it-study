@@ -91,13 +91,13 @@ export function SessionRecorder({id,status,recordingState,hasOwner,onChange}:{id
  async function retry(){await capture.current?.retryPersistence();await flush();}
  function download(){const blob=capture.current?.lastBlob;if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`recording-recovery-${Date.now()}.${blob.type==='audio/mp4'?'mp4':'webm'}`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
  return <section className="card flex flex-col gap-4 p-5">
-  <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-semibold">세션 녹음</h2><span role="status" className="text-sm text-ink-2">{mode==='recording'?'● 이 기기에서 녹음 중':status==='closed'?'녹음 종료':hasOwner?'녹음이 시작된 세션':'녹음 시작 전'}</span></div>
+  <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-semibold">세션 녹음</h2><span role="status" className="text-sm text-ink-2">{mode==='recording'?<><span className="text-rec" aria-hidden="true">●</span> 이 기기에서 녹음 중</>:status==='closed'?'녹음 종료':hasOwner?'녹음이 시작된 세션':'녹음 시작 전'}</span></div>
   <p className="text-sm text-ink-2">한 기기에서 이 녹음 탭을 열어 두세요. 장표와 인클래스는 새 탭에서 사용할 수 있고, 일시정지 중에도 계속 열람할 수 있습니다.</p>
   {status!=='closed'&&<div className="flex flex-wrap gap-2">
    {mode==='recording'?<button className="btn" disabled={busy} onClick={()=>void run(pause)}>녹음 일시정지</button>:<button className="btn btn-primary" disabled={busy} onClick={()=>void run(start)}>{hasOwner?'녹음 재개':'녹음 시작'}</button>}
    {(hasOwner||status==='running')&&<button className="btn" disabled={busy||confirmEnd} onClick={()=>setConfirmEnd(true)}>녹음 종료 · 세션 마치기</button>}
   </div>}
-  {confirmEnd&&status!=='closed'&&<div role="group" aria-label="세션 종료 확인" className="rounded-xl border border-ink/15 p-4">
+  {confirmEnd&&status!=='closed'&&<div role="group" aria-label="세션 종료 확인" className="inset border-line-strong p-4">
    <p className="text-sm">녹음을 저장하고 세션을 종료할까요? 종료한 세션은 다시 녹음하지 않습니다.</p>
    <div className="mt-3 flex gap-2">
     <button className="btn btn-primary" disabled={busy} onClick={()=>{setConfirmEnd(false);void run(end);}}>저장하고 세션 종료</button>
@@ -107,7 +107,7 @@ export function SessionRecorder({id,status,recordingState,hasOwner,onChange}:{id
   <p className="text-xs text-ink-2">{busy?'처리 중…':pending?`이 기기에 보관 중인 녹음 ${pending}개 · 저장 완료 전 창을 닫지 마세요.`:mode==='recording'?'녹음은 주기적으로 이 기기에 보관하고 서버에 저장합니다.':'보관된 녹음은 저장 재시도로 복구할 수 있습니다.'}</p>
   {mode!=='recording'&&hasOwner&&status!=='closed'&&<p className="text-xs text-ink-2">{recordingState==='recording'?'서버에는 녹음 중으로 기록되어 있습니다. 다른 기기의 녹음을 먼저 확인하세요.':'녹음이 일시정지되어 있습니다.'} 새로고침·기기 종료 직전의 아직 저장되지 않은 음성은 복구되지 않을 수 있습니다.</p>}
   {(pending>0||error)&&<button className="btn self-start" disabled={busy} onClick={()=>void run(retry)}>저장 재시도</button>}
-  {error&&<p role="alert" className="text-sm text-red-700">{error}</p>}
+  {error&&<p role="alert" className="text-sm text-danger">{error}</p>}
   {error&&capture.current?.lastBlob&&<button className="btn self-start" onClick={download}>마지막 녹음 내려받기</button>}
  </section>;
 }

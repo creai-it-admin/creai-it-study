@@ -24,7 +24,7 @@ export function LogoutButton() {
       <button type="button" className="btn" disabled={busy} onClick={logout}>
         {busy ? "로그아웃 중" : "로그아웃"}
       </button>
-      {failed ? <span role="alert" className="text-[12px] text-[color:var(--warn)]">로그아웃하지 못했습니다. 다시 시도해 주세요.</span> : null}
+      {failed ? <span role="alert" className="text-[12px] text-warn">로그아웃하지 못했습니다. 다시 시도해 주세요.</span> : null}
     </span>
   );
 }

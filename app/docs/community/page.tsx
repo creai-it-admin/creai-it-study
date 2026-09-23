@@ -12,7 +12,7 @@ export default function CommunityDocument() {
   return (
     <div className={styles.board}>
       <a href="#purpose" className={styles.skip}>본문으로 이동</a>
-      <header className={styles.header}>
+      <header className={`chrome ${styles.header}`}>
         <Link href="/docs" className={styles.brand}>CREAI<span>+</span>IT <small>Docsboard</small></Link>
         <Link href="/docs#community">상위 문서로 돌아가기 ↗</Link>
       </header>
@@ -49,7 +49,7 @@ export default function CommunityDocument() {
             <p className={styles.eyebrow}>01 / WEEKLY RHYTHM</p>
             <h2>주중의 경험이, 주간 논의의 재료가 된다.</h2>
             <article className={styles.material}><span>주중 · 커뮤니티 채널</span><h3>시도한 일과 막힌 지점을 짧게 공유한다.</h3><p>구성원이 자신의 일에서 얻은 결과와 질문을 남기고, 서로 댓글을 달며 경험을 연결한다. 모든 사람에게 같은 과업을 요구하기보다 각자의 적용 맥락을 살린다.</p></article>
-            <article className={styles.week}>
+            <article className={`card ${styles.week}`}>
               <h3>주 1회 온라인 콜 · 60분 기본안</h3>
               <p><strong>5–6인 소규모 콜 · 진행자 1인</strong></p>
               <dl>

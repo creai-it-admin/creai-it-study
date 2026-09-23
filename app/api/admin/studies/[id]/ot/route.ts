@@ -8,6 +8,6 @@ export async function POST(req:Request,ctx:{params:Promise<{id:string}>}){
  if(!validOtPath(path,id))return Response.json({error:'이 스터디의 OT 파일을 선택해 주세요.'},{status:400});
  if(!await prisma.study.findUnique({where:{id},select:{id:true}}))return Response.json({error:'스터디를 찾을 수 없습니다.'},{status:404});
  try{await confirmDeck(path);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
- await prisma.study.update({where:{id},data:{otPath:path}});
+ await prisma.study.update({where:{id},data:{otPath:path,otSourceVersionId:null}});
  return Response.json({ok:true});
 }

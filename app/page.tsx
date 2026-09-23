@@ -6,7 +6,7 @@ import { LearningExchange, UnderstandingArt } from '@/components/landing/Learnin
 import './landing.css';
 
 export const metadata: Metadata = {
-  title: 'CREAI+IT Study — AI 시대를 이끄는 사람들.',
+  title: 'CREAI+IT Edu — AI 시대를 이끄는 사람들.',
   description: 'AI의 변화를 읽는 지식과 최신 AI를 활용하는 경험. 4주 교육으로 기반을 만들고, 소규모 커뮤니티에서 서로 배우며 계속 발전합니다.',
 };
 
@@ -18,14 +18,14 @@ const curriculum = [
 ];
 
 function Brand() {
-  return <><span className="brand-symbol" aria-hidden="true"><img src="/landing/creaiit-symbol.png" alt="" width="250" height="354" /></span>CREAI<span>+</span>IT<small>STUDY</small></>;
+  return <><span className="brand-symbol" aria-hidden="true"><img src="/landing/creaiit-symbol.png" alt="" width="250" height="354" /></span>CREAI<span>+</span>IT<small>EDU</small></>;
 }
 
 export default function Landing() {
   return <div className="landing landing-renewed">
     <a href="#main" className="landing-skip">본문으로 바로가기</a>
     <header className="landing-nav">
-      <Link href="/" className="landing-logo" aria-label="CREAI+IT Study 홈"><Brand /></Link>
+      <Link href="/" className="landing-logo" aria-label="CREAI+IT Edu 홈"><Brand /></Link>
       <nav aria-label="주요 메뉴"><a href="#vision">우리가 지향하는 사람</a><a href="#curriculum">4주 교육</a><a href="#community">이후 커뮤니티</a></nav>
       <Link href="/routes" className="nav-enter">멤버 로그인 <span>↗</span></Link>
     </header>
@@ -36,10 +36,10 @@ export default function Landing() {
         </div>
         <div className="track-hero-inner landing-wrap">
           <div className="track-hero-copy">
-            <p className="eyebrow">CREAI+IT STUDY / LEARN. APPLY. EVOLVE.</p>
+            <p className="eyebrow">CREAI+IT EDU / LEARN. APPLY. EVOLVE.</p>
             <h1 id="hero-title">AI 시대를<br/><em>이끄는 사람들.</em></h1>
             <p className="track-hero-description">기술의 변화를 읽고, 최전선의 지능을 자신의 역량으로.<br/>함께 배우고 도전하며, 새로운 가능성을 만드는<br/>사람들로 성장합니다.</p>
-            <a href="#curriculum" className="landing-button accent">4주 교육부터 살펴보기 <span>↓</span></a>
+            <Link href="/apply" className="landing-button accent">참가 신청하러 가기 <span>↗</span></Link>
             <p className="track-hero-caption">4주간의 교육, 그리고 계속 배우는 커뮤니티.</p>
           </div>
         </div>
@@ -87,8 +87,8 @@ export default function Landing() {
 
       <section id="join" className="landing-wrap track-join">
         <span className="eyebrow">YOUR NEXT STEP</span><h2>새로운 시대의 가능성,<br/>그 시작에 함께 서다.</h2>
-        <p>4주 교육으로 시작하고, 커뮤니티에서 배움을 이어갑니다.<br/>다음 교육 기수의 일정과 참가비, 커뮤니티 구독료는 추후 안내합니다.</p>
-        <div className="track-join-actions"><a href="#curriculum" className="landing-button ink">4주 커리큘럼 보기 <span>↑</span></a><Link href="/routes" className="text-link">이미 참여 중이라면, 내 스터디로 ↗</Link></div>
+        <p>4주 교육으로 시작하고, 커뮤니티에서 배움을 이어갑니다.<br/>참여 가능한 일정을 남겨 주세요. 일정이 맞는 분들과 코호트를 구성합니다.<br/>정확한 일정과 참가비 안내 후 참여를 확정합니다.</p>
+        <div className="track-join-actions"><Link href="/apply" className="landing-button ink">참가 신청하러 가기 <span>↗</span></Link><Link href="/routes" className="text-link">이미 참여 중이라면, 내 스터디로 ↗</Link></div>
       </section>
     </main>
     <footer className="landing-footer landing-wrap"><a href="#main" className="landing-logo"><Brand /></a><p>Learn. Apply. Evolve. Together.</p><a href="#main">BACK TO TOP ↑</a></footer>

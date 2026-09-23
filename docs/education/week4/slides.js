@@ -1,0 +1,868 @@
+(() => {
+    const DATA = [
+        {
+            "title": "AI 시대를 관통하는",
+            "accent": "개념과 산업의 본질",
+            "kind": "cover",
+            "subtitle": "모델의 작동 원리부터 산업의 밸류체인과 협상력까지.",
+            "bottom": "새로운 변화를 해석하고, 나의 판단을 세우기 위한 배경지식.",
+            "note": "이번 교육은 이 시대를 관통하는 주요 AI 개념과 AI 산업을 본질적으로 이해하는 시간입니다. 먼저 각 개념의 정의와 작동 원리, 기억할 멘탈모델을 정리합니다. 이를 바탕으로 산업의 밸류체인과 기업 간 협상력을 살펴보고, 새로운 정보를 스스로 해석할 지식적 기반을 만듭니다.",
+            "sources": [],
+            "label": "FOUNDATION / WEEK 4"
+        },
+        {
+            "title": "대규모 언어 모델",
+            "accent": "",
+            "english": "Large Language Model · LLM",
+            "kind": "concept",
+            "definition": "대량의 데이터로 언어의 패턴을 학습해, 주어진 입력에 이어질 토큰을 예측·생성하는 모델입니다.",
+            "meaning": "학습으로 조정된 내부 수치인 ‘가중치’가 계산 방식을 결정합니다. 생성형 LLM은 앞선 맥락을 바탕으로 다음 토큰을 만들고, 이 과정을 반복합니다.",
+            "mental": "정답을 꺼내는 검색창이 아니라, 맥락으로 출력을 계산하는 엔진.",
+            "implication": "그래서 자연스러운 답변과 사실에 맞는 답변은 별도로 확인해야 합니다.",
+            "note": "다음 토큰 예측은 기본 작동 원리이지, 모델이 단순한 자동완성 수준의 과업만 수행한다는 뜻은 아닙니다. 학습된 패턴으로 다양한 과업을 수행하지만, 생성 결과가 사실임을 자동 보장하지는 않습니다. 모델과 검색 서비스, 앱 전체를 구분해 설명합니다.",
+            "sources": [
+                [
+                    "Hugging Face · 모델과 학습",
+                    "https://huggingface.co/learn/llm-course/chapter1/4"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "토큰",
+            "accent": "",
+            "english": "Token",
+            "kind": "concept",
+            "definition": "텍스트를 모델이 처리할 수 있도록 나눈 단위입니다. 한 단어일 수도, 단어의 일부나 문장부호일 수도 있습니다.",
+            "meaning": "문장을 토큰으로 바꾸어 입력하고, 출력도 토큰 단위로 생성합니다. 같은 문장도 언어와 토크나이저에 따라 토큰 수가 달라집니다.",
+            "mental": "AI가 읽고 쓰는 양을 세는 단위.",
+            "implication": "컨텍스트 한도와 많은 API의 사용료는 글자 수가 아니라 토큰 수로 표시됩니다.",
+            "note": "토큰 수는 비용과 지연을 이해하는 출발점입니다. 다만 토큰 하나당 실제 계산량은 모델 구조와 입력·출력 단계 등에 따라 달라집니다. 토큰 수가 같다고 공급자의 계산 원가까지 같지는 않습니다.",
+            "sources": [
+                [
+                    "Hugging Face · 토큰화",
+                    "https://huggingface.co/learn/llm-course/chapter6/1"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "사전학습",
+            "accent": "",
+            "english": "Pre-training",
+            "kind": "concept",
+            "definition": "대규모 데이터로 모델의 기본 가중치를 학습하는 과정입니다.",
+            "meaning": "언어 모델은 보통 다음 토큰을 예측하는 과제를 반복하며 언어·지식·코드 등의 패턴을 익힙니다. 데이터, 연산량, 학습 방식이 기반 능력에 영향을 줍니다.",
+            "mental": "폭넓은 기본기를 만드는 단계.",
+            "implication": "방대한 지식을 학습했다는 것과, 사용자의 지시를 잘 따른다는 것은 다릅니다.",
+            "note": "사전학습의 목적은 이후 다양한 과업에 활용할 기반을 형성하는 것입니다. 학습 데이터에 없던 최신 사실을 자동으로 안다고 볼 수 없고, 모든 사실을 정확히 저장한 데이터베이스도 아닙니다. 기본 능력과 서비스 행동을 구분하여 다음 후속학습으로 이어갑니다.",
+            "sources": [
+                [
+                    "Hugging Face · 모델과 학습",
+                    "https://huggingface.co/learn/llm-course/chapter1/4"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "후속학습",
+            "accent": "",
+            "english": "Post-training",
+            "kind": "concept",
+            "definition": "사전학습 이후 모델의 능력과 행동을 목표에 맞게 다듬는 학습 과정입니다.",
+            "meaning": "좋은 답변 예시로 훈련하거나, 결과에 대한 피드백·보상을 이용합니다. 지시 수행, 추론, 도구 사용 같은 행동을 개선할 수 있습니다.",
+            "mental": "기본기를 실제로 쓸 수 있는 행동으로 다듬는 단계.",
+            "implication": "같은 기반 모델에서도 후속학습에 따라 지시 수행과 응답 특성이 달라집니다.",
+            "note": "후속학습은 단순히 말투만 바꾸는 작업이 아닙니다. 지도 학습과 강화학습 등 서로 다른 방법을 사용할 수 있습니다. 추론 능력과 도구 사용 행동을 개선하기도 합니다. 모든 모델이 동일한 절차를 따르는 것은 아닙니다.",
+            "sources": [
+                [
+                    "Hugging Face · 후속학습과 강화학습",
+                    "https://huggingface.co/docs/course/chapter12/2"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "파인튜닝",
+            "accent": "",
+            "english": "Fine-tuning",
+            "kind": "concept",
+            "definition": "이미 학습된 모델을 추가 데이터로 더 훈련해, 가중치의 전부 또는 일부를 조정하는 방법입니다.",
+            "meaning": "원하는 과업·형식·행동에 맞는 예시를 반복 학습시킵니다. 문서를 입력에 붙여 읽게 하는 것과 달리 모델 자체가 바뀝니다.",
+            "mental": "이번 답변에 자료를 주는 것이 아니라, 답하는 방식을 훈련한다.",
+            "implication": "후속학습에 사용되는 방법 중 하나이며, 별도의 필수 단계라는 뜻은 아닙니다.",
+            "note": "예를 들어 분류 기준이나 일관된 출력 형식을 학습시킬 수 있습니다. 파인튜닝으로 지식을 주입할 수도 있지만, 자주 바뀌는 정보를 정확히 조회하는 데이터베이스를 그대로 대체하지는 않습니다. 최신 문서를 찾아 읽히는 RAG와 목적을 비교해야 합니다.",
+            "sources": [
+                [
+                    "Hugging Face · 파인튜닝",
+                    "https://huggingface.co/learn/llm-course/chapter3/1"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "추론",
+            "accent": "",
+            "english": "Inference",
+            "kind": "concept",
+            "definition": "학습된 모델을 실행해, 입력으로부터 출력을 계산하는 과정입니다.",
+            "meaning": "요청을 읽고 답변을 생성할 때 연산·메모리·시간이 듭니다. 일반적인 추론은 학습과 달리 모델의 가중치를 바꾸지 않습니다.",
+            "mental": "학습은 모델을 만드는 일, 추론은 그 모델을 매번 사용하는 일.",
+            "implication": "여기서 inference는 실행 전체를 뜻합니다. 논리적으로 숙고하는 reasoning과 구분합니다.",
+            "note": "분류 한 번도 추론이고 긴 답변 생성도 추론입니다. 추론 중 reasoning에 더 많은 계산을 쓰는 모델도 있습니다. 모델 개발의 학습 비용과 서비스를 계속 제공하며 발생하는 추론 비용을 구분하는 것이 산업 구조 이해의 핵심입니다.",
+            "sources": [
+                [
+                    "Google Cloud · AI 추론",
+                    "https://cloud.google.com/discover/what-is-ai-inference"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "컨텍스트",
+            "accent": "",
+            "english": "Context · Context window",
+            "kind": "concept",
+            "definition": "현재 출력을 만들 때 모델에 제공되는 정보입니다. 컨텍스트 윈도는 한 번에 처리할 수 있는 토큰 범위의 한도입니다.",
+            "meaning": "지시문, 대화 이력, 첨부 자료, 도구 결과가 입력 맥락을 이룹니다. 창의 크기가 커져도 모든 내용을 똑같이 정확하게 활용한다는 뜻은 아닙니다.",
+            "mental": "이번 일을 위해 모델 앞에 펼쳐 놓은 작업 자료.",
+            "implication": "어딘가에 저장된 정보도, 현재 맥락에 들어오지 않으면 답변에 활용되지 않을 수 있습니다.",
+            "note": "컨텍스트는 가중치에 학습된 지식과 다릅니다. 앱의 장기 기억은 외부에 저장했다가 필요한 정보를 현재 맥락에 다시 넣는 방식일 수 있습니다. 최대 입력과 출력 토큰의 관계는 모델마다 다르므로 제품 표기를 확인해야 합니다.",
+            "sources": [
+                [
+                    "Anthropic · 컨텍스트",
+                    "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "검색 증강 생성",
+            "accent": "",
+            "english": "Retrieval-Augmented Generation · RAG",
+            "kind": "concept",
+            "definition": "외부 자료에서 필요한 정보를 검색해 모델의 입력에 넣고, 그 근거를 바탕으로 답변을 생성하는 방식입니다.",
+            "meaning": "질문에 맞는 자료를 찾는 검색 과정과, 찾은 자료를 읽고 답하는 생성 과정을 연결합니다. 자료를 업데이트해도 모델을 다시 학습시킬 필요는 없습니다.",
+            "mental": "전부 외우게 하지 말고, 필요한 자료를 찾아 펼쳐 준다.",
+            "implication": "자료를 잘못 찾거나 잘못 해석하면 틀릴 수 있습니다. 검색 품질과 답변 품질을 함께 봅니다.",
+            "note": "사내 규정을 찾아 답변하는 사례로 설명합니다. 검색은 벡터 검색만을 의미하지 않으며 키워드 검색이나 여러 방식을 함께 사용할 수 있습니다. RAG는 환각을 없애는 보장이 아니라 최신·사내 정보를 근거로 사용할 수 있게 하는 구조입니다.",
+            "sources": [
+                [
+                    "AWS · RAG",
+                    "https://aws.amazon.com/what-is/retrieval-augmented-generation/"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "에이전트",
+            "accent": "",
+            "english": "Agent",
+            "kind": "concept",
+            "definition": "목표를 달성하기 위해 모델이 다음 행동과 도구 사용을 결정하고, 그 결과를 보며 작업을 이어가는 시스템입니다.",
+            "meaning": "모델의 판단을 검색·파일 수정·코드 실행 같은 도구에 연결합니다. 실행 결과가 다시 입력으로 들어오며 다음 행동이나 종료 여부를 결정합니다.",
+            "mental": "모델의 판단에 행동과 피드백을 연결한 구조.",
+            "implication": "고정된 순서를 실행하는 워크플로와, 상황에 따라 다음 행동을 고르는 에이전트를 구분합니다.",
+            "note": "에이전트는 단순히 모델에 붙이는 이름이 아니라 모델을 실행 환경과 연결하는 구조입니다. 성능은 모델뿐 아니라 제공된 맥락, 도구, 권한, 검증 방식에도 좌우됩니다. 자율성의 정도는 시스템마다 다르며 무한하게 잘할 수 있다는 의미가 아닙니다.",
+            "sources": [
+                [
+                    "Anthropic · 에이전트",
+                    "https://www.anthropic.com/engineering/building-effective-agents"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "API",
+            "accent": "",
+            "english": "Application Programming Interface",
+            "kind": "concept",
+            "definition": "소프트웨어가 다른 소프트웨어의 기능과 데이터를 사용하도록 정한 호출 규칙과 인터페이스입니다.",
+            "meaning": "AI 서비스는 요청을 정해진 형식으로 보내 모델의 결과를 받습니다. 제공자가 모델을 운영하고, 이용자는 그 기능을 자신의 앱이나 업무에 연결할 수 있습니다.",
+            "mental": "모델을 소유하지 않고도, 모델의 기능을 제품에 연결하는 접점.",
+            "implication": "AI API를 사용한다고 모델의 가중치를 받는 것은 아닙니다.",
+            "note": "API라는 개념 자체는 AI나 유료 클라우드에 한정되지 않습니다. 이 수업에서는 호스팅된 모델 API를 예로 설명합니다. 고객 대화 요약 기능을 앱에 넣을 때 모델을 직접 학습하거나 운영하지 않아도 되는 이유와, 호출 비용·제공자 의존이 생기는 이유를 연결합니다.",
+            "sources": [
+                [
+                    "IBM · API",
+                    "https://www.ibm.com/think/topics/api"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "공개 가중치 모델",
+            "accent": "",
+            "english": "Open-weight model",
+            "kind": "concept",
+            "definition": "학습된 가중치를 내려받아, 정해진 라이선스 조건에 따라 실행하거나 활용할 수 있도록 공개한 모델입니다.",
+            "meaning": "직접 운영하면 배포 환경과 데이터 흐름을 더 많이 통제할 수 있습니다. 대신 연산 자원, 운영, 보안과 업데이트를 직접 마련해야 합니다.",
+            "mental": "사용료를 내고 호출하는 선택과, 모델을 가져와 운영하는 선택.",
+            "implication": "가중치 공개가 학습 데이터·코드 전체 공개나 모든 용도의 자유로운 사용을 뜻하지는 않습니다.",
+            "note": "공개 가중치와 완전한 오픈소스를 같은 말로 쓰지 않습니다. 상업 사용과 재배포 조건은 라이선스를 확인합니다. 공개 모델도 다른 사업자가 API로 서비스할 수 있으므로 API와 공개 가중치는 서로 배타적인 모델 분류가 아닙니다.",
+            "sources": [
+                [
+                    "Hugging Face · 공개 범위와 라이선스",
+                    "https://github.com/huggingface/faq"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "GPU",
+            "accent": "",
+            "english": "Graphics Processing Unit",
+            "kind": "concept",
+            "definition": "많은 계산을 병렬로 수행하도록 설계된 프로세서입니다. 그래픽 처리에서 출발해 AI 학습과 추론에도 널리 사용됩니다.",
+            "meaning": "신경망의 행렬 연산 등을 동시에 처리합니다. 실제 성능은 칩의 연산 능력뿐 아니라 메모리, 칩 간 연결, 소프트웨어의 활용 정도에도 달려 있습니다.",
+            "mental": "많은 계산을 동시에 수행하는 연산 장치.",
+            "implication": "GPU 개수만 세어서는 AI 시스템의 처리량과 비용을 알 수 없습니다.",
+            "note": "GPU를 두뇌라고만 설명하면 모델과 하드웨어를 혼동하기 쉽습니다. 모델은 계산할 방식과 학습된 가중치, GPU는 그것을 실제로 계산하는 하드웨어입니다. NVIDIA의 경쟁력을 칩뿐 아니라 개발 환경과 시스템에서 읽는 뒤쪽 설명의 기반입니다.",
+            "sources": [
+                [
+                    "NVIDIA · GPU 연산 구조",
+                    "https://docs.nvidia.com/deeplearning/performance/pdf/GPU-Performance-Background-User-Guide.pdf"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "AI 전용 가속기",
+            "accent": "",
+            "english": "AI accelerator · ASIC · TPU",
+            "kind": "concept",
+            "definition": "AI 연산을 빠르고 효율적으로 처리하도록 설계한 칩입니다. ASIC은 특정 용도에 맞춰 설계한 집적회로를 뜻합니다.",
+            "meaning": "Google의 TPU처럼 특정 연산과 사용 환경에 맞춰 설계합니다. 적합한 과업에서는 효율을 높일 수 있지만, 소프트웨어와 운영 방식도 함께 맞춰야 합니다.",
+            "mental": "사용할 일이 충분히 크고 명확하면, 그 일에 맞는 연산 장치를 만든다.",
+            "implication": "TPU는 Google의 AI 가속기입니다. ASIC이라는 말 자체가 AI 칩만을 뜻하지는 않습니다.",
+            "note": "GPU도 AI 가속에 사용되므로 AI 가속기라는 큰 범주와 특정 용도에 맞춘 전용 칩을 구분합니다. TPU나 Trainium이 모든 과업에서 GPU보다 우수하다는 뜻은 아닙니다. 대규모 구매자가 자체 칩을 설계해 대안을 확보하는 산업적 의미로 연결합니다.",
+            "sources": [
+                [
+                    "Google Cloud · TPU",
+                    "https://cloud.google.com/tpu?hl=en"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "고대역폭 메모리",
+            "accent": "",
+            "english": "High Bandwidth Memory · HBM",
+            "kind": "concept",
+            "definition": "여러 DRAM 칩을 쌓고 넓은 연결 통로를 사용해, 많은 데이터를 빠르게 전달하도록 만든 메모리입니다.",
+            "meaning": "연산 장치가 사용할 가중치와 중간 데이터를 저장하고 공급합니다. 용량은 담을 수 있는 양, 대역폭은 단위 시간에 옮길 수 있는 양입니다.",
+            "mental": "계산 장치가 기다리지 않도록 데이터를 공급하는 고속 메모리.",
+            "implication": "계산할 힘이 충분해도 데이터를 제때 공급하지 못하면 전체 속도가 제한됩니다.",
+            "note": "HBM은 AI 모델의 영구 지식 그 자체가 아닙니다. 가중치 등의 데이터를 실행 중 담아 공급하는 하드웨어입니다. 용량과 대역폭을 구분하고, 연산과 메모리가 함께 갖춰져야 한다는 점을 설명합니다. 모든 AI 기기가 반드시 HBM을 사용하는 것은 아닙니다.",
+            "sources": [
+                [
+                    "SK hynix · HBM",
+                    "https://news.skhynix.com/en/sk-hynix-completes-worlds-first-hbm4-development-and-readies-mass-production/"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "데이터센터",
+            "accent": "",
+            "english": "Data center",
+            "kind": "concept",
+            "definition": "서버·저장 장치·네트워크를 모아 전력과 냉각 설비로 운영하는 시설입니다.",
+            "meaning": "대규모 AI는 여러 연산 장치를 연결해 사용합니다. 칩이 있어도 장치 간 통신, 전력 공급, 냉각이 뒷받침되어야 학습과 서비스를 지속할 수 있습니다.",
+            "mental": "AI의 계산 능력을 실제로 가동시키는 시설 전체.",
+            "implication": "칩 확보와 실제 가동은 다릅니다. 전력·연결·냉각까지 준비되어야 공급이 늘어납니다.",
+            "note": "여러 컴퓨터를 함께 활용하는 묶음을 클러스터라고 합니다. 클라우드는 이런 자원을 외부 고객이 서비스로 이용하게 하는 제공 방식이며 데이터센터 건물 그 자체와 같은 말은 아닙니다. 인프라 투자 발표, 계약된 전력과 실제 가동 용량도 구분해 읽습니다.",
+            "sources": [
+                [
+                    "IEA · AI 인프라와 전력",
+                    "https://www.iea.org/reports/key-questions-on-energy-and-ai/executive-summary"
+                ]
+            ],
+            "label": "FOUNDATION / WEEK 4 · 핵심 개념"
+        },
+        {
+            "title": "AI 산업은 이 구성요소들을",
+            "accent": "나누어 공급하는 기업들로 이루어집니다.",
+            "kind": "map",
+            "items": [
+                [
+                    "반도체·제조",
+                    "NVIDIA · TSMC\nSK hynix"
+                ],
+                [
+                    "인프라·클라우드",
+                    "AWS · Azure\nGoogle Cloud"
+                ],
+                [
+                    "모델",
+                    "OpenAI · Anthropic\nGoogle DeepMind"
+                ],
+                [
+                    "서비스·업무",
+                    "Copilot · Cursor\n각종 업무 서비스"
+                ],
+                [
+                    "고객",
+                    "개인 · 기업\n실제 업무의 수요"
+                ]
+            ],
+            "bottom": "같은 기업이 여러 층에 걸쳐 있을 수 있습니다.",
+            "note": "기술 구성요소에 기업을 붙입니다. 회사 전체를 한 칸으로 분류하는 지도가 아니라 역할별 지도입니다. 전력은 인프라를, 데이터는 학습과 업무 활용을 각각 지원합니다. 직접 판매와 클라우드 경유 등 여러 경로가 있으므로 모든 거래가 한 줄을 통과하는 것은 아닙니다.",
+            "sources": [
+                [
+                    "Google · Cloud Next 2025",
+                    "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/google-cloud-next-2025-sundar-pichai-keynote/"
+                ],
+                [
+                    "Cursor · 모델 구성",
+                    "https://cursor.com/docs"
+                ],
+                [
+                    "Anthropic · AWS 협력 / 2026.04",
+                    "https://www.anthropic.com/news/anthropic-amazon-compute"
+                ]
+            ],
+            "label": "THE INDUSTRY MAP"
+        },
+        {
+            "title": "고객이 낸 돈은 여러 층으로 나뉘지만,",
+            "accent": "모두 같은 방식으로 돈을 벌지는 않습니다.",
+            "kind": "ledger",
+            "items": [
+                [
+                    "고객 → 서비스",
+                    "구독료 · 사용료",
+                    "업무를 해결하기 위해 지불"
+                ],
+                [
+                    "서비스 → 모델·클라우드",
+                    "API · 연산 사용료",
+                    "서비스 실행 비용"
+                ],
+                [
+                    "인프라 → 장비·시설",
+                    "장비 구매 · 시설 투자",
+                    "장기간 사용할 자산 확보"
+                ]
+            ],
+            "bottom": "투자금은 소유권과 미래 수익에 대한 거래입니다. 서비스 매출과 구분합니다.",
+            "note": "돈의 흐름을 기능의 흐름과 구분합니다. 표는 이해를 위한 대표 거래 경로이며 한 회사가 여러 역할을 수행하거나 직접 계약할 수 있습니다. 서비스 매출과 장비 구매액을 단순히 더해 전체 시장 규모로 계산하면 중복이 생깁니다. 클라우드 기업의 지분 투자는 사용료와 별개의 거래이며, 장기 사용 약정 또한 이미 발생한 매출과 같지 않습니다.",
+            "sources": [],
+            "rail": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "tag": "대표 거래 구조 · 실제 계약은 기업마다 다릅니다."
+        },
+        {
+            "title": "가치를 만드는 것과,",
+            "accent": "그 가치의 몫을 가져가는 것은 다릅니다.",
+            "kind": "questions",
+            "items": [
+                [
+                    "필요성",
+                    "상대가 내게서\n꼭 얻어야 하는 것은?"
+                ],
+                [
+                    "대안",
+                    "상대에게 현실적인\n다른 선택지가 있는가?"
+                ],
+                [
+                    "전환 부담",
+                    "바꾸는 데 시간·비용·위험이\n얼마나 드는가?"
+                ]
+            ],
+            "bottom": "이 세 질문으로 각 기업의 협상력을 읽어봅니다.",
+            "note": "협상력은 일방적인 기술 우열이나 기업 순위가 아닙니다. 특정 거래에서 상대방의 선택지가 무엇인지가 핵심입니다. 내가 상대를 얼마나 필요로 하는지도 함께 봅니다. 공급이 귀하더라도 수요가 줄거나 대체재가 생기면 조건은 달라질 수 있습니다. 이후 기업별 장을 이 질문에 연결합니다.",
+            "sources": [],
+            "dark": true,
+            "label": "FROM VALUE CREATION TO BARGAINING POWER"
+        },
+        {
+            "title": "NVIDIA의 힘은 칩과 함께,",
+            "accent": "그 칩을 쓰는 전체 환경에서 나옵니다.",
+            "kind": "layers",
+            "items": [
+                [
+                    "소프트웨어",
+                    "CUDA · 라이브러리 · 개발 도구"
+                ],
+                [
+                    "연결",
+                    "칩과 서버를 연결하는 네트워크"
+                ],
+                [
+                    "연산 시스템",
+                    "가속기 · 서버·랙 단위 구성"
+                ]
+            ],
+            "bottom": "칩의 가격뿐 아니라, 시스템을 바꾸는 전체 부담을 비교해야 합니다.",
+            "note": "NVIDIA의 발표는 가속기뿐 아니라 네트워킹, CUDA-X 라이브러리와 소프트웨어 공급을 보여줍니다. 이 사실을 기반으로 기존 코드·최적화·운영 경험의 변경 비용이 구매 판단에 영향을 줄 수 있다고 해석합니다. 모든 고객에게 같은 전환비용이 있다는 뜻은 아닙니다. 경쟁 제품의 성능과 실제 과업별 총비용을 함께 확인해야 합니다.",
+            "sources": [
+                [
+                    "NVIDIA · 2026.08 실적·제품 발표",
+                    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027"
+                ]
+            ],
+            "rail": [
+                0
+            ],
+            "side": "칩 교체\n+ 코드·최적화\n+ 운영 경험"
+        },
+        {
+            "title": "좋은 칩을 설계해도,",
+            "accent": "생산하고 연결하고 가동할 수 있어야 합니다.",
+            "kind": "bottleneck",
+            "items": [
+                [
+                    "제조·패키징",
+                    "TSMC",
+                    "설계를 실제 제품으로"
+                ],
+                [
+                    "메모리",
+                    "SK hynix 등",
+                    "계산 장치에 데이터 공급"
+                ],
+                [
+                    "전력·계통",
+                    "지역 전력망·시설",
+                    "장비를 가동할 기반"
+                ]
+            ],
+            "bottom": "지금 확장하기 가장 어려운 요소가, 전체 공급의 병목이 될 수 있습니다.",
+            "note": "TSMC의 첨단 패키징, SK hynix와 TSMC의 HBM 협력, IEA가 지적한 전력망과 장비 공급 제약을 연결합니다. 제조와 시설 공급은 계획에서 가동까지 시간이 걸립니다. 다만 병목이 곧 모든 기업의 영구적인 초과이익은 아닙니다. 증설과 경쟁, 고객의 대안에 따라 협상력은 달라집니다.",
+            "sources": [
+                [
+                    "TSMC · 2025 연차보고서",
+                    "https://investor.tsmc.com/static/annualReports/2025/english/index.html"
+                ],
+                [
+                    "SK hynix · TSMC 협력",
+                    "https://news.skhynix.com/en/sk-hynix-partners-with-tsmc-to-strengthen-hbm-technological-leadership/"
+                ],
+                [
+                    "IEA · 에너지와 AI",
+                    "https://www.iea.org/reports/key-questions-on-energy-and-ai/executive-summary"
+                ]
+            ],
+            "rail": [
+                0,
+                1
+            ]
+        },
+        {
+            "title": "큰 구매자는 직접 대안을 만들어",
+            "accent": "공급자 의존을 줄이려 합니다.",
+            "kind": "pair",
+            "items": [
+                [
+                    "Google · TPU",
+                    "자체 가속기와 소프트웨어로\n자사·클라우드 업무를 운영",
+                    "목적에 맞는 성능·비용 구조"
+                ],
+                [
+                    "AWS · Trainium",
+                    "자체 칩을 클라우드에 공급하고\nAnthropic과 활용을 확대",
+                    "연산 공급과 장기 수요 연결"
+                ]
+            ],
+            "bottom": "대안이 생겨도 제조·메모리·전력에 대한 의존은 남습니다.",
+            "note": "Google의 TPU 소개와 Anthropic의 AWS 협력 발표가 확인해주는 것은 자체 가속기의 공급과 활용입니다. 비용·공급·설계 통제 확보라는 전략적 의미는 이 사실에 대한 분석입니다. 자체 칩이 모든 업무에서 GPU보다 유리하다고 단정하지 않습니다. 소프트웨어 지원과 작업 특성, 제조 공급까지 포함해 판단합니다.",
+            "sources": [
+                [
+                    "Google · Ironwood TPU",
+                    "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/ironwood-tpu-age-of-inference/"
+                ],
+                [
+                    "Anthropic · AWS 협력 / 2026.04",
+                    "https://www.anthropic.com/news/anthropic-amazon-compute"
+                ]
+            ],
+            "rail": [
+                0,
+                1
+            ]
+        },
+        {
+            "title": "클라우드와 모델 회사는 서로에게",
+            "accent": "고객이자 성장 기반입니다.",
+            "kind": "relationship",
+            "items": [
+                [
+                    "클라우드",
+                    "연산 자원 · 고객 접근 경로"
+                ],
+                [
+                    "모델 회사",
+                    "연산 수요 · 모델·서비스"
+                ]
+            ],
+            "bottom": "필요한 공급은 오래 확보하고, 특정 공급자에 대한 의존은 분산합니다.",
+            "note": "Anthropic은 2026년 4월 AWS 기술에 대한 10년간 1,000억 달러 초과 사용 약정과 최대 5GW 용량 확보를 발표했습니다. 이는 발표된 장기 약정이며 현재 매출이나 모든 용량의 가동을 뜻하지 않습니다. 별도 발표에서 NVIDIA GPU, Google TPU, AWS Trainium을 사용하는 접근을 설명했습니다. 장기 확보와 다변화가 함께 나타날 수 있다는 사례입니다.",
+            "sources": [
+                [
+                    "Anthropic · AWS 협력 / 2026.04",
+                    "https://www.anthropic.com/news/anthropic-amazon-compute"
+                ],
+                [
+                    "Anthropic · 복수 칩 플랫폼",
+                    "https://www.anthropic.com/news/expanding-our-use-of-google-cloud-tpus-and-services"
+                ]
+            ],
+            "rail": [
+                1,
+                2
+            ],
+            "under": "Anthropic 사례 · AWS 장기 협력 + GPU·TPU·Trainium 활용"
+        },
+        {
+            "title": "모델 회사의 협상력은,",
+            "accent": "고객이 성능을 얼마나 대체할 수 있느냐에 달립니다.",
+            "kind": "pair",
+            "items": [
+                [
+                    "대체가 어려운 과업",
+                    "작은 성능 차이가\n실제 완료 여부를 바꾼다.",
+                    "성능·신뢰성에 대한 지불 의사"
+                ],
+                [
+                    "대체가 쉬운 과업",
+                    "여러 모델이\n요구 품질을 충족한다.",
+                    "비용·속도·운영 조건을 비교"
+                ]
+            ],
+            "bottom": "“어느 모델이 최고인가?” 다음에는 “내 과업에서 바꿔도 되는가?”를 묻습니다.",
+            "note": "Cursor는 여러 공급자의 모델을 선택할 수 있는 사례입니다. 선택지가 있다는 사실과 특정 작업에서 실제 대체할 수 있다는 것은 다릅니다. 같은 품질 기준으로 결과를 평가하고 가격, 속도, 문맥 처리, 운영 조건을 비교해야 합니다. 공개 가중치 역시 가능한 대안이지만 운영 부담과 라이선스를 함께 고려합니다.",
+            "sources": [
+                [
+                    "Cursor · 모델 구성",
+                    "https://cursor.com/docs"
+                ]
+            ],
+            "rail": [
+                2,
+                3
+            ]
+        },
+        {
+            "title": "협력 관계도 고정되어 있지 않습니다.",
+            "accent": "계약은 서로의 선택지를 다시 정합니다.",
+            "kind": "contract",
+            "items": [
+                [
+                    "유지",
+                    "Microsoft는 주요 클라우드 파트너\nAzure 우선 공급 원칙과 예외"
+                ],
+                [
+                    "변경",
+                    "OpenAI는 다른 클라우드에도 공급 가능\nMicrosoft의 IP 라이선스는 비독점"
+                ]
+            ],
+            "bottom": "공개된 계약 변화는 확인할 수 있지만, 협상 동기 전체를 단정할 수는 없습니다.",
+            "note": "2026년 4월 27일 Microsoft 공식 발표를 읽습니다. 주요 클라우드 파트너 관계와 Azure 우선 공급 원칙은 유지되며 Microsoft가 필요한 기능을 지원할 수 없거나 지원하지 않기로 하는 예외가 있습니다. OpenAI는 다른 클라우드에서 고객에게 제품을 공급할 수 있고, Microsoft의 IP 라이선스는 비독점으로 바뀝니다. 이 장은 독점 관계가 영구적이라는 가정을 갱신하는 사례입니다.",
+            "sources": [
+                [
+                    "Microsoft · 계약 변경 / 2026.04.27",
+                    "https://blogs.microsoft.com/blog/2026/04/27/the-next-phase-of-the-microsoft-openai-partnership/"
+                ]
+            ],
+            "rail": [
+                1,
+                2
+            ],
+            "under": "Microsoft–OpenAI · 2026년 4월 27일 발표"
+        },
+        {
+            "title": "여러 층을 함께 가진 기업은,",
+            "accent": "한 제품의 수익만으로 전략을 짜지 않습니다.",
+            "kind": "portfolio",
+            "items": [
+                [
+                    "Google",
+                    "TPU → Cloud → Gemini → 서비스",
+                    "여러 층을 함께 설계하고 제공"
+                ],
+                [
+                    "Meta의 공개 전략",
+                    "Llama → 생태계 → 자체 서비스",
+                    "2024년 발표: 모델 접근 판매와 다른 사업 기반"
+                ]
+            ],
+            "bottom": "무엇을 무료·개방형으로 제공하는지와, 어디에서 가치를 얻는지를 함께 봅니다.",
+            "note": "Google의 통합 구성과 Meta의 2024년 Llama 공개 전략 설명을 비교합니다. Meta 사례는 당시 회사가 제시한 전략적 논리이며 모든 미래 모델의 공개 정책을 뜻하지 않습니다. 여러 층의 수익과 비용이 연결되면 단일 제품의 가격만으로 전략을 설명하기 어렵습니다. 통합 자체가 자동적인 승리를 보장하지는 않습니다.",
+            "sources": [
+                [
+                    "Google · Cloud Next 2025",
+                    "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/google-cloud-next-2025-sundar-pichai-keynote/"
+                ],
+                [
+                    "Meta · 공개 전략 / 2024.07",
+                    "https://about.fb.com/news/2024/07/open-source-ai-is-the-path-forward/amp/"
+                ]
+            ],
+            "rail": [
+                0,
+                1,
+                2,
+                3
+            ]
+        },
+        {
+            "title": "서비스의 경쟁력은 모델 위에 무엇을 더하고,",
+            "accent": "고객이 왜 계속 쓰는지에 달려 있습니다.",
+            "kind": "flow",
+            "items": [
+                [
+                    "업무 맥락",
+                    "접근 가능한 자료\n기존 시스템·권한"
+                ],
+                [
+                    "업무 수행",
+                    "관련 정보를 찾아\n행동과 검증을 연결"
+                ],
+                [
+                    "고객의 결과",
+                    "실제 품질·편의\n지속적으로 쓰는 이유"
+                ]
+            ],
+            "bottom": "데이터를 보유한 사실만으로는 부족합니다. 더 좋은 결과로 연결되어야 합니다.",
+            "note": "Microsoft Work IQ는 업무 데이터와 맥락, 도구, 작업 공간을 권한 구조 안에서 연결하는 사례입니다. 이를 근거로 모델 바깥의 업무 연결층이 존재함을 보여줍니다. 이러한 구성이 경쟁 우위로 지속될지는 실제 결과, 고객 선택과 대안에 달려 있습니다. 서비스 회사의 방어력을 단순히 데이터 양이나 인터페이스 모양으로 판단하지 않습니다.",
+            "sources": [
+                [
+                    "Microsoft · Work IQ 구조",
+                    "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/work-iq"
+                ]
+            ],
+            "rail": [
+                3,
+                4
+            ]
+        },
+        {
+            "title": "한쪽의 비용이 내려가면,",
+            "accent": "다른 쪽의 기회와 경쟁 조건이 바뀝니다.",
+            "kind": "scenario",
+            "items": [
+                [
+                    "모델 공급자",
+                    "단위 가격·마진 압력?\n사용량 확대?"
+                ],
+                [
+                    "클라우드",
+                    "요청당 자원 감소?\n총연산 수요 증가?"
+                ],
+                [
+                    "서비스·고객",
+                    "새 업무의 경제성 개선?\n진입·가격 경쟁 확대?"
+                ]
+            ],
+            "bottom": "단위 비용이 내려가는 것과, 전체 지출이 줄어드는 것은 같은 일이 아닙니다.",
+            "note": "가정: 동일 품질을 제공하는 추론의 단위 비용이 내려갑니다. 이 가정 아래 각 단계의 반응을 함께 생각합니다. 가격 인하가 고객에게 전달되는 정도, 사용량 증가, 경쟁자의 진입에 따라 결과가 달라집니다. 그림은 예측이나 확정된 실적이 아니라 조건부 시나리오입니다. 승자를 단정하기보다 무엇을 추가로 확인해야 할지 묻습니다.",
+            "sources": [],
+            "rail": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "tag": "가정 · 동일 품질의 추론 단위 비용 하락",
+            "under": "단위 비용 × 사용량 → 총비용"
+        },
+        {
+            "title": "AI 뉴스는 “무엇이 바뀌었고,",
+            "accent": "누구의 대안이 늘었는가”로 읽습니다.",
+            "kind": "news",
+            "items": [
+                [
+                    "확인된 변화",
+                    "OpenAI의 다른 클라우드 공급 가능"
+                ],
+                [
+                    "직접적 의미",
+                    "공급 경로의 선택지가 확대"
+                ],
+                [
+                    "조건부 영향",
+                    "클라우드 간 협상 조건에 영향 가능"
+                ],
+                [
+                    "더 확인할 것",
+                    "실제 계약·이전 비용·사용량 배분"
+                ]
+            ],
+            "bottom": "발표된 사실 → 직접적 의미 → 조건부 해석 → 추가 확인을 구분합니다.",
+            "note": "앞에서 읽은 Microsoft–OpenAI 계약 변경 발표를 다시 사용합니다. 단순히 어느 회사에 호재인가를 묻기 전에 어떤 조항이 바뀌었는지 확인합니다. 선택지가 늘었다고 실제 이전이 완료되거나 가격이 내려갔다고 말할 수는 없습니다. 수강생에게 마지막 줄에서 어떤 증거를 확인하겠는지 질문하며 읽는 방식을 정리합니다.",
+            "sources": [
+                [
+                    "Microsoft · 계약 변경 / 2026.04.27",
+                    "https://blogs.microsoft.com/blog/2026/04/27/the-next-phase-of-the-microsoft-openai-partnership/"
+                ]
+            ],
+            "rail": [
+                1,
+                2
+            ],
+            "under": "함께 다시 읽기 · Microsoft–OpenAI 계약 변경"
+        },
+        {
+            "title": "산업의 변화를 이해하면,",
+            "accent": "내 AI 활용도 더 근거 있게 바꿀 수 있습니다.",
+            "kind": "personal",
+            "items": [
+                [
+                    "도구를 바꿀까?",
+                    "품질 차이와 전환 부담을 비교"
+                ],
+                [
+                    "더 큰 일을 맡길까?",
+                    "완료 품질과 내 개입 시간을 확인"
+                ],
+                [
+                    "무엇을 쌓아둘까?",
+                    "업무 자료·기준·검증된 작업 방식"
+                ]
+            ],
+            "bottom": "도구 이해 → 업무 설계 → 활용 범위 확장 → 변화의 의미를 해석하기.",
+            "note": "앞선 세 주와 연결합니다. 좋은 도구를 알아보고 업무 루프를 설계하고 어려운 일을 맡겨본 경험을, 이제 산업 이해로 보강합니다. 새 도구가 나왔다고 모두 바꾸거나 익숙하다는 이유로 유지하는 대신 자신의 과업으로 판단합니다. 내게 필요한 지식은 선택과 적용을 바꾸는 지식입니다.",
+            "sources": [],
+            "label": "BACK TO YOUR WORK"
+        },
+        {
+            "title": "새로운 정보를 접하고,",
+            "accent": "기존 판단을 계속 갱신합니다.",
+            "kind": "closing",
+            "items": [
+                [
+                    "변화를 이해한다",
+                    "무엇이 실제로 달라졌는가"
+                ],
+                [
+                    "내 일에서 확인한다",
+                    "무엇을 더 잘할 수 있는가"
+                ],
+                [
+                    "경험을 공유한다",
+                    "다음 판단의 근거로 남긴다"
+                ]
+            ],
+            "bottom": "CREAI+IT EDU · 이해와 활용을 연결하며, 더 큰 가능성을 만들어가는 사람.",
+            "note": "4주의 교육은 모든 최신 정보를 외우는 과정이 아닙니다. 새로운 정보를 이해하고 자기 일에 적용하며 결과를 바탕으로 판단을 갱신할 기반을 만드는 과정입니다. 이후 커뮤니티에서는 발표의 요약만 교환하기보다 서로의 적용 경험과 근거를 함께 검토합니다. 모델과 산업이 변해도 계속 배우는 사람이 되는 방향으로 마무리합니다.",
+            "sources": [],
+            "dark": true,
+            "label": "FOUNDATION / KEEP LEARNING"
+        }
+    ];
+    const { SlideFrame, SlideTitle, BottomLine, Flow } = window;
+    const names = ['반도체·제조', '인프라·클라우드', '모델', '서비스·업무', '고객'];
+    const txt = s => s?.split('\n').map((x, i) => React.createElement(React.Fragment, { key: i },
+        i > 0 && React.createElement("br", null),
+        x));
+    function Rail({ active }) { return React.createElement("div", { className: "mapRail" }, names.map((n, i) => React.createElement(React.Fragment, { key: n },
+        i > 0 && React.createElement("span", null, "\u2192"),
+        React.createElement("b", { className: active.includes(i) ? 'active' : '' }, n)))); }
+    function Items({ s }) { return s.items.map(([a, b, c, d], i) => React.createElement("section", { key: a },
+        React.createElement("span", { className: "itemIndex" }, String(i + 1).padStart(2, '0')),
+        React.createElement("h2", null, txt(a)),
+        React.createElement("p", null, txt(b)),
+        c && React.createElement("small", null, txt(c)),
+        d && React.createElement("small", { className: "cost" }, txt(d)))); }
+    function Exhibit({ s }) {
+        const kind = s.kind;
+        if (kind === 'layers')
+            return React.createElement("div", { className: "layers4" },
+                React.createElement("div", null, s.items.map(([a, b], i) => React.createElement("section", { key: a },
+                    React.createElement("b", null, a),
+                    React.createElement("span", null, b)))),
+                React.createElement("aside", null, txt(s.side)));
+        if (kind === 'flow')
+            return React.createElement("div", null,
+                React.createElement(Flow, { items: s.items }),
+                s.under && React.createElement("div", { className: "under4" }, s.under));
+        if (kind === 'loop')
+            return React.createElement("div", { className: "loop4" },
+                React.createElement(Flow, { items: s.items }),
+                React.createElement("div", { className: "return4" }, "\u21B6 \uACB0\uACFC\uB97C \uB2E4\uC74C \uC785\uB825\uC73C\uB85C \u00B7 \uD544\uC694\uD55C \uB9CC\uD07C \uBC18\uBCF5"));
+        if (kind === 'map')
+            return React.createElement("div", { className: "map4" },
+                React.createElement("div", { className: "mapBoxes" }, s.items.map(([a, b], i) => React.createElement(React.Fragment, { key: a },
+                    i > 0 && React.createElement("span", null, "\u2192"),
+                    React.createElement("section", null,
+                        React.createElement("b", null, a),
+                        React.createElement("p", null, txt(b)))))),
+                React.createElement("div", { className: "mapSupports" },
+                    React.createElement("span", null, "\uC804\uB825 \u2192 \uC778\uD504\uB77C"),
+                    React.createElement("span", null, "\uB370\uC774\uD130 \u2192 \uD559\uC2B5 \u00B7 \uC5C5\uBB34 \uD65C\uC6A9")));
+        if (kind === 'ledger')
+            return React.createElement("div", { className: "ledger4" }, s.items.map(([a, b, c]) => React.createElement("section", { key: a },
+                React.createElement("b", null, a),
+                React.createElement("strong", null, b),
+                React.createElement("span", null, c))));
+        if (kind === 'relationship')
+            return React.createElement("div", null,
+                React.createElement("div", { className: "relation4" },
+                    React.createElement("section", null,
+                        React.createElement("h2", null, s.items[0][0]),
+                        React.createElement("p", null, s.items[0][1])),
+                    React.createElement("div", { className: "arrows4" },
+                        React.createElement("span", null, "\uC5F0\uC0B0 \u00B7 \uC720\uD1B5 \u2192"),
+                        React.createElement("span", null, "\u2190 \uC0AC\uC6A9\uB8CC \u00B7 \uC218\uC694")),
+                    React.createElement("section", null,
+                        React.createElement("h2", null, s.items[1][0]),
+                        React.createElement("p", null, s.items[1][1]))),
+                React.createElement("div", { className: "under4" }, s.under));
+        if (kind === 'news')
+            return React.createElement("div", null,
+                React.createElement("div", { className: "newsLabel" }, s.under),
+                React.createElement("div", { className: "news4" }, s.items.map(([a, b], i) => React.createElement("section", { key: a },
+                    React.createElement("strong", null, a),
+                    React.createElement("span", null, b)))));
+        return React.createElement("div", null,
+            React.createElement("div", { className: 'items4 ' + kind },
+                React.createElement(Items, { s: s })),
+            s.under && React.createElement("div", { className: "under4" }, s.under));
+    }
+    function Sources({ s }) { return React.createElement("div", { className: "sources4" }, s.sources.map(([label, url]) => React.createElement("a", { href: url, key: url, target: "_blank", rel: "noreferrer" },
+        label,
+        " \u2197"))); }
+    function Concept({ s }) {
+        return React.createElement(SlideFrame, { label: s.label },
+            React.createElement("header", { className: "conceptTitle" },
+                React.createElement("h1", null, s.title),
+                React.createElement("p", null, s.english)),
+            React.createElement("dl", { className: "conceptRows" },
+                React.createElement("div", null,
+                    React.createElement("dt", null, "\uC815\uC758"),
+                    React.createElement("dd", null, s.definition)),
+                React.createElement("div", null,
+                    React.createElement("dt", null, "\uBCF8\uC9C8\uC801 \uC758\uBBF8"),
+                    React.createElement("dd", null, s.meaning)),
+                React.createElement("div", { className: "mentalRow" },
+                    React.createElement("dt", null, "\uAE30\uC5B5\uD560 \uBA58\uD0C8\uBAA8\uB378"),
+                    React.createElement("dd", null, s.mental))),
+            React.createElement("p", { className: "conceptImplication" }, s.implication),
+            React.createElement(Sources, { s: s }));
+    }
+    window.OT_SLIDES = DATA.map(s => ({ title: (s.title + ' ' + s.accent).trim(), note: s.note, render: () => s.kind === 'cover' ? React.createElement(SlideFrame, { dark: true, label: s.label },
+            React.createElement("div", { className: "cover" },
+                React.createElement("span", { className: "eyebrow" }, "AI CONCEPTS & INDUSTRY"),
+                React.createElement("h1", null,
+                    s.title,
+                    React.createElement("br", null),
+                    React.createElement("em", null, s.accent)),
+                React.createElement("p", null, s.subtitle)),
+            React.createElement("div", { className: "coverFoot" }, s.bottom)) : s.kind === 'concept' ? React.createElement(Concept, { s: s }) : React.createElement(SlideFrame, { dark: s.dark, label: s.label || 'FOUNDATION / AI INDUSTRY' },
+            React.createElement(SlideTitle, null,
+                s.title,
+                React.createElement("br", null),
+                React.createElement("em", null, s.accent)),
+            s.rail && React.createElement(Rail, { active: s.rail }),
+            React.createElement("div", { className: 'body content4 ' + (s.rail ? 'withRail' : '') },
+                s.tag && React.createElement("div", { className: "tag4" }, s.tag),
+                React.createElement(Exhibit, { s: s })),
+            React.createElement(BottomLine, null, s.bottom),
+            React.createElement(Sources, { s: s })) }));
+})();

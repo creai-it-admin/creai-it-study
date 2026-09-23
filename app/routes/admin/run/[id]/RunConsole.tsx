@@ -18,7 +18,7 @@ export function RunConsole({id}:{id:string}){
   <SessionRecorder id={id} status={state.session.status} recordingState={state.session.recordingState} hasOwner={state.session.hasOwner} onChange={()=>void load()}/>
   <div className="flex flex-wrap gap-2">{state.session.hasDeck&&<a className="btn" href={`/routes/deck?session=${id}`} target="_blank" rel="noreferrer">HTML 장표 보기</a>}
    <Link className="btn" href={`/routes/sessions/${id}`}>세션 리포트</Link></div>
-  {error&&<p role="alert" className="text-sm text-red-700">{error}</p>}
+  {error&&<p role="alert" className="text-sm text-danger">{error}</p>}
 
  </div>;
 }

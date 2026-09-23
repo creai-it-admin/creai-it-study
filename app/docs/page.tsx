@@ -3,7 +3,7 @@ import Link from "next/link";
 import styles from "./docs.module.css";
 
 export const metadata: Metadata = {
-  title: "Docsboard · CREAI+IT Study",
+  title: "Docsboard · CREAI+IT Edu",
   description: "AI에 대한 지식적 이해와 활용에 대한 이해를 통해, AI 시대를 선도할 차별화된 인재로 성장할 기반을 만드는 4주 교육의 결정 기록",
   robots: { index: false, follow: false },
 };
@@ -53,7 +53,7 @@ export default function Docsboard() {
   return (
     <div className={styles.board}>
       <a href="#decision" className={styles.skip}>본문으로 이동</a>
-      <header className={styles.header}>
+      <header className={`chrome ${styles.header}`}>
         <Link href="/" className={styles.brand}>CREAI<span>+</span>IT <small>Docsboard</small></Link>
         <Link href="/routes">스터디로 돌아가기 ↗</Link>
       </header>
@@ -97,7 +97,7 @@ export default function Docsboard() {
             <div className={styles.legend}><span><i className={styles.knowledgeKey}/>지식적 이해</span><span><i className={styles.practiceKey}/>활용 이해·적용</span></div>
             <div className={styles.weeks}>
               {weeks.map((week, index) => (
-                <article key={week.number} className={styles.week}>
+                <article key={week.number} className={`card ${styles.week}`}>
                   <div className={styles.weekHeading}><span className={styles.weekNumber}>W{week.number}</span><div><h3>{week.title}</h3><p>{week.question}</p></div></div>
                   <div className={styles.ratio} aria-label={index === 3 ? "지식적 이해 80%, 활용 이해와 적용 20%" : "지식적 이해 20%, 활용 이해와 적용 80%"}>
                     <span style={{ flex: index === 3 ? 4 : 1 }}>지식 {index === 3 ? 80 : 20}%</span><span style={{ flex: index === 3 ? 1 : 4 }}>활용 {index === 3 ? 20 : 80}%</span>
@@ -141,7 +141,7 @@ export default function Docsboard() {
             <Link href="/docs/community" className="btn">커뮤니티 세부 운영안 읽기 ↗</Link>
           </section>
 
-          <footer className={styles.footer}>CREAI+IT Study · 교육의 의도와 핵심 내용을 기준으로 구체화합니다.<a href="#decision">위로 ↑</a></footer>
+          <footer className={styles.footer}>CREAI+IT Edu · 교육의 의도와 핵심 내용을 기준으로 구체화합니다.<a href="#decision">위로 ↑</a></footer>
         </main>
       </div>
     </div>

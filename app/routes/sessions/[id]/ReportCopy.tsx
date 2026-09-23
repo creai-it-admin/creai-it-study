@@ -19,8 +19,8 @@ export function ReportCopy({id}:{id:string}){
    <button className="btn shrink-0" disabled={state==='copying'} onClick={()=>void copy()}>{state==='copying'?'복사 중…':state==='copied'?'✓ HTML 복사 완료':'HTML 복사'}</button>
   </div>
   <p role="status" className="text-xs text-ink-2">{state==='copied'?'리포트 전체가 복사됐습니다. 원하는 곳에 붙여넣으세요.':state==='copying'?'리포트를 불러오고 있습니다.':''}</p>
-  {state==='error'&&<p role="alert" className="text-sm text-red-700">{error}</p>}
-  {state==='manual'&&<div className="rounded-lg border border-line p-3">
+  {state==='error'&&<p role="alert" className="text-sm text-danger">{error}</p>}
+  {state==='manual'&&<div className="inset p-3">
    <p role="status" className="mb-2 text-sm">브라우저가 자동 복사를 허용하지 않았습니다. 아래 내용을 선택한 뒤 ⌘C 또는 Ctrl+C로 복사해 주세요.</p>
    <label className="text-xs text-ink-2">복사할 HTML 원문<textarea readOnly value={html} onFocus={event=>event.currentTarget.select()} className="field mt-2 h-40 w-full font-mono text-xs"/></label>
   </div>}

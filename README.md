@@ -167,8 +167,11 @@ HTML 재업로드를 안내한다.
 Next.js App Router, TypeScript, Tailwind v4, Prisma 6 + Supabase Postgres,
 Auth.js Credentials provider, MediaRecorder, OpenAI API.
 
-색과 글꼴은 yonseicreaiit.com에서 가져왔다. 강조색 `#0ea5e9`, 본문 `#0f172a`,
-바탕 `#f8fafc`. 한글은 Pretendard, 영문은 Outfit.
+색과 글꼴은 yonseicreaiit.com에서 가져왔다. 강조색 `#0ea5e9`, 본문 `#0f172a`.
+한글은 Pretendard, 영문은 Outfit. 화면은 Daylight Glass 토큰(`app/globals.css`)을 따른다.
+옅은 하늘빛 바탕 위에 반투명 카드와 흐림 헤더를 두고, 화면에서는 `card`·`btn`·`field`·`pill`·`inset`과
+`text-danger`·`rounded-card` 같은 토큰 클래스만 쓴다. 투명도 줄이기 설정에서는 불투명 재질로 바뀐다.
+랜딩(`/`)은 `landing.css`의 자체 팔레트를 쓴다.
 
 ## 아직 없는 것
 

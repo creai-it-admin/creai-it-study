@@ -25,7 +25,7 @@ export default async function LoginPage({
         </div>
 
         {sp.consent ? (
-          <p className="mb-4 rounded-lg bg-accent-soft px-3 py-2 text-[13px] text-accent-strong">
+          <p className="mb-4 rounded-inner bg-accent-soft px-3 py-2 text-[13px] text-accent-strong">
             동의가 저장되지 않았습니다. 아래에서 다시 확인해 주세요.
           </p>
         ) : null}

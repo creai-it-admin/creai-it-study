@@ -1,0 +1,32 @@
+[
+  {
+    "slide": 1,
+    "overflow": [],
+    "footerGap": null,
+    "fontLoaded": true
+  },
+  {
+    "slide": 2,
+    "overflow": [],
+    "footerGap": 17.140625,
+    "fontLoaded": true
+  },
+  {
+    "slide": 3,
+    "overflow": [],
+    "footerGap": 19.625,
+    "fontLoaded": true
+  },
+  {
+    "slide": 4,
+    "overflow": [],
+    "footerGap": 43.171875,
+    "fontLoaded": true
+  },
+  {
+    "slide": 5,
+    "overflow": [],
+    "footerGap": 24.390625,
+    "fontLoaded": true
+  }
+]

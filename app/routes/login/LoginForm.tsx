@@ -4,8 +4,8 @@ import { useState, type FormEvent } from 'react';
 import { signIn } from 'next-auth/react';
 
 export function Consent({agreed,onChange}:{agreed:boolean;onChange:(value:boolean)=>void}) {
-  return <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-line p-3">
-    <input type="checkbox" checked={agreed} onChange={e=>onChange(e.target.checked)} className="mt-[3px] h-4 w-4 accent-[var(--accent)]" />
+  return <label className="inset flex cursor-pointer items-start gap-3 p-3">
+    <input type="checkbox" checked={agreed} onChange={e=>onChange(e.target.checked)} className="mt-[3px] h-4 w-4" />
     <span className="text-[13.5px] leading-relaxed">대화 기록 저장 및 운영진 검토 목적의 문서화에 동의합니다.</span>
   </label>;
 }
@@ -60,7 +60,7 @@ export function LoginForm({consentRequired=false}:{consentRequired?:boolean}) {
       <label className="text-sm">비밀번호<input key={mode} className="field mt-1" name="password" type="password" autoComplete={mode==='signup'?'new-password':'current-password'} required minLength={10} maxLength={128} disabled={busy}/>{mode==='signup'&&<span className="mt-1 block text-xs text-ink-2">10~128자. 기억하기 쉬운 긴 문장도 사용할 수 있습니다.</span>}</label>
       {mode==='signup'&&<label className="text-sm">비밀번호 확인<input className="field mt-1" name="confirmation" type="password" autoComplete="new-password" required minLength={10} maxLength={128} disabled={busy}/></label>}
       {needsConsent&&<><Consent agreed={agreed} onChange={setAgreed}/><ConsentDetails/></>}
-      {error&&<p role="alert" className="text-sm text-red-700">{error}</p>}
+      {error&&<p role="alert" className="text-sm text-danger">{error}</p>}
       {notice&&<p role="status" className="text-sm text-accent-strong">{notice}</p>}
       <button className="btn btn-primary w-full" disabled={busy||(needsConsent&&!agreed)}>{busy?'처리 중…':mode==='signup'?'계정 만들기':'로그인'}</button>
     </form>

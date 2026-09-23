@@ -15,7 +15,7 @@ export function StudyForm(){
  return <form onSubmit={submit} className="card flex flex-col gap-5 p-6">
   <label className="text-sm font-medium">스터디 이름<input className="field mt-2" name="name" placeholder="예: 1기 스터디" maxLength={120} required disabled={busy}/></label>
   <div className="grid gap-4 sm:grid-cols-2">{[1,2,3,4].map(week=><label className="text-sm font-medium" key={week}>{week}주차 날짜<input className="field mt-2" name={`week${week}`} type="date" required disabled={busy}/></label>)}</div>
-  {error&&<p role="alert" className="text-sm text-red-700">{error}</p>}
+  {error&&<p role="alert" className="text-sm text-danger">{error}</p>}
   <button className="btn btn-primary" disabled={busy}>{busy?'만드는 중…':'스터디 만들기'}</button>
  </form>;
 }

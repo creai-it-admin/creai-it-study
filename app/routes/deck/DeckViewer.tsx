@@ -4,6 +4,6 @@ export function DeckViewer({src,title}:{src:string;title:string}){
  const frame=useRef<HTMLIFrameElement>(null);
  return <div className="flex flex-col gap-3">
   <div className="flex justify-end"><button className="btn" onClick={()=>void frame.current?.requestFullscreen().catch(()=>{})}>전체 화면</button></div>
-  <iframe ref={frame} title={title} src={src} sandbox="allow-scripts" allow="fullscreen" referrerPolicy="no-referrer" className="h-[75dvh] min-h-[420px] w-full rounded-lg border border-line bg-white" />
+  <iframe ref={frame} title={title} src={src} sandbox="allow-scripts" allow="fullscreen" referrerPolicy="no-referrer" className="h-[75dvh] min-h-[420px] w-full rounded-inner border border-line bg-paper" />
  </div>;
 }

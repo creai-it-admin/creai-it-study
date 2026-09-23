@@ -113,7 +113,7 @@ export function InclassForm() {
   const label =
     save === "saving" ? "저장 중" : save === "saved" ? "저장됨" : save === "failed" ? "저장 안 됨" : "";
   const labelColor =
-    save === "failed" ? "text-[color:var(--warn)]" : save === "saved" ? "text-[color:var(--ok)]" : "text-ink-3";
+    save === "failed" ? "text-warn" : save === "saved" ? "text-ok" : "text-ink-3";
 
   if (!loaded) return <div className="card p-10 text-center text-[13px] text-ink-3">불러오는 중</div>;
 
@@ -136,8 +136,8 @@ export function InclassForm() {
         <span className={`text-[12.5px] ${labelColor}`}>{label}</span>
       </div>
 
-      {saveError ? <p role="alert" className="text-[13px] text-[color:var(--warn)]">{saveError}</p> : null}
-      {localFailed ? <p role="alert" className="text-[13px] text-[color:var(--warn)]">이 브라우저에 초안을 보관할 수 없습니다. 저장됨을 확인하기 전에는 새로고침하지 마세요.</p> : null}
+      {saveError ? <p role="alert" className="text-[13px] text-warn">{saveError}</p> : null}
+      {localFailed ? <p role="alert" className="text-[13px] text-warn">이 브라우저에 초안을 보관할 수 없습니다. 저장됨을 확인하기 전에는 새로고침하지 마세요.</p> : null}
       <div className="card p-5">
         <p className="text-[15px] leading-relaxed font-medium">{topic}</p>
       </div>

@@ -16,7 +16,7 @@ export async function POST(req:Request,ctx:{params:Promise<{id:string}>}){
  try{await confirmDeck(path);}catch(e){return NextResponse.json({error:(e as Error).message},{status:400});}
  try{
   const material=await prisma.$transaction(async tx=>{
-   const saved=existing?await tx.sessionMaterial.update({where:{id:existing.id},data:{path,title:title.trim()}}):await tx.sessionMaterial.upsert({where:{path},create:{sessionId:id,kind,title:title.trim(),path},update:{}});
+   const saved=existing?await tx.sessionMaterial.update({where:{id:existing.id},data:{path,title:title.trim(),sourceVersionId:null}}):await tx.sessionMaterial.upsert({where:{path},create:{sessionId:id,kind,title:title.trim(),path},update:{}});
    // Keep legacy education links working during rolling deployments.
    if(kind==='education'&&(!session.deckPath||existing?.path===session.deckPath))await tx.studySession.update({where:{id},data:{deckPath:path,deckUrl:null}});
    return saved;

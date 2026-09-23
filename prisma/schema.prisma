@@ -100,6 +100,8 @@ model VerificationToken {
 // --- 스터디 도메인 ---
 
 model Study {
+  otSourceVersionId String?
+  otSourceVersion LibraryVersion? @relation(fields:[otSourceVersionId], references:[id], onDelete:Restrict)
   otPath    String?
   id        String @id @default(cuid())
   name      String
@@ -164,6 +166,8 @@ enum MaterialKind {
 }
 
 model SessionMaterial {
+  sourceVersionId String?
+  sourceVersion LibraryVersion? @relation(fields:[sourceVersionId], references:[id], onDelete:Restrict)
   id        String @id @default(cuid())
   sessionId String
   kind      MaterialKind
@@ -289,4 +293,44 @@ model ActivityFeedback {
   author User @relation(fields:[authorId], references:[id], onDelete:Cascade)
   @@unique([submissionId, authorId])
   @@index([authorId])
+}
+
+// Prospective cohort participants; independent from registered app users.
+model EducationApplication {
+  id             String   @id // Client UUID makes retries idempotent.
+  name           String
+  birthDate      DateTime @db.Date
+  phone          String
+  referral       String
+  availableFrom  DateTime @db.Date
+  timeBlocks     String[]
+  consentedAt    DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt, id])
+  @@index([availableFrom])
+}
+
+// Shared teaching assets. Published versions are append-only; cohorts receive snapshots.
+model LibraryAsset {
+  id String @id @default(uuid())
+  title String
+  weekNo Int // 0 = OT, 1–4 = Foundation weeks
+  versionCount Int @default(0)
+  createdAt DateTime @default(now())
+  versions LibraryVersion[]
+  @@index([weekNo, createdAt])
+}
+
+model LibraryVersion {
+  id String @id @default(uuid())
+  assetId String
+  number Int
+  path String @unique
+  note String @default("")
+  createdAt DateTime @default(now())
+  asset LibraryAsset @relation(fields:[assetId], references:[id], onDelete:Restrict)
+  studies Study[]
+  materials SessionMaterial[]
+  @@unique([assetId, number])
 }

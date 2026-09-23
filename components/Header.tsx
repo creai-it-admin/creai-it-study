@@ -24,32 +24,25 @@ export async function Header({ right }: { right?: React.ReactNode } = {}) {
   // 주소를 직접 치게 두면 그 요구가 사실상 없는 것과 같다.
   const running = session?.user ? await getRunningSession(session.user) : null;
   const showDeck = !!running?.deckPath||!!running?._count.materials;
+  const nav = "rounded-control px-2.5 py-1.5 transition-colors hover:bg-ink/5 hover:text-ink";
 
   return (
-    <header className="border-b border-line bg-surface">
+    <header className="chrome">
       <div className="mx-auto flex min-h-14 flex-wrap gap-3 py-3 max-w-5xl items-center justify-between px-5">
         <Link href="/routes">
           <Logo sub="AI 스터디" />
         </Link>
-        <div className="flex flex-wrap items-center gap-3 text-[13px] text-ink-2">
-          {name ? <Link href="/routes/mine" className="hover:text-ink">내 활동 기록</Link> : null}
-          {isAdmin ? <Link href="/routes/admin" className="hover:text-ink">스터디 관리</Link> : null}
-          {isAdmin ? <Link href="/docs" className="hover:text-ink">Docsboard</Link> : null}
-          {running ? <><Link href={`/routes/sessions/${running.id}/activity`} className="hover:text-ink">인클래스</Link></> : null}
-          {showDeck ? (
-            <Link href="/routes/deck" className="hover:text-ink">
-              장표
-            </Link>
-          ) : null}
+        <div className="flex flex-wrap items-center gap-1 text-[13px] text-ink-2">
+          {name ? <Link href="/routes/mine" className={nav}>내 활동 기록</Link> : null}
+          {isAdmin ? <Link href="/routes/admin" className={nav}>스터디 관리</Link> : null}
+          {isAdmin ? <Link href="/routes/admin/applications" className={nav}>참가 신청자</Link> : null}
+          {isAdmin ? <Link href="/routes/admin/library" className={nav}>공통 자료실</Link> : null}
+          {isAdmin ? <Link href="/docs" className={nav}>Docsboard</Link> : null}
+          {running ? <Link href={`/routes/sessions/${running.id}/activity`} className={nav}>인클래스</Link> : null}
+          {showDeck ? <Link href="/routes/deck" className={nav}>장표</Link> : null}
           {name ? (
-            <span className="flex items-center gap-2">
-              <span
-                className={
-                  isAdmin
-                    ? "rounded-md bg-accent-soft px-2 py-1 text-[12px] font-medium text-accent-strong"
-                    : "rounded-md bg-[color:var(--bg)] px-2 py-1 text-[12px] text-ink-2"
-                }
-              >
+            <span className="ml-2 mr-1 flex items-center gap-2">
+              <span className={isAdmin ? "pill px-2 text-[12px] font-medium" : "pill pill-muted px-2 text-[12px]"}>
                 {isAdmin ? "운영진" : "참가자"}
               </span>
               <span className="text-ink-3">{name}</span>

@@ -32,7 +32,7 @@ export function PasswordForm() {
     <label className="text-sm">새 비밀번호<input className="field mt-1" type="password" name="password" autoComplete="new-password" required minLength={10} maxLength={128} disabled={busy}/><span className="mt-1 block text-xs text-ink-2">10~128자로 입력해 주세요.</span></label>
     <label className="text-sm">비밀번호 확인<input className="field mt-1" type="password" name="confirmation" autoComplete="new-password" required minLength={10} maxLength={128} disabled={busy}/></label>
     <Consent agreed={agreed} onChange={setAgreed}/>
-    {error&&<p role="alert" className="text-sm text-red-700">{error}</p>}
+    {error&&<p role="alert" className="text-sm text-danger">{error}</p>}
     <button className="btn btn-primary" disabled={busy||!agreed}>{busy?'저장 중…':'비밀번호 저장'}</button>
     <Link href="/routes/login" className="text-center text-sm text-ink-2">로그인으로 돌아가기</Link>
   </form>;

@@ -8,6 +8,8 @@ export default async function AdminHome(){
  const studies=await prisma.study.findMany({orderBy:{createdAt:'desc'},include:{sessions:{orderBy:{weekNo:'asc'},select:{weekNo:true,date:true,status:true}}}});
  return <main className="mx-auto max-w-4xl px-5 py-8">
   <div className="mb-6 flex flex-wrap items-center justify-between gap-4"><div><h1 className="text-xl font-semibold">스터디 관리</h1><p className="mt-2 text-sm text-ink-2">스터디를 선택해 주차별 자료와 세션을 관리하세요.</p></div><Link className="btn btn-primary" href="/routes/admin/studies/new">새 스터디 만들기</Link></div>
+  <Link className="card mb-4 flex items-center justify-between p-5 hover:border-accent" href="/routes/admin/library"><span><strong>공통 자료실</strong><span className="mt-1 block text-sm text-ink-2">Foundation OT · 1–4주차 원본과 버전 관리</span></span><span aria-hidden="true">→</span></Link>
+  <Link className="card mb-6 flex items-center justify-between p-5 hover:border-accent" href="/routes/admin/applications"><span><strong>참가 신청자</strong><span className="mt-1 block text-sm text-ink-2">신청 정보와 시작 가능일 · 토요일·일요일 시간대 확인</span></span><span aria-hidden="true">→</span></Link>
   <div className="grid gap-4 sm:grid-cols-2">{studies.map(study=>{
    const weeks=study.sessions.filter(s=>s.weekNo>0),closed=weeks.filter(s=>s.status==='closed').length;
    const running=study.sessions.find(s=>s.status==='running');

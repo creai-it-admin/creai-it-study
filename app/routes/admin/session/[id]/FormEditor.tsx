@@ -76,6 +76,6 @@ export function FormEditor({ sessionId, initialTopic, initialFields, initialVers
       <span className="text-[13px] text-ink-2">{dirty ? "저장하지 않은 변경 사항이 있습니다" : `질문 ${fields.length}개`}</span>
     </div> : null}
     {fields.length === 0 ? <p className="text-[13px] text-ink-2">세션을 시작하려면 질문이 하나 이상 필요합니다.</p> : null}
-    {message ? <p role={error ? "alert" : "status"} className={`text-[14px] ${error ? "text-[color:var(--warn)]" : "text-[color:var(--ok)]"}`}>{message}</p> : null}
+    {message ? <p role={error ? "alert" : "status"} className={`text-[14px] ${error ? "text-warn" : "text-ok"}`}>{message}</p> : null}
   </div>;
 }
