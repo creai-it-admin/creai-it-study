@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { StudyGuide } from '@/components/landing/StudyGuide';
 import { ProjectExamples } from '@/components/landing/ProjectExamples';
+import { EnrollmentOffer } from '@/components/landing/EnrollmentOffer';
 import { LearningExchange, UnderstandingArt } from '@/components/landing/LearningExchange';
 import './landing.css';
 
@@ -40,6 +41,7 @@ export default function Landing() {
             <p className="eyebrow">CREAI+IT EDU / LEARN. APPLY. EVOLVE.</p>
             <h1 id="hero-title">AI 시대를<br/><em>이끄는 사람들.</em></h1>
             <p className="track-hero-description">기술의 변화를 읽고, 최전선의 지능을 자신의 역량으로.<br/>함께 배우고 도전하며, 새로운 가능성을 만드는<br/>사람들로 성장합니다.</p>
+            <EnrollmentOffer dark />
             <Link href="/apply" className="landing-button accent">참가 신청하러 가기 <span>↗</span></Link>
             <p className="track-hero-caption">4주간의 교육, 그리고 계속 배우는 커뮤니티.</p>
           </div>
