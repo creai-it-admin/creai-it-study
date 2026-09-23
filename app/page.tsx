@@ -63,7 +63,7 @@ export default function Landing() {
 
       <section id="curriculum" className="curriculum-section">
         <div className="landing-wrap curriculum-layout">
-          <div className="curriculum-intro"><span className="eyebrow">01 / FOUNDATION EDUCATION</span><h2>AI 시대,<br/><em>압도적인 인재로.</em></h2><p className="foundation-ambition">그 도약의 기반을 다지는 4주.</p><p>기술의 변화를 읽는 깊이와 최전선의 AI를 자기 일에 연결하는 힘. 두 기반을 함께 세워, AI가 발전할수록 더 큰 일을 해내는 사람으로 성장하고자 합니다.</p><p className="foundation-bridge">도구를 이해하고, 일할 구조를 설계하고, 어려운 위임에서 배우고, 기술과 산업을 읽는 것. 네 주의 교육은 이 목표를 향합니다.</p><div className="curriculum-facts">4주 · 주 1회 · 회당 2시간 · 소규모 교육</div>
+          <div className="curriculum-intro"><span className="eyebrow">01 / FOUNDATION EDUCATION</span><h2>AI 시대,<br/><em>압도적인 인재로.</em></h2><p className="foundation-ambition">그 도약의 기반을 다지는 4주.</p><p>기술의 변화를 읽는 깊이와 최전선의 AI를 자기 일에 연결하는 힘. 두 기반을 함께 세워, AI가 발전할수록 더 큰 일을 해내는 사람으로 성장하고자 합니다.</p><p className="foundation-bridge">AI를 이해하고, 더 큰 일을 맡기는 방법을 배웁니다. 마지막 2주에는 나만의 프로젝트를 진행하며, 튜터의 피드백을 받아 배운 방법을 실제 결과물로 연결합니다.</p><div className="curriculum-facts">4주 · 주 1회 · 회당 2시간 · 소규모 교육</div>
             <div className="curriculum-rhythm"><div><span><b>1–3주</b> 활용 중심</span><i aria-hidden="true"/><small>지식 20% · 활용 80%</small></div><div><span><b>4주</b> 기술·산업 이해 중심</span><i aria-hidden="true"/><small>지식 80% · 활용 20%</small></div></div>
           </div>
           <div className="curriculum-list">{curriculum.map(item => <article className="curriculum-row" key={item.week}>
@@ -71,6 +71,19 @@ export default function Landing() {
             <div><p className="curriculum-question">{item.question}</p><h3>{item.title}</h3><p className="curriculum-body">{item.body}</p><details><summary>다루는 내용 <span aria-hidden="true">＋</span></summary><p>{item.detail}</p></details></div>
           </article>)}</div>
         </div>
+        <section className="landing-wrap foundation-project" aria-labelledby="project-title">
+          <div className="project-heading"><div><span className="eyebrow">YOUR OWN PROJECT / WEEK 03–04</span><h3 id="project-title">혼자서는 엄두가 나지 않았던 일,<br/><em>이번에는 AI와 함께.</em></h3></div><p>직접 쓰고 싶은 서비스, 반복 업무를 줄이는 도구, 리서치를 돕는 시스템.<br/>각자의 목표에 맞춰 범위를 정하고, 튜터의 피드백으로 막힌 지점을 풀며 완성해갑니다.</p></div>
+          <div className="project-timeline" aria-label="1주 도구 이해, 2주 업무 설계, 3주 활용 범위 확장, 4주 기술·산업 이해. 개인 프로젝트와 튜터링은 3–4주차에 병행합니다.">
+            <ol>{['도구 이해', '업무 설계', '활용 범위 확장', '기술·산업 이해'].map((title, i) => <li key={title}><span>0{i+1} WEEK</span><strong>{title}</strong></li>)}</ol>
+            <div className="project-span"><span>3–4주차 병행</span><strong>나만의 프로젝트 · 튜터링</strong></div>
+          </div>
+          <ol className="project-steps">
+            <li><span>01</span><div><h4>주제와 범위 정하기</h4><p>내게 필요한 결과물과 완료 기준을 정하고, 2주 안에 시도할 범위로 조정합니다.</p></div></li>
+            <li><span>02</span><div><h4>만들며 피드백 받기</h4><p>AI에게 맡겨보고, 막힌 결과와 지시를 함께 살피며 다음 시도를 바꿉니다.</p></div></li>
+            <li><span>03</span><div><h4>결과와 배운 점 공유하기</h4><p>만든 것을 보여주고, 어디까지 맡겼고 어디서 직접 판단했는지 나눕니다.</p></div></li>
+          </ol>
+          <div className="project-foot"><p>4주 교육 안에서 진행합니다. 주제는 배운 뒤 함께 구체화합니다.</p><Link href="/apply" className="text-link">내 프로젝트로 시작하기 ↗</Link></div>
+        </section>
         <div className="landing-wrap foundation-result"><span>압도적인 성장의 출발점</span><p>변화를 읽는 지식.<br/>AI와 일을 완성하는 활용력.<br/><strong>스스로 한계를 넓혀가는 학습의 기준.</strong></p><a href="#community" aria-label="교육 이후의 커뮤니티 보기">↓</a></div>
       </section>
 
