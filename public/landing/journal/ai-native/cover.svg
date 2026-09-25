@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+<title id="title">AI Native — 업무 전체를 관통하는 지능</title><desc id="desc">목표 설정부터 조사, 제작, 검토까지 하나로 이어진 업무 흐름에 AI의 지능이 연결된다.</desc>
+<defs><linearGradient id="paper" x2="1" y2="1"><stop stop-color="#e9f1f5"/><stop offset="1" stop-color="#d1e5ee"/></linearGradient><linearGradient id="line"><stop stop-color="#3aa0cb"/><stop offset="1" stop-color="#b6e5f6"/></linearGradient></defs>
+<rect width="1200" height="675" fill="#102b48"/>
+<path d="M650 0H1200V675H520Z" fill="#163b58"/>
+<g fill="none" stroke="#274962"><path d="M60 130H1140M60 545H1140"/><path d="M650 130V545M825 130V545M1000 130V545"/></g>
+<g font-family="Arial, sans-serif"><text x="65" y="86" fill="#adcfde" font-size="17" letter-spacing="3">CREAI+IT JOURNAL / 001</text>
+<text x="60" y="274" fill="#f2f7fa" font-size="118" font-weight="700" letter-spacing="-6">AI</text><text x="60" y="390" fill="#f2f7fa" font-size="118" font-weight="700" letter-spacing="-6">NATIVE.</text>
+<text x="65" y="464" fill="#99d9f0" font-size="21">Intelligence across the entire workflow.</text>
+<g fill="none" stroke="url(#line)" stroke-width="3"><path d="M615 337C700 337 670 193 745 193H1075"/><path d="M615 337C720 337 675 289 745 289H1045"/><path d="M615 337C720 337 675 385 745 385H1015"/><path d="M615 337C700 337 670 481 745 481H985"/></g>
+<circle cx="615" cy="337" r="27" fill="#88d8f2"/><circle cx="615" cy="337" r="43" fill="none" stroke="#70c0de" stroke-opacity=".4"/>
+<g fill="url(#paper)"><rect x="745" y="164" width="325" height="58" rx="4"/><rect x="745" y="260" width="295" height="58" rx="4"/><rect x="745" y="356" width="265" height="58" rx="4"/><rect x="745" y="452" width="235" height="58" rx="4"/></g>
+<g fill="#153951" font-size="20"><text x="768" y="202">01  /  DEFINE</text><text x="768" y="298">02  /  EXPLORE</text><text x="768" y="394">03  /  BUILD</text><text x="768" y="490">04  /  REFINE</text></g>
+<text x="65" y="608" fill="#f2f7fa" font-size="17" letter-spacing="2">LEARN. APPLY. EVOLVE.</text><text x="1135" y="608" fill="#adcfde" text-anchor="end" font-size="17">CREAI+IT EDU</text></g></svg>

@@ -1,0 +1,29 @@
+{
+  "film": "CREAI+IT EDU · Foundation intro",
+  "composition": "FoundationIntro · 1920×1080 · 60 fps · 63.55 s",
+  "sources": {
+    "visuals": "authored motion graphics (Remotion 4.0.528); no captured or generated footage",
+    "copy": "docs/education/ot/plan.md, OT v2 slides, landing (app/page.tsx) and /apply copy",
+    "fonts": {
+      "Pretendard": "npm pretendard@1.3.9, SIL Open Font License 1.1",
+      "Outfit": "Google Fonts via @remotion/google-fonts, SIL Open Font License 1.1"
+    }
+  },
+  "audio": {
+    "voiceover": "none",
+    "music": {
+      "title": "Foundation intro score",
+      "source": "original, synthesized by scripts/score.py (numpy/scipy); no samples",
+      "license": "project-owned original",
+      "file": "public/audio/score.wav"
+    },
+    "sfx": "original, synthesized by scripts/score.py",
+    "loudness": "-16 LUFS integrated, true peak below -1.5 dBTP (two-pass EBU R128, linear gain)",
+    "native_clip_audio": "not applicable"
+  },
+  "exports": {
+    "ot_master": "out/creaiit-foundation-intro-1080p60.mp4",
+    "web": "out/creaiit-foundation-intro-web.mp4 (1080p30, faststart)",
+    "poster": "out/creaiit-foundation-intro-poster.jpg"
+  }
+}

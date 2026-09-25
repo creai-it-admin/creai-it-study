@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 820" role="img" aria-labelledby="title desc">
+<title id="title">업무의 시작부터 완성까지 AI와 함께</title><desc id="desc">목표를 논의하고, 조사하고, 만들고, 검토하는 모든 단계에서 AI를 활용한다. 사람은 방향을 정하고 중요한 판단을 내리며 결과에 책임진다.</desc>
+<rect width="740" height="820" rx="8" fill="#e8eff3"/>
+<g font-family="Pretendard, Apple SD Gothic Neo, sans-serif">
+<text x="42" y="58" fill="#397391" font-size="16" letter-spacing="2">AI THROUGHOUT THE WORK</text>
+<text x="42" y="108" fill="#142b48" font-size="32" font-weight="700">처음부터 끝까지, 함께 사고하기.</text>
+<path d="M76 195V615" stroke="#7399ad" stroke-width="2"/>
+<rect x="597" y="162" width="101" height="483" rx="50" fill="#153952"/>
+<text x="648" y="383" text-anchor="middle" fill="#d1effa" font-size="30" font-weight="700">AI</text><text x="648" y="418" text-anchor="middle" fill="#d1effa" font-size="22">지능</text>
+<g stroke="#609bb6" stroke-width="2"><path d="M536 203H597M536 333H597M536 463H597M536 593H597"/></g>
+<g fill="#f9fcfd"><rect x="118" y="162" width="418" height="94" rx="5"/><rect x="118" y="292" width="418" height="94" rx="5"/><rect x="118" y="422" width="418" height="94" rx="5"/><rect x="118" y="552" width="418" height="94" rx="5"/></g>
+<g fill="#173b52"><circle cx="76" cy="203" r="24"/><circle cx="76" cy="333" r="24"/><circle cx="76" cy="463" r="24"/><circle cx="76" cy="593" r="24"/></g>
+<g fill="white" text-anchor="middle" font-size="20"><text x="76" y="210">1</text><text x="76" y="340">2</text><text x="76" y="470">3</text><text x="76" y="600">4</text></g>
+<g fill="#142b48" font-size="27" font-weight="700"><text x="140" y="201">무엇을 할지 논의하고</text><text x="140" y="331">필요한 것을 조사하고</text><text x="140" y="461">실제 결과물을 만들고</text><text x="140" y="591">검토하며 다시 다듬고</text></g>
+<g fill="#596e7e" font-size="21"><text x="140" y="234">문제 · 목표 · 완료 기준</text><text x="140" y="364">시장 · 고객 · 근거 확인</text><text x="140" y="494">분석 · 문서 · 데모</text><text x="140" y="624">평가 · 수정 · 재검증</text></g>
+<path d="M42 691H698" stroke="#b1c6d0"/>
+<text x="42" y="741" fill="#142b48" font-size="25" font-weight="600">사람은 방향을 정하고, 판단하고, 책임집니다.</text>
+<text x="42" y="779" fill="#596e7e" font-size="22">그 판단을 더 정교하게 만드는 데에도 AI를 활용합니다.</text>
+</g></svg>

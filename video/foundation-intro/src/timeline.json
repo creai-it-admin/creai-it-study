@@ -1,0 +1,153 @@
+{
+  "fps": 60,
+  "end": 63.55,
+  "hook": {
+    "streamIn": 0.2,
+    "dotIn": 0.35,
+    "line1In": 1.2,
+    "line1Out": 4.6,
+    "line2In": 4.95,
+    "line2Out": 8.35,
+    "pressure": [
+      5,
+      8
+    ],
+    "slow": [
+      8,
+      8.7
+    ],
+    "gather": [
+      8.35,
+      9.1
+    ],
+    "surge": [
+      9.1,
+      10.6
+    ]
+  },
+  "vision": {
+    "line1In": 10.35,
+    "line2In": 10.75,
+    "emphasis": 11.7,
+    "subIn": 14.4,
+    "out": 17.6
+  },
+  "ring": {
+    "descend": [
+      17.7,
+      18.8
+    ],
+    "split": [
+      18.8,
+      19.5
+    ],
+    "titleIn": 19.15,
+    "labelsIn": [
+      19.75,
+      20
+    ],
+    "arcTop": [
+      21.45,
+      22.55
+    ],
+    "arcTopLabel": 22.15,
+    "arcBottom": [
+      22.95,
+      24.05
+    ],
+    "arcBottomLabel": 23.65,
+    "loop": [
+      24.45,
+      26.45
+    ],
+    "out": [
+      26.85,
+      27.45
+    ]
+  },
+  "unroll": {
+    "roll": [
+      27.65,
+      30.25
+    ],
+    "extend": [
+      30.25,
+      32.15
+    ],
+    "variance": [
+      30.75,
+      32.55
+    ],
+    "headingIn": 29.75,
+    "headingOut": 32.45
+  },
+  "route": {
+    "depart": [
+      32.55,
+      36.75,
+      41.15,
+      45.95
+    ],
+    "arrive": [
+      33.35,
+      37.75,
+      42.15,
+      46.95
+    ]
+  },
+  "project": {
+    "branch": [
+      42.5,
+      44.15
+    ],
+    "labelIn": 43.05,
+    "marks": [
+      43.55,
+      43.9,
+      44.25
+    ],
+    "resultIn": 44.35
+  },
+  "pullback": {
+    "move": [
+      49.95,
+      51.65
+    ],
+    "labelsIn": 50.85,
+    "factsIn": 51.25,
+    "factsOut": 53.75
+  },
+  "beyond": {
+    "move": [
+      53.95,
+      56.55
+    ],
+    "camera": [
+      53.95,
+      55.45
+    ],
+    "lineIn": 54.55,
+    "lineOut": 56.45
+  },
+  "ending": {
+    "worldOut": [
+      56.65,
+      57.55
+    ],
+    "flight": [
+      56.55,
+      57.7
+    ],
+    "brandIn": 57.7,
+    "labelIn": 58.25,
+    "heroIn": [
+      58.35,
+      58.65
+    ],
+    "subIn": 59.45,
+    "ruleIn": [
+      59.85,
+      60.45
+    ]
+  }
+}

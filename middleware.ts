@@ -4,11 +4,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const PUBLIC = ["/routes/login", "/api/auth", "/landing"];
+const PUBLIC = ["/routes/login", "/api/auth", "/landing", "/blog"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (pathname === "/apply" || pathname === "/api/applications" || pathname === "/" || PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
+  if (pathname === "/sitemap.xml" || pathname === "/robots.txt" || pathname === "/apply" || pathname === "/api/applications" || pathname === "/" || PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
 
   const token = await getToken({
     req,
