@@ -1,4 +1,5 @@
 import {NextResponse} from 'next/server';
+import {revalidatePath} from 'next/cache';
 import {Prisma} from '@prisma/client';
 import {requireAdmin} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
@@ -26,6 +27,7 @@ export async function POST(request:Request){
    if(!result.count)throw Error('다른 창에서 수정된 글입니다. 새로고침 후 다시 확인해 주세요.');
    return tx.blogPost.findUniqueOrThrow({where:{id:old.id}});
   });
+  if(input.action!=='save')revalidatePath('/'); // 랜딩 히어로의 최신 글
   return NextResponse.json({id:post.id,updatedAt:post.updatedAt,publishedAt:post.publishedAt,publishedUpdatedAt:post.publishedUpdatedAt});
  }catch(error){
   if(error instanceof Prisma.PrismaClientKnownRequestError&&error.code==='P2002')return NextResponse.json({error:'이미 사용 중인 글 주소입니다.'},{status:409});
