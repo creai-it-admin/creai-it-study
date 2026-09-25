@@ -18,7 +18,8 @@
     "storage:setup": "tsx scripts/storage-setup.ts",
     "test:session:integration": "node --import tsx --test tests/session-control.integration.ts",
     "test:study:integration": "node --import tsx --test tests/studies.integration.ts",
-    "reports:worker": "tsx scripts/report-worker.ts"
+    "reports:worker": "tsx scripts/report-worker.ts",
+    "test:blog:integration": "RUN_BLOG_QA=1 node --import tsx --test tests/blog.integration.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
@@ -26,13 +27,15 @@
     "next": "16.3.4",
     "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "sanitize-html": "^2.17.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sanitize-html": "^2.16.1",
     "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "tsx": "^4.23.13",

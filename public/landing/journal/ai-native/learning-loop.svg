@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 570" role="img" aria-labelledby="title desc">
+<title id="title">지식과 경험이 서로를 갱신하는 학습</title><desc id="desc">AI에 대한 지식은 활용을 판단할 기준이 된다. 활용 경험은 그 기준을 검증하고 갱신한다. 이 반복으로 더 큰 일을 수행할 수 있게 된다.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="none" stroke="#65c4e6" stroke-width="1.5"/></marker></defs>
+<rect width="740" height="570" rx="8" fill="#142f49"/>
+<g font-family="Pretendard, Apple SD Gothic Neo, sans-serif">
+<text x="42" y="56" fill="#a9cbdc" font-size="16" letter-spacing="2">KNOWLEDGE × EXPERIENCE</text>
+<text x="42" y="110" fill="#f3f8fa" font-size="32" font-weight="700">알고, 써보고, 기준을 갱신합니다.</text>
+<path d="M245 205Q370 126 495 205" stroke="#65c4e6" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M495 365Q370 444 245 365" stroke="#65c4e6" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<circle cx="213" cy="285" r="95" fill="#244963"/><circle cx="527" cy="285" r="95" fill="#c9e8f4"/>
+<text x="213" y="279" fill="#f2f8fc" font-size="30" font-weight="700" text-anchor="middle">지식적 이해</text><text x="213" y="317" fill="#b9d5e3" font-size="21" text-anchor="middle">원리 · 한계 · 산업</text>
+<text x="527" y="279" fill="#16394f" font-size="30" font-weight="700" text-anchor="middle">활용의 이해</text><text x="527" y="317" fill="#365a6e" font-size="21" text-anchor="middle">설계 · 위임 · 검토</text>
+<text x="370" y="160" fill="#d0e9f4" font-size="22" text-anchor="middle">판단 기준을 세우고</text>
+<text x="370" y="445" fill="#d0e9f4" font-size="22" text-anchor="middle">경험으로 검증하고</text>
+<path d="M42 480H698" stroke="#355670"/>
+<text x="370" y="529" fill="#f3f8fa" font-size="27" text-anchor="middle">더 큰 일을, 더 정확하게 맡길 수 있도록.</text>
+</g></svg>

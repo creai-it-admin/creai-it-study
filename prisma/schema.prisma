@@ -334,3 +334,16 @@ model LibraryVersion {
   materials SessionMaterial[]
   @@unique([assetId, number])
 }
+
+model BlogPost {
+  id                 String    @id @default(uuid())
+  slug               String    @unique
+  draft              Json
+  published          Json?
+  publishedAt        DateTime?
+  publishedUpdatedAt DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([publishedAt, id])
+}

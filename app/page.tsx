@@ -28,7 +28,7 @@ export default function Landing() {
     <a href="#main" className="landing-skip">본문으로 바로가기</a>
     <header className="landing-nav">
       <Link href="/" className="landing-logo" aria-label="CREAI+IT Edu 홈"><Brand /></Link>
-      <nav aria-label="주요 메뉴"><a href="#vision">우리가 지향하는 사람</a><a href="#curriculum">4주 교육</a><a href="#community">이후 커뮤니티</a></nav>
+      <nav aria-label="주요 메뉴"><a href="#vision">우리가 지향하는 사람</a><a href="#curriculum">4주 교육</a><a href="#community">이후 커뮤니티</a><Link href="/blog">저널</Link></nav>
       <Link href="/routes" className="nav-enter">멤버 로그인 <span>↗</span></Link>
     </header>
     <main id="main">
@@ -108,7 +108,7 @@ export default function Landing() {
         <div className="track-join-actions"><Link href="/apply" className="landing-button ink">참가 신청하러 가기 <span>↗</span></Link><Link href="/routes" className="text-link">이미 참여 중이라면, 내 스터디로 ↗</Link></div>
       </section>
     </main>
-    <footer className="landing-footer landing-wrap"><a href="#main" className="landing-logo"><Brand /></a><p>Learn. Apply. Evolve. Together.</p><a href="#main">BACK TO TOP ↑</a></footer>
+    <footer className="landing-footer landing-wrap"><a href="#main" className="landing-logo"><Brand /></a><p>Learn. Apply. Evolve. Together.</p><Link href="/blog">저널 읽기 ↗</Link><a href="#main">BACK TO TOP ↑</a></footer>
     <StudyGuide />
   </div>;
 }
