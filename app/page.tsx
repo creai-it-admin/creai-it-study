@@ -5,7 +5,11 @@ import { StudyGuide } from '@/components/landing/StudyGuide';
 import { ProjectExamples } from '@/components/landing/ProjectExamples';
 import { EnrollmentOffer } from '@/components/landing/EnrollmentOffer';
 import { LearningExchange, UnderstandingArt } from '@/components/landing/LearningExchange';
+import { getLatestPost } from '@/lib/blog/posts';
 import './landing.css';
+
+// 히어로의 최신 저널 글. 발행·비공개 전환 시 API가 즉시 갱신하고, 이 값은 안전망이다.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'CREAI+IT Edu — AI 시대를 이끄는 사람들.',
@@ -23,7 +27,8 @@ function Brand() {
   return <><span className="brand-symbol" aria-hidden="true"><img src="/landing/creaiit-symbol.png" alt="" width="250" height="354" /></span>CREAI<span>+</span>IT<small>EDU</small></>;
 }
 
-export default function Landing() {
+export default async function Landing() {
+  const latest = await getLatestPost();
   return <div className="landing landing-renewed">
     <a href="#main" className="landing-skip">본문으로 바로가기</a>
     <header className="landing-nav">
@@ -38,7 +43,7 @@ export default function Landing() {
         </div>
         <div className="track-hero-inner landing-wrap">
           <div className="track-hero-copy">
-            <p className="eyebrow">CREAI+IT EDU / LEARN. APPLY. EVOLVE.</p>
+            <Link href={latest ? `/blog/${latest.slug}` : '/blog'} className="hero-journal"><span className="hero-journal-tag">JOURNAL</span><span className="hero-journal-title">{latest?.title ?? 'CREAI+IT 저널 읽기'}</span><span className="hero-journal-arrow" aria-hidden="true">→</span></Link>
             <h1 id="hero-title">AI 시대를<br/><em>이끄는 사람들.</em></h1>
             <p className="track-hero-description">기술의 변화를 읽고, 최전선의 지능을 자신의 역량으로.<br/>함께 배우고 도전하며, 새로운 가능성을 만드는<br/>사람들로 성장합니다.</p>
             <EnrollmentOffer dark />
