@@ -131,8 +131,11 @@ export const Strands: React.FC<{t: number}> = ({t}) => {
   const dashes = (y: number, color: string) => (
     <line x1={W.routeEnd + 24} y1={y} x2={W.beyondEnd + 600} y2={y} stroke={color} strokeWidth={3} strokeDasharray="18 22" strokeLinecap="round" opacity={beyond} />
   );
+  // In the finale the two strands fuse into the foundation that replaces them.
+  const fused = 1 - seg(t, TL.beyond.blocks[0], TL.beyond.lock, 0, 1, E.soft);
+  if (fused <= 0) return null;
   return (
-    <svg style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}} width={1} height={1}>
+    <svg style={{position: 'absolute', left: 0, top: 0, overflow: 'visible', opacity: fused}} width={1} height={1}>
       <defs>
         <linearGradient id="fadeRight" gradientUnits="userSpaceOnUse" x1={W.routeEnd} x2={W.beyondEnd + 600} y1={0} y2={0}>
           <stop offset="0" stopColor="#fff" stopOpacity={0.55} />

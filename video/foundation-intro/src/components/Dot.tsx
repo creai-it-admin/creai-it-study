@@ -3,7 +3,7 @@ import {clamp01, seg} from '../lib/time';
 import {camera, dotSpeed, dotWorld, project, TL} from '../lib/world';
 import {C} from '../theme';
 
-const BURSTS = [TL.hook.surge[1], TL.ring.loop[1], ...TL.route.arrive];
+const BURSTS = [TL.hook.surge[1], TL.ring.loop[1], ...TL.route.arrive, TL.beyond.lock];
 const decay = (t: number, at: number, rate = 3) => (t < at ? 0 : Math.exp(-(t - at) * rate));
 
 /** The protagonist, drawn in screen space so it keeps its size while the camera zooms. */
@@ -22,7 +22,8 @@ export const Dot: React.FC<{t: number}> = ({t}) => {
   const p = project(d, camera(t));
   const appear = seg(t, TL.hook.dotIn, TL.hook.dotIn + 0.5);
   const [g0, g1] = TL.hook.gather;
-  const charge = seg(t, g0, g1) * (1 - seg(t, TL.hook.surge[0], TL.hook.surge[0] + 0.12));
+  // Gathers before the opening dash, and again on the foundation before the launch home.
+  const charge = Math.max(seg(t, g0, g1) * (1 - seg(t, TL.hook.surge[0], TL.hook.surge[0] + 0.12)), seg(t, TL.beyond.charge[0], TL.beyond.charge[1]));
   const burst = Math.max(...BURSTS.map((b) => decay(t, b)));
   const trail = clamp01((dotSpeed(t) - 500) / 2200);
   const history = trail > 0.01 ? Array.from({length: 14}, (_, k) => project(dotWorld(t - (k + 1) * 0.011), camera(t - (k + 1) * 0.011))) : [];

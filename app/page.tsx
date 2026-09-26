@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { StudyGuide } from '@/components/landing/StudyGuide';
 import { ProjectExamples } from '@/components/landing/ProjectExamples';
 import { EnrollmentOffer } from '@/components/landing/EnrollmentOffer';
+import { IntroFilm } from '@/components/landing/IntroFilm';
 import { LearningExchange, UnderstandingArt } from '@/components/landing/LearningExchange';
 import { getLatestPost } from '@/lib/blog/posts';
 import './landing.css';
@@ -58,6 +59,11 @@ export default async function Landing() {
         <a href="#curriculum"><span>01 / FOUNDATION</span><strong>4주, 기반을 만들다.</strong><b aria-hidden="true">↘</b></a>
         <a href="#community"><span>02 / COMMUNITY</span><strong>그 이후, 함께 넓히다.</strong><b aria-hidden="true">↗</b></a>
       </div>
+
+      <section id="film" className="landing-wrap film-section" aria-labelledby="film-title">
+        <div className="section-heading"><div><span className="eyebrow">FOUNDATION FILM</span><h2 id="film-title">우리가 가는 길을,<br/><em>1분 안에.</em></h2></div><p>AI 시대를 이끄는 사람이 되기 위한 기반, 4주 Foundation 교육을 한 편에 담았습니다. 소리를 켜면 내레이션과 함께 볼 수 있어요.</p></div>
+        <IntroFilm />
+      </section>
 
       <section id="vision" className="landing-wrap vision-section">
         <div className="section-heading"><div><span className="eyebrow">THE PERSON WE WANT TO BECOME</span><h2>깊이 이해하고.<br/><em>담대하게 활용하고.</em></h2></div><p>AI가 무엇을 바꾸는지 이해하고,<br/>그 힘으로 자신의 일과 조직에 변화를 만드는 사람.<br/>우리가 함께 성장해 나갈 방향입니다.</p></div>

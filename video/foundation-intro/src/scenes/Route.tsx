@@ -1,7 +1,7 @@
 import React from 'react';
 import {MaskedWords} from '../components/MaskedWords';
-import {E, seg, win} from '../lib/time';
-import {dotWorld, ROUTE_Y, TL, W} from '../lib/world';
+import {E, lerp, seg, win} from '../lib/time';
+import {blockHeight, dotWorld, ROUTE_Y, TL, W} from '../lib/world';
 import {C, EN, KR} from '../theme';
 
 // Week names follow the landing/apply pages; questions follow the OT roadmap.
@@ -134,9 +134,107 @@ export const Facts: React.FC<{t: number}> = ({t}) => {
   );
 };
 
+/* ---------- Finale: the four weeks become one foundation, and it launches the dot ---------- */
+
 const bd = TL.beyond;
-export const Beyond: React.FC<{t: number}> = ({t}) => (
-  <div style={{position: 'absolute', left: W.routeEnd + 190, top: ROUTE_Y - 470}}>
-    <MaskedWords t={t} text="4주는, *시작*입니다." start={bd.lineIn} exit={bd.lineOut} size={116} />
-  </div>
-);
+const SLAB_H = W.slabH;
+const SEAM = 56;
+const BLOCK_END = [...W.weekStart.slice(1), W.weekEnd];
+const decay = (t: number, at: number, rate: number) => (t < at ? 0 : Math.exp(-(t - at) * rate));
+
+export const Foundation: React.FC<{t: number}> = ({t}) => {
+  if (t < bd.blocks[0] - 0.05 || t > TL.ending.worldOut[1]) return null;
+  const x0 = W.weekStart[0];
+  const x1 = W.weekEnd;
+  const shut = seg(t, bd.lock - 0.14, bd.lock, 0, 1, E.in); // the seams snap shut together
+  const hit = decay(t, bd.lock, 3.2);
+  const sweep = seg(t, bd.stamp[0], bd.stamp[1], 0, 1, E.inOut);
+  const charge = seg(t, bd.charge[0], bd.charge[1], 0, 1, E.in);
+  const launch = decay(t, bd.move[1], 5);
+  const blocks = W.weekStart.map((start, i) => {
+    const {grow, h} = blockHeight(t, i);
+    const gap = (SEAM * (1 - shut)) / 2;
+    return {a: start + (i > 0 ? gap : 0), b: BLOCK_END[i] - (i < 3 ? gap : 0), h, grow, flash: decay(t, bd.blocks[i], 4.5)};
+  });
+  const rect = (b: (typeof blocks)[number], i: number, fill: string, opacity = 1) => (
+    <rect key={i} x={b.a} y={ROUTE_Y - b.h / 2} width={b.b - b.a} height={b.h} rx={20} fill={fill} opacity={opacity} />
+  );
+  const sx = lerp(x0 - 500, x1 + 500, sweep);
+  const numeral = 1 - seg(t, bd.stamp[0] - 0.1, bd.stamp[0] + 0.25);
+  return (
+    <>
+      <svg style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}} width={1} height={1}>
+        <defs>
+          {/* The two understandings fused: application leads weeks 1–3, knowledge week 4. */}
+          <linearGradient id="fdFill" gradientUnits="userSpaceOnUse" x1={x0} x2={x1} y1={0} y2={0}>
+            <stop offset={0} stopColor={C.bright} />
+            <stop offset={0.62} stopColor={C.bright} />
+            <stop offset={0.86} stopColor={C.knowledge} />
+            <stop offset={1} stopColor={C.knowledge} />
+          </linearGradient>
+          <linearGradient id="fdSheen" gradientUnits="userSpaceOnUse" x1={sx - 500} x2={sx + 500} y1={0} y2={0}>
+            <stop offset={0} stopColor="#fff" stopOpacity={0} />
+            <stop offset={0.5} stopColor="#fff" stopOpacity={0.95} />
+            <stop offset={1} stopColor="#fff" stopOpacity={0} />
+          </linearGradient>
+          {/* Charge: energy gathers toward the launch end. */}
+          <linearGradient id="fdGather" gradientUnits="userSpaceOnUse" x1={x0} x2={x1} y1={0} y2={0}>
+            <stop offset={0.3} stopColor="#fff" stopOpacity={0} />
+            <stop offset={1} stopColor="#fff" stopOpacity={1} />
+          </linearGradient>
+          {/* Solid, not a bar: lit from above, shaded toward the ground. */}
+          <linearGradient id="fdShade" gradientUnits="userSpaceOnUse" x1={0} x2={0} y1={ROUTE_Y - SLAB_H / 2} y2={ROUTE_Y + SLAB_H / 2}>
+            <stop offset={0} stopColor="#fff" stopOpacity={0.42} />
+            <stop offset={0.12} stopColor="#fff" stopOpacity={0.08} />
+            <stop offset={0.6} stopColor={C.cover} stopOpacity={0} />
+            <stop offset={1} stopColor={C.cover} stopOpacity={0.34} />
+          </linearGradient>
+          <filter id="fdGlow" x="-10%" y="-200%" width="120%" height="500%">
+            <feGaussianBlur stdDeviation={60} />
+          </filter>
+          <clipPath id="fdClip">{blocks.map((b, i) => rect(b, i, '#fff'))}</clipPath>
+        </defs>
+        <g filter="url(#fdGlow)" opacity={0.45 + 0.55 * hit + 0.4 * charge + 0.5 * launch}>
+          {blocks.map((b, i) => rect(b, i, 'url(#fdFill)', b.grow))}
+        </g>
+        {blocks.map((b, i) => rect(b, i, 'url(#fdFill)', Math.min(1, b.grow * 2.5)))}
+        <g clipPath="url(#fdClip)">
+          <rect x={x0} y={ROUTE_Y - SLAB_H} width={x1 - x0} height={SLAB_H * 2} fill="url(#fdShade)" />
+          {blocks.map((b, i) => rect(b, i, '#fff', 0.85 * b.flash))}
+          <rect x={x0} y={ROUTE_Y - SLAB_H} width={x1 - x0} height={SLAB_H * 2} fill="#fff" opacity={0.7 * hit} />
+          {sweep > 0 && sweep < 1 && <rect x={sx - 500} y={ROUTE_Y - SLAB_H} width={1000} height={SLAB_H * 2} fill="url(#fdSheen)" />}
+          <rect x={x0} y={ROUTE_Y - SLAB_H} width={x1 - x0} height={SLAB_H * 2} fill="url(#fdGather)" opacity={0.75 * charge + 0.6 * launch} />
+        </g>
+      </svg>
+      {/* Week numerals ride each block until FOUNDATION is struck across all four. */}
+      {blocks.map((b, i) => (
+        <div key={i} style={{position: 'absolute', left: b.a + 80, top: ROUTE_Y - 96, fontFamily: EN, fontSize: 160, fontWeight: 600, lineHeight: 1.2,
+          letterSpacing: '-0.02em', color: C.cover, opacity: seg(b.grow, 0.6, 1) * numeral}}>
+          0{i + 1}
+        </div>
+      ))}
+      <div style={{position: 'absolute', left: x0, top: ROUTE_Y - 120, width: x1 - x0, textAlign: 'center', fontFamily: EN, fontSize: 200, fontWeight: 600,
+        lineHeight: 1.2, letterSpacing: '0.5em', paddingLeft: '0.5em', color: C.cover, clipPath: `inset(0 ${(1 - sweep) * 100}% 0 0)`}}>
+        FOUNDATION
+      </div>
+    </>
+  );
+};
+
+/** Screen-space words of the finale, left-aligned on the OT margin where the cover's headline will take over. */
+export const FinaleText: React.FC<{t: number}> = ({t}) => {
+  if (t < bd.leadIn - 0.1 || t > TL.ending.worldOut[1]) return null;
+  const out = bd.move[1] + 0.02;
+  // The clause holds the main text area while FOUNDATION is struck, then hands it to the call.
+  return (
+    <div style={{position: 'absolute', left: 96, top: 214}}>
+      <MaskedWords t={t} text="4주를 거치며," start={bd.leadIn} exit={out} size={56} weight={600} color={C.muted} />
+      <div style={{position: 'absolute', left: 0, top: 100}}>
+        <MaskedWords t={t} text={'AI 시대를 이끌\n*압도적인 인재*가 되기 위한,'} start={bd.clause} exit={bd.lineIn - 0.45} size={104} lineHeight={1.22} />
+      </div>
+      <div style={{position: 'absolute', left: 0, top: 100}}>
+        <MaskedWords t={t} text={'단단한 기반을,\n*함께 만듭시다.*'} start={bd.lineIn} exit={out} size={128} emPulse={bd.charge[0]} />
+      </div>
+    </div>
+  );
+};

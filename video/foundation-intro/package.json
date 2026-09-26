@@ -4,10 +4,12 @@
   "type": "module",
   "scripts": {
     "prepare-assets": "node scripts/prepare-assets.mjs",
-    "score": "python3 scripts/score.py",
+    "voiceover": "python3 scripts/voiceover.py",
+    "score": "python3 scripts/score.py --cut vo",
     "studio": "npm run prepare-assets && remotion studio src/index.ts",
     "render": "npm run prepare-assets && npm run score && remotion render src/index.ts FoundationIntro out/creaiit-foundation-intro-1080p60.mp4 --codec=h264 --crf=16 --audio-bitrate=256k && npm run export",
-    "export": "ffmpeg -y -loglevel error -i out/creaiit-foundation-intro-1080p60.mp4 -vf fps=30 -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 160k out/creaiit-foundation-intro-web.mp4 && ffmpeg -y -loglevel error -ss 63.3 -i out/creaiit-foundation-intro-1080p60.mp4 -frames:v 1 -q:v 2 out/creaiit-foundation-intro-poster.jpg",
+    "export": "ffmpeg -y -loglevel error -i out/creaiit-foundation-intro-1080p60.mp4 -c:v libx264 -preset slow -crf 23 -profile:v high -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 160k out/creaiit-foundation-intro-web.mp4 && ffmpeg -y -loglevel error -sseof -0.25 -i out/creaiit-foundation-intro-1080p60.mp4 -frames:v 1 -q:v 2 out/creaiit-foundation-intro-poster.jpg",
+    "landing": "cp out/creaiit-foundation-intro-web.mp4 ../../public/landing/foundation-intro.mp4 && cp out/creaiit-foundation-intro-poster.jpg ../../public/landing/foundation-intro-poster.jpg && cp out/creaiit-foundation-intro.ko.vtt ../../public/landing/foundation-intro.ko.vtt",
     "stills": "node scripts/stills.mjs",
     "typecheck": "tsc --noEmit"
   },

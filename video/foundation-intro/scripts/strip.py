@@ -2,7 +2,8 @@
 import subprocess, sys
 from PIL import Image, ImageDraw
 name, a, b, step = sys.argv[1], float(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4])
-src = 'out/creaiit-foundation-intro-1080p60.mp4'
+import os
+src = os.environ.get('SRC', 'out/creaiit-foundation-intro-1080p60.mp4')
 times, t = [], a
 while t <= b + 1e-6:
     times.append(round(t, 3)); t += step

@@ -1,7 +1,14 @@
-import TL from '../timeline.json';
+import {getInputProps} from 'remotion';
+import musicCut from '../timeline.json';
+import voCut from '../timeline-vo.json';
+import render from '../render.json';
 import {E, lerp, seg, track, type Key} from './time';
 
-export {TL};
+/** `--props='{"cut":"music"}'` renders the music-only cut; the default is the narrated cut, retimed to its phrasing. */
+export const CUT: 'vo' | 'music' = (getInputProps() as {cut?: string}).cut === 'music' ? 'music' : 'vo';
+export const TL: typeof musicCut = CUT === 'music' ? musicCut : voCut;
+/** The film is authored in timeline seconds and played back faster: frame time × SPEED = timeline time. */
+export const SPEED: number = render.speed;
 
 /**
  * One world, one protagonist. Every scene lives at fixed world coordinates; the camera
@@ -19,6 +26,7 @@ export const W = {
   weekEnd: 5380,
   routeEnd: 5500,
   beyondEnd: 7600,
+  slabH: 420, // the finale's foundation
 };
 
 export const L = {x: W.C.x - W.R, y: W.C.y}; // knowledge node, later the route start
@@ -50,14 +58,24 @@ const camKeys: Key[] = [
   {t: TL.pullback.move[0], v: [W.S[3] + 300, 1360, 0.95]},
   {t: TL.pullback.move[1], v: [3340, 1395, 0.4]}, // whole route, start to end, inside the 96 px OT margins
   {t: TL.beyond.camera[0], v: [3340, 1395, 0.4]},
-  {t: TL.beyond.camera[1], v: [6300, 1420, 0.8]},
-  {t: TL.ending.flight[0], v: [6500, 1420, 0.8], e: E.linear},
-  {t: TL.ending.worldOut[1], v: [6620, 1420, 0.62], e: E.out},
+  // The four weeks settle low in frame as one foundation, edge to edge inside the OT margins; the words take the space above.
+  {t: TL.beyond.camera[1], v: [3380, 829, 0.432]},
+  {t: TL.ending.flight[0], v: [3380, 841, 0.44], e: E.soft}, // a slow lean in while the call lands
 ];
+
+const kick = (t: number, at: number, amp: number) => (t < at ? 0 : amp * Math.exp(-(t - at) * 7));
 
 export const camera = (t: number): Cam => {
   const [cx, cy, z] = track(t, camKeys);
-  return {cx, cy, z};
+  // The foundation locking and the launch each land as a small impact.
+  return {cx, cy, z: z * (1 + kick(t, TL.beyond.lock, 0.02) + kick(t, TL.ending.flight[0], 0.014))};
+};
+
+/** Height of one week's block of the foundation: it rises when that week lights and swells as the four lock. */
+export const blockHeight = (t: number, i: number) => {
+  const grow = seg(t, TL.beyond.blocks[i], TL.beyond.blocks[i] + 0.42, 0, 1, E.out);
+  const hit = t < TL.beyond.lock ? 0 : Math.exp(-(t - TL.beyond.lock) * 3.2);
+  return {grow, h: lerp(30, W.slabH, grow) * (1 + 0.1 * hit)};
 };
 
 export const project = (p: Pt, c: Cam): Pt => ({x: 960 + (p.x - c.cx) * c.z, y: 540 + (p.y - c.cy) * c.z});
@@ -71,7 +89,8 @@ export const ringPoint = (theta: number): Pt => ({x: W.C.x + W.R * Math.cos(thet
 const routeX = (t: number) => {
   let x = L.x;
   for (let i = 0; i < 4; i++) x = seg(t, r.depart[i], r.arrive[i], x, W.S[i], E.inOut);
-  return seg(t, TL.beyond.move[0], TL.beyond.move[1], x, W.beyondEnd, E.soft);
+  // Rides the cascade to the far end of the foundation, arriving as it locks: the launch point.
+  return seg(t, TL.beyond.blocks[0], TL.beyond.lock, x, W.weekEnd - 150, E.inOut);
 };
 
 /**
@@ -99,7 +118,10 @@ export const dotWorld = (t: number): Pt & {visible: boolean} => {
     const u = E.inOut((t - TL.ring.loop[0]) / (TL.ring.loop[1] - TL.ring.loop[0]));
     return {...ringPoint(Math.PI - 2 * Math.PI * u), visible: true};
   }
-  return {x: routeX(t), y: ROUTE_Y, visible: t < TL.ending.flight[0]};
+  // As week 04's block rises beneath it, the dot is carried up and stands on the finished foundation.
+  const b4 = blockHeight(t, 3);
+  const lift = b4.grow * (b4.h / 2 + 34);
+  return {x: routeX(t), y: ROUTE_Y - lift, visible: t < TL.ending.flight[0]};
 };
 
 export const dotScreen = (t: number): Pt => project(dotWorld(t), camera(t));
