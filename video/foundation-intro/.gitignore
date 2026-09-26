@@ -3,3 +3,4 @@ out
 public/fonts
 public/audio
 public/grain-*.png
+__pycache__

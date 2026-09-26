@@ -2,7 +2,7 @@ import React from 'react';
 import {measureText} from '@remotion/layout-utils';
 import {DotGlyph} from '../components/Dot';
 import {MaskedWords} from '../components/MaskedWords';
-import {E, seg, win} from '../lib/time';
+import {clamp01, E, seg, win} from '../lib/time';
 import {camera, dotWorld, project, TL} from '../lib/world';
 import {C, KR} from '../theme';
 
@@ -27,10 +27,17 @@ export const Ending: React.FC<{t: number}> = ({t}) => {
   const target = {x: EDGE + wCreai + wPlus / 2, y: TOP + lineH / 2 + BRAND * 0.02};
 
   const from = project(dotWorld(e.flight[0]), camera(e.flight[0]));
-  const p = E.inOut(Math.min(1, (t - e.flight[0]) / (e.flight[1] - e.flight[0])));
   const ctrl = {x: from.x + (target.x - from.x) * 0.45, y: Math.min(from.y, target.y) - 240};
-  const q = 1 - p;
-  const pos = {x: q * q * from.x + 2 * q * p * ctrl.x + p * p * target.x, y: q * q * from.y + 2 * q * p * ctrl.y + p * p * target.y};
+  // Launched off the foundation: all the gathered energy at once, then a soft landing in the +.
+  const at = (tt: number) => {
+    const p = E.out(clamp01((tt - e.flight[0]) / (e.flight[1] - e.flight[0])));
+    const q = 1 - p;
+    return {p, x: q * q * from.x + 2 * q * p * ctrl.x + p * p * target.x, y: q * q * from.y + 2 * q * p * ctrl.y + p * p * target.y};
+  };
+  const pos = at(t);
+  const p = pos.p;
+  const trail = t < e.flight[1] + 0.2 ? Array.from({length: 18}, (_, k) => at(t - (k + 1) * 0.014)) : [];
+  const blast = Math.exp(-(t - e.flight[0]) * 3.4);
   const landed = t >= e.flight[1];
   const morph = seg(t, e.brandIn, e.brandIn + 0.4, 0, 1, E.out);
   const ring = t < e.brandIn ? 0 : Math.exp(-(t - e.brandIn) * 2.6);
@@ -56,8 +63,25 @@ export const Ending: React.FC<{t: number}> = ({t}) => {
         FOUNDATION EDUCATION
       </div>
 
+      {blast > 0.01 && (
+        <>
+          <div style={{position: 'absolute', left: from.x - 24 - 320 * (1 - blast), top: from.y - 24 - 320 * (1 - blast), width: 48 + 640 * (1 - blast),
+            height: 48 + 640 * (1 - blast), borderRadius: '50%', border: `3px solid ${C.me}`, opacity: 0.85 * blast}} />
+          <div style={{position: 'absolute', left: from.x - 160, top: from.y - 160, width: 320, height: 320, borderRadius: '50%', opacity: blast,
+            background: 'radial-gradient(circle, rgba(243,249,255,0.9) 0%, rgba(56,189,248,0.35) 35%, rgba(56,189,248,0) 70%)'}} />
+        </>
+      )}
+      {trail.length > 0 && (
+        <svg style={{position: 'absolute', inset: 0, overflow: 'visible'}} width={1920} height={1080}>
+          {trail.map((s, k) => {
+            const prev = k === 0 ? pos : trail[k - 1];
+            const fade = (1 - k / trail.length) * (1 - morph);
+            return <line key={k} x1={prev.x} y1={prev.y} x2={s.x} y2={s.y} stroke={C.me} strokeLinecap="round" strokeWidth={18 * fade} opacity={0.85 * fade} />;
+          })}
+        </svg>
+      )}
       {!landed || morph < 1 ? (
-        <DotGlyph x={pos.x} y={pos.y} core={10 - 4 * p} glow={1 - 0.4 * p} alpha={1 - morph} />
+        <DotGlyph x={pos.x} y={pos.y} core={13 - 7 * p} glow={1.6 - p} alpha={1 - morph} />
       ) : null}
       {ring > 0.01 && (
         <div style={{position: 'absolute', left: target.x - 14 - 70 * (1 - ring), top: target.y - 14 - 70 * (1 - ring), width: 28 + 140 * (1 - ring),

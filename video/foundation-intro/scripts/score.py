@@ -7,8 +7,9 @@ the overview; a resolved Dmaj9 as the dot becomes the + of CREAI+IT.
 SFX: one coherent family (filtered noise, sine bells, soft sub) placed on the first legible frame of
 each event. Nothing is sampled, so there is no third-party licence to track.
 
-  python3 scripts/score.py            full score -> public/audio/score.wav (loudness-normalized)
-  python3 scripts/score.py --silent   silent placeholder of the right length
+  python3 scripts/score.py            music-only cut -> public/audio/score.wav (loudness-normalized)
+  python3 scripts/score.py --cut vo   narrated cut (src/timeline-vo.json + voiceover/placement.json) -> public/audio/score-vo.wav
+  python3 scripts/score.py --silent   silent placeholders of the right lengths
 """
 import json
 import subprocess
@@ -19,10 +20,23 @@ import numpy as np
 from scipy import signal
 
 SR = 48000
-TL = json.load(open('src/timeline.json'))
+CUT = 'vo' if '--cut' in sys.argv and sys.argv[sys.argv.index('--cut') + 1] == 'vo' else 'music'
+SPEED = json.load(open('src/render.json'))['speed']  # same playback speed the picture uses
+
+
+def compress(o):
+    """Timeline seconds -> film seconds. The music is composed at the compressed timing, never stretched afterwards."""
+    if isinstance(o, dict):
+        return {k: (x if k == 'fps' else compress(x)) for k, x in o.items()}
+    if isinstance(o, list):
+        return [compress(x) for x in o]
+    return o / SPEED if isinstance(o, (int, float)) and not isinstance(o, bool) else o
+
+
+TL = compress(json.load(open('src/timeline-vo.json' if CUT == 'vo' else 'src/timeline.json')))
 END = TL['end']
 N = int(END * SR)
-OUT = 'public/audio/score.wav'
+OUT = 'public/audio/score-vo.wav' if CUT == 'vo' else 'public/audio/score.wav'
 
 
 def write(path, stereo):
@@ -35,7 +49,8 @@ def write(path, stereo):
 
 
 if '--silent' in sys.argv:
-    write(OUT, np.zeros((N, 2)))
+    for path, tl_path in (('public/audio/score.wav', 'src/timeline.json'), ('public/audio/score-vo.wav', 'src/timeline-vo.json')):
+        write(path, np.zeros((int(json.load(open(tl_path))['end'] * SR), 2)))
     sys.exit(0)
 
 rng = np.random.default_rng(11)
@@ -183,13 +198,15 @@ for i in range(4):
     pad(s, t_end, week_chords[i], 0.32, fade=1.0, bright=0.55)
 # Overview: widest voicing.
 pad(pb['move'][0], bd['move'][0] + 0.5, ['G1', 'D2', 'B2', 'F#3', 'A3', 'D4', 'E4'], 0.42, fade=1.4, bright=0.85, width=0.9)
-# Beyond: suspended, still moving.
-pad(bd['move'][0], e['flight'][0] + 0.6, ['A1', 'E2', 'D3', 'E3', 'B3'], 0.34, fade=1.2, bright=0.6)
+# Finale: suspended while the weeks gather, IV as they lock, V under the charge, the tonic when the + lands.
+pad(bd['move'][0], bd['lock'] + 0.3, ['A1', 'E2', 'D3', 'E3', 'B3'], 0.34, fade=1.0, bright=0.6)
+pad(bd['lock'], bd['charge'][0] + 0.3, ['G1', 'D2', 'B2', 'D3', 'A3', 'E4'], 0.40, fade=0.6, bright=0.8, width=0.8)
+pad(bd['charge'][0], e['flight'][0] + 0.5, ['A1', 'E2', 'C#3', 'E3', 'A3', 'E4'], 0.42, fade=0.5, bright=0.85, width=0.8)
 # Ending: resolved, long tail.
 pad(e['flight'][0] + 0.4, END + 1.5, ['D2', 'A2', 'F#3', 'C#4', 'E4', 'A4'], 0.40, fade=2.4, bright=0.75, width=0.8)
 
 # Route pulse: soft plucks on eighths (96 bpm) that give the journey momentum.
-BEAT = 60 / 96
+BEAT = 60 / 96 / SPEED  # 144 bpm at 1.5×: the pulse speeds up with the picture
 pulse_notes = [['D4', 'A4', 'F#4', 'A4'], ['B3', 'F#4', 'D4', 'F#4'], ['G3', 'D4', 'B3', 'D4'], ['A3', 'E4', 'C#4', 'E4']]
 t0 = r['depart'][0]
 k = 0
@@ -204,6 +221,19 @@ while tp < pb['move'][0] + 0.4:
         place(music, tp, pan(sub, 0), 0.22 * ramp)
     k += 1
     tp = t0 + k * BEAT / 2
+
+# Finale pulse: the route's pulse returns under the call on IV, doubles on V as the dot charges, and stops dead on the launch.
+k, tp = 0, bd['lock'] + 0.15
+while tp < e['flight'][0] - 0.02:
+    on_v = tp >= bd['charge'][0]
+    note = (['A3', 'E4', 'C#4', 'E4'] if on_v else ['G3', 'D4', 'B3', 'D4'])[k % 4]
+    ramp = min(1.0, (tp - bd['lock']) / 1.5)
+    place(music, tp, pan(pluck(hz(note), 0.8, 2000), 0.25 * ((k % 2) * 2 - 1)), 0.07 * ramp, 0.3)  # under speech: soft, darker
+    if k % 4 == 0:
+        sub = np.sin(2 * np.pi * hz('A1' if on_v else 'G1') * np.arange(int(0.5 * SR)) / SR) * env(int(0.5 * SR), 0.01, 0.35)
+        place(music, tp, pan(sub, 0), 0.2 * ramp)
+    k += 1
+    tp += BEAT / 4 if on_v else BEAT / 2
 
 # ---------- sound design ----------
 # The flood: grains of filtered noise whose density follows the word stream.
@@ -285,9 +315,24 @@ chime(pj['resultIn'], ['D5', 'A5', 'D6'], 0.12, spread=0.4, dur=2.6, reverb=0.6,
 # Overview: pull back.
 whoosh(pb['move'][0], pb['move'][1] - pb['move'][0] + 0.3, 3500, 250, 0.3, -0.3, 0.20, peak=0.35)
 chime(pb['factsIn'] + 0.1, ['D4', 'A4'], 0.10, dur=2.6, reverb=0.6, bright=0.6)
-# Beyond: the dot keeps going.
-whoosh(bd['move'][0], 1.6, 500, 3000, -0.3, 0.8, 0.16, peak=0.4)
-chime(bd['lineIn'] + 0.15, ['E5', 'B5'], 0.11, dur=2.6, reverb=0.6)
+# Finale: each week's block rises on that week's chord tone, then the four lock with one impact.
+whoosh(bd['move'][0], bd['lock'] - bd['move'][0], 400, 2600, -0.4, 0.4, 0.12, peak=0.85)
+for i_ in range(4):
+    tick = rng.standard_normal(int(0.03 * SR)) * np.exp(-np.arange(int(0.03 * SR)) / SR * 160)
+    place(sfx, bd['blocks'][i_], pan(tick, -0.6 + 0.4 * i_), 0.12, 0.2)
+    chime(bd['blocks'][i_] + 0.02, arrive_notes[i_], 0.13, spread=0.3, dur=1.6, reverb=0.5, stagger=0.04)
+sub_hit(bd['lock'], 0.8, f0=80, f1=34, dur=1.8)
+b, a = signal.butter(2, 1400 / (SR / 2))
+clack = signal.lfilter(b, a, rng.standard_normal(int(0.09 * SR))) * np.exp(-np.arange(int(0.09 * SR)) / SR * 45)
+place(sfx, bd['lock'], pan(clack / np.max(np.abs(clack)), 0), 0.22, 0.35)
+chime(bd['lock'], ['D5', 'A5', 'D6'], 0.2, spread=0.4, dur=3.2, reverb=0.7, stagger=0.02)
+# FOUNDATION is struck: a bright sweep across the field with the light.
+whoosh(bd['stamp'][0], bd['stamp'][1] - bd['stamp'][0], 1200, 9000, -0.8, 0.8, 0.10, peak=0.6)
+chime(bd['stamp'][1], ['F#6'], 0.07, dur=2.0, reverb=0.7, bright=1.3)
+chime(bd['lineIn'] + 0.15, ['A4', 'E5'], 0.10, dur=2.6, reverb=0.6)
+# Charge: the opening dash's rising sweep returns and cuts on the launch.
+whoosh(bd['charge'][0] - 0.2, bd['charge'][1] - bd['charge'][0] + 0.2, 300, 7000, 0.6, 0.8, 0.2, reverb=0.3, peak=0.98)
+sub_hit(e['flight'][0], 0.75)
 # Homecoming: a rising glide as the dot flies, a bright landing as it becomes the +.
 n = int((e['flight'][1] - e['flight'][0]) * SR)
 tt = np.arange(n) / SR
@@ -314,23 +359,50 @@ def reverb_ir(seconds=2.8):
 ir = reverb_ir()
 wet = np.stack([signal.fftconvolve(send[:, c], ir[:, c])[:N] for c in range(2)], axis=-1)
 
-# Keep the low end clean and the music from masking the effects.
+# Narration (VO cut): place each line, then duck the music ~7 dB and the effects ~3 dB beneath it.
+voice = np.zeros((N, 2))
+if CUT == 'vo':
+    placement = json.load(open('voiceover/placement.json'))['parts']
+    speech = np.zeros(N)
+    for p_ in placement:
+        # Only the voice is time-compressed (pitch preserved); music and effects are composed at the new timing.
+        pcm = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', f"public/{p_['file']}", '-af', f'atempo={SPEED}',
+                              '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
+        line = np.frombuffer(pcm, dtype=np.float32).astype(float)
+        i0 = int(p_['at'] / SPEED * SR)
+        voice[i0:i0 + len(line)] += pan(line, 0)[: max(0, N - i0)]
+        speech[max(0, i0 - int(0.15 * SR)):i0 + len(line) + int(0.25 * SR)] = 1
+    # smooth the duck: ~120 ms attack, ~450 ms release
+    duck = signal.lfilter([1 - np.exp(-1 / (0.12 * SR))], [1, -np.exp(-1 / (0.12 * SR))], speech)
+    duck = np.maximum(duck, signal.lfilter([1 - np.exp(-1 / (0.45 * SR))], [1, -np.exp(-1 / (0.45 * SR))], speech))
+    b, a = signal.butter(2, 80 / (SR / 2), btype='high')
+    voice = signal.lfilter(b, a, voice, axis=0)
+    bed = music * 0.9 * (1 - 0.55 * duck)[:, None] + (sfx + wet * 0.55) * (1 - 0.3 * duck)[:, None]
+    # Voice level from measurement: ~9 LU above the bed it sits on.
+    on = duck > 0.9
+    rms = lambda x: np.sqrt(np.mean(x[on] ** 2) + 1e-12)
+    voice *= rms(bed) * 10 ** (9 / 20) / rms(voice)
+    mix_src = bed + voice
+else:
+    mix_src = music * 0.9 + sfx + wet * 0.55
+
+# Keep the low end clean.
 b, a = signal.butter(2, 28 / (SR / 2), btype='high')
-mix = signal.lfilter(b, a, music * 0.9 + sfx + wet * 0.55, axis=0)
+mix = signal.lfilter(b, a, mix_src, axis=0)
 # Protect the first and last moments: an intentional near-silence at 0 and a clean tail for the cut to the deck.
 fade_in = np.clip(t_all / 0.25, 0, 1)
 fade_out = np.clip((END - t_all) / 1.6, 0, 1) ** 1.5
 mix *= (fade_in * fade_out)[:, None]
 mix /= np.max(np.abs(mix)) + 1e-9
-write('out/score-raw.wav', mix * 0.7)
+write(f'out/score-raw-{CUT}.wav', mix * 0.7)
 
 # Two-pass EBU R128 loudness to -16 LUFS / -1.5 dBTP (linear gain when possible).
-probe = subprocess.run(['ffmpeg', '-hide_banner', '-nostats', '-i', 'out/score-raw.wav', '-af',
+probe = subprocess.run(['ffmpeg', '-hide_banner', '-nostats', '-i', f'out/score-raw-{CUT}.wav', '-af',
                         'loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-'],
                        capture_output=True, text=True).stderr
 m = json.loads(probe[probe.rindex('{'):probe.rindex('}') + 1])
-subprocess.run(['ffmpeg', '-y', '-hide_banner', '-loglevel', 'error', '-i', 'out/score-raw.wav', '-af',
+subprocess.run(['ffmpeg', '-y', '-hide_banner', '-loglevel', 'error', '-i', f'out/score-raw-{CUT}.wav', '-af',
                 f"loudnorm=I=-16:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
                 f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true",
                 '-ar', str(SR), '-c:a', 'pcm_s16le', OUT], check=True)
-print(f"score: {END:.2f}s, measured {m['input_i']} LUFS / {m['input_tp']} dBTP -> {OUT}")
+print(f"score ({CUT}, {SPEED}×): {END:.2f}s, measured {m['input_i']} LUFS / {m['input_tp']} dBTP -> {OUT}")

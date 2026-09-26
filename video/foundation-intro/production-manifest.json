@@ -1,6 +1,6 @@
 {
   "film": "CREAI+IT EDU · Foundation intro",
-  "composition": "FoundationIntro · 1920×1080 · 60 fps · 63.55 s",
+  "composition": "FoundationIntro · 1920×1080 · 60 fps · narrated cut authored at 75.59 s, played at 1.5× (src/render.json) → 50.45 s",
   "sources": {
     "visuals": "authored motion graphics (Remotion 4.0.528); no captured or generated footage",
     "copy": "docs/education/ot/plan.md, OT v2 slides, landing (app/page.tsx) and /apply copy",
@@ -10,7 +10,29 @@
     }
   },
   "audio": {
-    "voiceover": "none",
+    "voiceover": {
+      "source": "generated",
+      "provider": "ElevenLabs",
+      "model": "eleven_v3",
+      "language": "ko",
+      "voice": "Sola (KlstlYt9VVf3zgie2Oht)",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.8,
+        "style": 0.3,
+        "speed": 1.05,
+        "seed": 7
+      },
+      "retakes": {
+        "week1": "seed 11 (first take read as 그거를)",
+        "two": "seed 7 with [clear articulation] (변화를 onset read as 전화를 at 1.5× otherwise)",
+        "finale": "one take split at 1.30 s / 4.74 s via takes.json `cuts` (room tone in pauses; the expressive pause before 만듭시다 is longer than the sentence breaks); performance text 사 주를"
+      },
+      "script": "voiceover/takes.json (performance text) → voiceover/placement.json (timing) → out/creaiit-foundation-intro.ko.vtt (captions)",
+      "raw_takes": "voiceover/raw/*.mp3",
+      "parts": "public/audio/vo/*.wav",
+      "qa": "every part and the full final mix transcribed with gpt-4o-mini-transcribe; full mix matches the script word for word"
+    },
     "music": {
       "title": "Foundation intro score",
       "source": "original, synthesized by scripts/score.py (numpy/scipy); no samples",
@@ -19,11 +41,14 @@
     },
     "sfx": "original, synthesized by scripts/score.py",
     "loudness": "-16 LUFS integrated, true peak below -1.5 dBTP (two-pass EBU R128, linear gain)",
-    "native_clip_audio": "not applicable"
+    "native_clip_audio": "not applicable",
+    "mix": "1.5×: music and effects composed at the compressed timing (pulse 144 bpm), narration time-compressed per line (ffmpeg atempo, pitch preserved); music ducked ~7 dB / effects ~3 dB under speech; voice ~9 LU above the bed; two-pass EBU R128 to -16 LUFS"
   },
   "exports": {
-    "ot_master": "out/creaiit-foundation-intro-1080p60.mp4",
-    "web": "out/creaiit-foundation-intro-web.mp4 (1080p30, faststart)",
-    "poster": "out/creaiit-foundation-intro-poster.jpg"
+    "master": "out/creaiit-foundation-intro-1080p60.mp4 (1.5×, 50.45 s)",
+    "web": "out/creaiit-foundation-intro-web.mp4 (1.5×, 1080p60, faststart, 8.4 MB) → public/landing/foundation-intro.mp4",
+    "poster": "out/creaiit-foundation-intro-poster.jpg → public/landing/foundation-intro-poster.jpg",
+    "captions": "out/creaiit-foundation-intro.ko.vtt (film time) → public/landing/foundation-intro.ko.vtt",
+    "removed": "1× narrated and music-only exports (superseded by the 1.5× cut)"
   }
 }
