@@ -11,6 +11,7 @@ export default async function AdminHome(){
   <Link className="card mb-4 flex items-center justify-between p-5 hover:border-accent" href="/routes/admin/library"><span><strong>공통 자료실</strong><span className="mt-1 block text-sm text-ink-2">Foundation OT · 1–4주차 원본과 버전 관리</span></span><span aria-hidden="true">→</span></Link>
   <Link className="card mb-6 flex items-center justify-between p-5 hover:border-accent" href="/routes/admin/applications"><span><strong>참가 신청자</strong><span className="mt-1 block text-sm text-ink-2">신청 정보와 시작 가능일 · 토요일·일요일 시간대 확인</span></span><span aria-hidden="true">→</span></Link>
   <Link className="card mb-6 flex items-center justify-between p-5 hover:border-accent" href="/routes/admin/blog"><span><strong>블로그 관리</strong><span className="mt-1 block text-sm text-ink-2">HTML 글 작성 · 미리보기 · 발행</span></span><span aria-hidden="true">→</span></Link>
+  <Link className="card mb-6 flex items-center justify-between p-5 hover:border-accent" href="/routes/admin/ideas"><span><strong>교육 운영 구상</strong><span className="mt-1 block text-sm text-ink-2">1on1 멘토링 · AI 인클래스와 동적 해설 검토</span></span><span aria-hidden="true">→</span></Link>
   <div className="grid gap-4 sm:grid-cols-2">{studies.map(study=>{
    const weeks=study.sessions.filter(s=>s.weekNo>0),closed=weeks.filter(s=>s.status==='closed').length;
    const running=study.sessions.find(s=>s.status==='running');
