@@ -1,11 +1,13 @@
 import { createHash } from "node:crypto";
 
-export type FormContent = { topicMd: string; fields: { id: string; order: number; question: string; stage?: string }[] };
-export type FormInput = { version: string; topicMd: string; fields: { id?: string; question: string; stage?: string }[] };
+export type FormContent = { topicMd: string; agentMd?: string; agentWebSearch?: boolean; fields: { id: string; order: number; question: string; stage?: string }[] };
+export type FormInput = { version: string; topicMd: string; agentMd: string; agentWebSearch: boolean; fields: { id?: string; question: string; stage?: string }[] };
 
 export function formVersion(form: FormContent | null): string {
   return createHash("sha256").update(JSON.stringify(form ? {
     topicMd: form.topicMd,
+    // Defaults stay out of the hash so versions of forms without an agent are unchanged.
+    ...(form.agentMd ? { agentMd: form.agentMd } : {}), ...(form.agentWebSearch ? { agentWebSearch: true } : {}),
     fields: [...form.fields].sort((a, b) => a.order - b.order).map(({ id, order, question, stage }) => ({ id, order, question, ...(stage?{stage}:{}) })),
   } : null)).digest("hex");
 }
@@ -15,6 +17,8 @@ export function parseFormInput(value: unknown): FormInput | null {
   const input = value as Record<string, unknown>;
   if (typeof input.version !== "string" || typeof input.topicMd !== "string" ||
       !input.topicMd.trim() || !Array.isArray(input.fields)) return null;
+  if (input.agentMd !== undefined && (typeof input.agentMd !== "string" || input.agentMd.length > 20000)) return null;
+  if (input.agentWebSearch !== undefined && typeof input.agentWebSearch !== "boolean") return null;
   const fields: FormInput["fields"] = [];
   const ids = new Set<string>();
   for (const raw of input.fields) {
@@ -24,7 +28,7 @@ export function parseFormInput(value: unknown): FormInput | null {
     if (raw.stage !== undefined && !["before", "after"].includes(raw.stage)) return null;
     fields.push({ stage: raw.stage ?? (raw.question.startsWith("[피드백 후]")?"after":"before"), ...(raw.id ? { id: raw.id } : {}), question: raw.question.trim() });
   }
-  return { version: input.version, topicMd: input.topicMd.trim(), fields };
+  return { version: input.version, topicMd: input.topicMd.trim(), agentMd: typeof input.agentMd === "string" ? input.agentMd.trim() : "", agentWebSearch: input.agentWebSearch === true, fields };
 }
 
 export function formLockedReason(status: string, submissions: number, activityStatus = "locked"): string | null {

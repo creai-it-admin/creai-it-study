@@ -27,7 +27,9 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
       return NextResponse.json({ error: "이 회차에 없는 질문입니다." }, { status: 400 });
     }
     const form = await tx.formDef.upsert({
-      where: { sessionId: id }, create: { sessionId: id, topicMd: input.topicMd }, update: { topicMd: input.topicMd },
+      where: { sessionId: id },
+      create: { sessionId: id, topicMd: input.topicMd, agentMd: input.agentMd, agentWebSearch: input.agentWebSearch },
+      update: { topicMd: input.topicMd, agentMd: input.agentMd, agentWebSearch: input.agentWebSearch },
     });
     const retained = input.fields.flatMap((f) => f.id ? [f.id] : []);
     await tx.formField.deleteMany({ where: { formDefId: form.id, id: { notIn: retained } } });

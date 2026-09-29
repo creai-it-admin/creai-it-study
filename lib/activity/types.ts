@@ -1,13 +1,15 @@
+import type {PracticeEvent} from '@/lib/practice/types';
 export type ActivityField = {id:string; question:string; order:number; stage:string};
 export type ActivitySnapshot = {answers:Record<string,string>; result:string};
 export type Feedback = {id:string; authorId:string; name:string; text:string; updatedAt:string};
 export type ActivityData = {
  session:{id:string;studyName:string;weekNo:number;status:string;activityStatus:string;sharingOpen:boolean};
  viewer:{id:string;admin:boolean};
- form:{topicMd:string;fields:ActivityField[]}|null;
+ form:{topicMd:string;fields:ActivityField[];agent:boolean}|null;
+ spotlight:{name:string;events:PracticeEvent[]}|null;
  mine:{id:string|null;version:string;answers:Record<string,string>;firstSnapshot:ActivitySnapshot|null;firstSharedAt:string|null;completedAt:string|null;feedback:Feedback[]};
  peers:{id:string;userId:string;name:string;snapshot:ActivitySnapshot;completedAt:string|null;revisedResult:string;reflection:Record<string,string>;feedback:Feedback[]}[];
- people:{id:string;name:string;progress:string;attendance:string;filled:number;total:number;answers:Record<string,string>;firstSnapshot:ActivitySnapshot|null;feedback:Feedback[]}[];
+ people:{id:string;name:string;progress:string;attendance:string;filled:number;total:number;answers:Record<string,string>;firstSnapshot:ActivitySnapshot|null;feedback:Feedback[];turns:number}[];
 };
 export const FIRST_RESULT='$firstResult', REVISED_RESULT='$revisedResult';
 export function activityProgress(sub:{firstSharedAt?:unknown;completedAt?:unknown;answers?:{text:string}[];firstResult?:string}|null|undefined){

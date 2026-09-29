@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type Field = { id?: string; question: string; stage?: string; key: string };
-export function FormEditor({ sessionId, initialTopic, initialFields, initialVersion, lockedReason }: {
-  sessionId: string; initialTopic: string; initialFields: { id: string; question: string; stage?: string }[];
+export function FormEditor({ sessionId, initialTopic, initialAgentMd, initialWebSearch, initialFields, initialVersion, lockedReason }: {
+  sessionId: string; initialTopic: string; initialAgentMd: string; initialWebSearch: boolean; initialFields: { id: string; question: string; stage?: string }[];
   initialVersion: string; lockedReason: string | null;
 }) {
   const router = useRouter();
   const [topic, setTopic] = useState(initialTopic);
+  const [agentMd, setAgentMd] = useState(initialAgentMd);
+  const [webSearch, setWebSearch] = useState(initialWebSearch);
   const [fields, setFields] = useState<Field[]>(initialFields.map((f) => ({ ...f, key: f.id })));
   const [version, setVersion] = useState(initialVersion);
   const [busy, setBusy] = useState(false);
@@ -35,12 +37,12 @@ export function FormEditor({ sessionId, initialTopic, initialFields, initialVers
     try {
       const response = await fetch(`/api/admin/session/${sessionId}/form`, {
         method: "PUT", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ version, topicMd: topic, fields: fields.map(({ id, question, stage }) => ({ id, question, stage:stage??"before" })) }),
+        body: JSON.stringify({ version, topicMd: topic, agentMd, agentWebSearch: webSearch, fields: fields.map(({ id, question, stage }) => ({ id, question, stage:stage??"before" })) }),
         signal: AbortSignal.timeout(10000),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "저장하지 못했습니다");
-      setTopic(result.form.topicMd);
+      setTopic(result.form.topicMd); setAgentMd(result.form.agentMd); setWebSearch(result.form.agentWebSearch);
       setFields(result.form.fields.map((f: { id: string; question: string; stage?:string }) => ({ ...f, key: f.id })));
       setVersion(result.version); setDirty(false); setError(false); setMessage("저장했습니다");
       router.refresh();
@@ -55,6 +57,12 @@ export function FormEditor({ sessionId, initialTopic, initialFields, initialVers
       <div className="card p-5">
         <label htmlFor="form-topic" className="mb-2 block text-[14px] font-medium">인클래스 주제</label>
         <textarea id="form-topic" className="field min-h-24" value={topic} onChange={(e) => { setTopic(e.target.value); changed(); }} />
+      </div>
+      <div className="card p-5">
+        <label htmlFor="form-agent" className="mb-1 block text-[14px] font-medium">AI 실습 에이전트</label>
+        <p className="mb-3 text-[13px] text-ink-2">참가자가 활동 화면에서 함께 작업할 AI의 과제·역할·제공 자료를 적습니다. 목표와 결과 기준은 참가자가 정하도록 피드백 전 질문으로 남겨 주세요. 비워 두면 AI 실습 없이 진행합니다.</p>
+        <textarea id="form-agent" className="field min-h-40" maxLength={20000} value={agentMd} onChange={(e) => { setAgentMd(e.target.value); changed(); }} placeholder={"과제: …\n에이전트 역할: …\n제공 자료: …"} />
+        <label className="mt-3 flex items-center gap-2 text-[14px]"><input type="checkbox" checked={webSearch} onChange={(e) => { setWebSearch(e.target.checked); changed(); }} /> 웹 검색 허용 · 검색어와 출처가 작업 기록에 남습니다</label>
       </div>
       {fields.map((field, index) => <div key={field.key} className="card p-5">
         <div className="mb-3 flex items-center justify-between gap-3">
