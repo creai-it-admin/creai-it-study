@@ -57,6 +57,8 @@ model User {
   attendances Attendance[]
   memberships StudyMembership[]
   activityFeedback ActivityFeedback[]
+  practiceEvents PracticeEvent[]
+  practiceSummaries PracticeSummary[]
 }
 
 // --- Auth.js 어댑터가 요구하는 테이블 ---
@@ -149,8 +151,14 @@ model StudySession {
   processingAttempts Int @default(0)
   processingNextAttemptAt DateTime?
   processingToken String?
+  // 강사가 수업에 띄운 실습 기록 범위 {userId,from,to}. 동료에게는 이 범위만 보인다.
+  spotlight Json?
+  // 참가자 간 해설거리. 반영한 참가자별 기록 위치(inputs)를 함께 저장한다.
+  commentary Json?
   recordingParts RecordingPart[]
   materials SessionMaterial[]
+  practiceEvents PracticeEvent[]
+  practiceSummaries PracticeSummary[]
 
   segments    Segment[]
   formDef     FormDef?
@@ -197,6 +205,9 @@ model FormDef {
   id        String @id @default(cuid())
   sessionId String @unique
   topicMd   String
+  // 비어 있으면 AI 실습 없이 기존 활동으로 진행한다.
+  agentMd   String  @default("")
+  agentWebSearch Boolean @default(false)
 
   session     StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   fields      FormField[]
@@ -293,6 +304,37 @@ model ActivityFeedback {
   author User @relation(fields:[authorId], references:[id], onDelete:Cascade)
   @@unique([submissionId, authorId])
   @@index([authorId])
+}
+
+// 참가자별 AI 실습 과정. 추가만 하며 seq가 요약·해설의 근거 위치다.
+model PracticeEvent {
+  id        String   @id @default(cuid())
+  sessionId String
+  userId    String
+  seq       Int
+  kind      String   // request | response | result
+  text      String
+  meta      Json?
+  createdAt DateTime @default(now())
+  session StudySession @relation(fields:[sessionId], references:[id], onDelete:Cascade)
+  user    User         @relation(fields:[userId], references:[id], onDelete:Cascade)
+  @@unique([sessionId, userId, seq])
+  @@index([userId])
+}
+
+model PracticeSummary {
+  sessionId     String
+  userId        String
+  throughSeq    Int
+  data          Json
+  model         String
+  reasoning     String
+  promptVersion String
+  generatedAt   DateTime
+  session StudySession @relation(fields:[sessionId], references:[id], onDelete:Cascade)
+  user    User         @relation(fields:[userId], references:[id], onDelete:Cascade)
+  @@id([sessionId, userId])
+  @@index([userId])
 }
 
 // Prospective cohort participants; independent from registered app users.

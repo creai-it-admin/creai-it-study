@@ -8,10 +8,10 @@ export type Report = {
  openQuestions:{text:string;evidence:Evidence[]}[];
  limitations:string[];
 };
-type Schema={type?:string;enum?:string[];maxLength?:number;minLength?:number;properties?:Record<string,Schema>;required?:string[];additionalProperties?:false;items?:Schema;minItems?:number;maxItems?:number;anyOf?:Schema[]};
-const str=(maxLength:number):Schema=>({type:'string',minLength:1,maxLength});
-const obj=(properties:Record<string,Schema>):Schema=>({type:'object',properties,required:Object.keys(properties),additionalProperties:false});
-const arr=(items:Schema,maxItems:number,minItems=0):Schema=>({type:'array',items,minItems,maxItems});
+export type Schema={type?:string;enum?:string[];maxLength?:number;minLength?:number;properties?:Record<string,Schema>;required?:string[];additionalProperties?:false;items?:Schema;minItems?:number;maxItems?:number;anyOf?:Schema[]};
+export const str=(maxLength:number):Schema=>({type:'string',minLength:1,maxLength});
+export const obj=(properties:Record<string,Schema>):Schema=>({type:'object',properties,required:Object.keys(properties),additionalProperties:false});
+export const arr=(items:Schema,maxItems:number,minItems=0):Schema=>({type:'array',items,minItems,maxItems});
 const nullable=(schema:Schema):Schema=>({anyOf:[schema,{type:'null'}]});
 const evidence=arr(obj({partId:str(100),quote:str(300)}),4,1);
 export const REPORT_SCHEMA=obj({
@@ -23,9 +23,10 @@ export const REPORT_SCHEMA=obj({
  openQuestions:arr(obj({text:str(300),evidence}),6),limitations:arr(str(400),6),
 });
 // Validate against the same bounded schema used for Structured Outputs, including cached data.
-function matches(v:unknown,s:Schema):boolean{
+export function matches(v:unknown,s:Schema):boolean{
  if(s.anyOf)return s.anyOf.some(x=>matches(v,x));
  if(s.type==='null')return v===null;
+ if(s.type==='integer')return Number.isInteger(v);
  if(s.type==='string')return typeof v==='string'&&v.trim().length>=(s.minLength??0)&&v.length<=(s.maxLength??Infinity)&&(!s.enum||s.enum.includes(v));
  if(s.type==='array')return Array.isArray(v)&&v.length>=(s.minItems??0)&&v.length<=(s.maxItems??Infinity)&&v.every(x=>matches(x,s.items!));
  if(s.type==='object')return !!v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===s.required!.length&&s.required!.every(k=>Object.hasOwn(v,k)&&matches((v as Record<string,unknown>)[k],s.properties![k]));
