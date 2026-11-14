@@ -33,7 +33,7 @@ export default function ApplicationForm() {
     finally { sending.current = false; setBusy(false); }
   }
   const fieldError = (name: string) => error?.field === name;
-  if (done) return <section ref={success} tabIndex={-1} className={`card ${styles.success}`} aria-labelledby="success-title"><span className={styles.check}>✓</span><p className={styles.eyebrow}>APPLICATION RECEIVED</p><h2 id="success-title">신청이 접수되었습니다.</h2><p>가능한 일정이 맞는 분들과 코호트를 구성한 뒤,<br/>남겨 주신 전화번호로 안내드릴게요.</p><div className={styles.summary}><span>시작 가능일</span><strong>{start.replaceAll('-', '.')} 이후</strong><span>가능한 요일·시간대</span><strong>{TIME_BLOCKS.filter(b => blocks.includes(b.value)).map(b => b.label).join(' / ')}</strong></div><p className={styles.note}>정확한 일정과 참가비를 확인하신 후 참여를 확정합니다.</p><Link href="/" className={`btn btn-primary ${styles.submit}`}>교육 소개로 돌아가기 ↗</Link></section>;
+  if (done) return <section ref={success} tabIndex={-1} className={`card ${styles.success}`} aria-labelledby="success-title"><span className={styles.check}>✓</span><p className={styles.eyebrow}>APPLICATION RECEIVED</p><h2 id="success-title">신청이 접수되었습니다.</h2><p>가능한 일정이 맞는 분들과 코호트를 구성한 뒤,<br/>남겨 주신 전화번호로 안내드릴게요.</p><div className={styles.summary}><span>시작 가능일</span><strong>{start.replaceAll('-', '.')} 이후</strong><span>가능한 요일·시간대</span><strong>{TIME_BLOCKS.filter(b => blocks.includes(b.value)).map(b => b.label).join(' / ')}</strong></div><p className={styles.note}>정확한 일정과 장소를 확인하신 후 참여를 확정합니다.</p><Link href="/" className={`btn btn-primary ${styles.submit}`}>교육 소개로 돌아가기 ↗</Link></section>;
   return <form onSubmit={submit} className={`card ${styles.form}`} aria-busy={busy}>
     <fieldset disabled={busy} className={styles.section}><legend><span>01</span> 기본 정보</legend><p className={styles.note}>모든 항목을 입력해 주세요.</p>
       <div className={styles.twoColumns}>
@@ -47,6 +47,13 @@ export default function ApplicationForm() {
       <label>시작 가능일<input className="field" name="availableFrom" type="date" min={koreaToday()} value={start} onChange={e => setStart(e.target.value)} required aria-invalid={fieldError('availableFrom')} aria-describedby="start-help" /><small id="start-help">이 날짜 이후에 시작하는 코호트에 참여할 수 있다는 뜻입니다. 실제 개강일은 별도로 안내합니다.</small></label>
       <fieldset className={styles.times}><legend>참여 가능한 시간대 <small>복수 선택 가능</small></legend><p id="time-help">4주 동안 참여 가능한 요일·시간대를 모두 골라 주세요. 토요일과 일요일 모두 선택할 수 있으며, 선택한 시간대 중 하나로 편성합니다.</p>{(['토요일', '일요일'] as const).map(day => <fieldset key={day} className={styles.dayGroup}><legend>{day}</legend><div className={styles.blocks}>{TIME_BLOCKS.filter(block => block.day === day).map(block => <label key={block.value} className={`${styles.block} ${blocks.includes(block.value) ? styles.selected : ''}`}><input type="checkbox" name="timeBlocks" aria-label={block.label} value={block.value} checked={blocks.includes(block.value)} onChange={e => setBlocks(prev => e.target.checked ? [...prev, block.value] : prev.filter(v => v !== block.value))} aria-describedby="time-help" /><span><small>{block.period}</small><strong>{block.time}</strong></span></label>)}</div></fieldset>)}</fieldset>
     </fieldset>
+    <section className={styles.rules} aria-labelledby="rules-title"><h3 id="rules-title">참여 전에 알아 두세요</h3><ul>
+      <li>첫 수업 전에 AI 도구 유료 플랜(월 20달러 수준)을 하나 이상 결제하고, Codex 또는 Claude 앱을 설치해 주세요.</li>
+      <li>매주 과제가 있습니다. 과제를 2회 이상 내지 않으면 참가비를 환불받을 수 없습니다.</li>
+      <li>2회 이상 결석하면 다음 기수에서 이어서 참여합니다.</li>
+      <li>지각하면 1분에 500원, 최대 1만 원을 냅니다.</li>
+      <li>수업은 복습을 위해 녹화합니다.</li>
+    </ul></section>
     <label className={styles.consent}><input name="consent" type="checkbox" required disabled={busy} aria-invalid={fieldError('consent')} /><span>신청 접수를 위한 개인정보 수집·이용에 동의합니다.<small>CREAI+IT는 이름·생년월일·전화번호·유입 경로·가능 일정을 코호트 편성과 참여 안내에 사용합니다. 동의를 거부할 수 있으나 신청 접수는 어렵습니다.</small></span></label>
     {error && <p role="alert" className={styles.error}>{error.message}</p>}
     <button className={`btn btn-primary ${styles.submit}`} disabled={busy} type="submit">{busy ? '신청을 접수하고 있어요…' : '참가 신청하기 →'}</button><p className={styles.bottomNote}>신청 후 운영진이 남겨 주신 번호로 연락드립니다.</p>

@@ -14,14 +14,14 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'CREAI+IT Edu — AI 시대를 이끄는 사람들.',
-  description: 'AI의 변화를 읽는 지식과 최신 AI를 활용하는 경험. 4주 교육으로 기반을 만들고, 소규모 커뮤니티에서 서로 배우며 계속 발전합니다.',
+  description: 'AI의 변화를 읽는 지식과 최신 AI를 활용하는 경험. 4주 교육으로 기반을 만들고, 수료생 커뮤니티에서 서로 배우며 계속 발전합니다.',
 };
 
 const curriculum = [
-  { week: '01', title: '지금의 AI, 그리고 내가 쓸 수 있는 도구', question: '지금 무엇이 가능하고, 어디서 시작할까?', body: '현재 AI의 수준과 가능성을 짚고, Claude Code·Codex 같은 코딩 에이전트의 기본 사용과 주요 기능을 이해합니다.', detail: '파일과 실행 도구, 서브에이전트, 지침과 스킬, 외부 서비스 연결. 각 기능이 어떤 일을 가능하게 하는지 실제 예시로 살펴봅니다.' },
-  { week: '02', title: 'AI와 함께 일하는 구조', question: '어떻게 내 업무를 맡기고, 함께 완성할까?', body: 'PRD로 목표와 완료 기준을 정하고, 사람과 AI의 역할·작업 순서·검토 지점을 설계합니다.', detail: '방향을 던지고, 함께 조정하고, 구체화해 맡긴 뒤 결과를 보며 수정합니다. 실제 작업 과정을 통해 이 루프가 어떻게 움직이는지 배웁니다.' },
-  { week: '03', title: '더 어려운 일을 맡기며 배우는 법', question: '모델이 발전할 때, 나도 함께 발전하려면?', body: '도전적인 일을 맡긴 경험에서 가능성과 한계를 확인하고, 시행착오를 더 나은 활용 방식으로 바꿉니다.', detail: '어디서 실패했는지, 맥락이나 일의 구조를 어떻게 바꿔야 하는지 살펴봅니다. 새 모델과 기능을 만날 때 기존의 한계를 다시 확인하고, 얻은 교훈을 쌓아갑니다.' },
-  { week: '04', title: 'AI 기술과 산업을 읽는 관점', question: '가치는 어디에서 생기고, 누가 영향력을 갖는가?', body: 'AI 밸류체인과 참여자별 협상력, 핵심 기술 개념을 이해하고 앞선 활용 경험을 더 넓은 맥락에 연결합니다.', detail: '반도체·인프라·모델·애플리케이션의 관계를 살펴봅니다. 기술의 특성이 비용과 경쟁에 어떻게 연결되는지 이해하며, 새로운 소식을 해석할 기준을 만듭니다.' },
+  { week: '01', title: 'AI와 함께 일을 설계하기', question: '모든 일을 AI와 함께 한다면, 일은 어떻게 달라질까?', body: '모든 일을 AI 에이전트와 함께 한다는 전제로 일을 짭니다. Codex·Claude Code가 일하는 원리를 이해하고, 첫 주에 사이트를 직접 만들어 배포합니다.', detail: '맥락을 주는 법, 계산을 실행기에 맡기는 법, 외부 도구를 쓰게 하는 법을 개념으로 익힙니다. 기획·비교·세부 결정은 AI에게 맡기고, 사람은 중요한 방향을 판단합니다.' },
+  { week: '02', title: '큰 일을 믿고 맡기기', question: '내가 계속 지시하지 않아도, 큰 일이 기준대로 굴러가려면?', body: '해야 할 일과 품질 기준을 먼저 정하고, 큰 일을 오래 맡겨도 결과가 흔들리지 않는 구조를 만듭니다.', detail: 'AI와 대화로 작업 구조를 합의하고, 첫 결과를 보며 조정한 뒤 반복 실행합니다. 다시 쓸 구조는 스킬로 만들어 다음 일에 그대로 씁니다.' },
+  { week: '03', title: '할 수 있는 일의 범위 넓히기', question: '아직 시켜 보지 않은 어려운 일, 정말 안 될까?', body: '해 보지 않은 어려운 일을 담대하게 맡기고, 맥락 파악부터 AI에게 넘겨 봅니다. 영상·3D처럼 새로운 결과물에도 도전합니다.', detail: '모델이 무엇을 기준으로 좋아지는지 이해하고, 실패한 지점에서 맥락과 일의 구조를 어떻게 바꿀지 찾습니다. 새 모델이 나올 때마다 기존의 한계를 다시 확인합니다.' },
+  { week: '04', title: '달라지는 세상 읽기', question: 'AI가 더 좋아지면, 사람들은 무엇을 다르게 할까?', body: '검색, 앱, 보험 같은 실제 사례로 사람들의 행동과 산업이 어떻게 바뀌는지 살피고, 당연하던 전제를 다시 묻습니다.', detail: '모델·인프라·서비스로 이어지는 밸류체인과 그 안의 협상력을 짚고, 쏟아지는 AI 소식 중 의미 있는 변화를 골라내는 기준을 만듭니다. 마지막에는 각자의 분야에 적용해 봅니다.' },
 ];
 
 function Brand() {
@@ -77,7 +77,7 @@ export default async function Landing() {
 
       <section id="curriculum" className="curriculum-section">
         <div className="landing-wrap curriculum-layout">
-          <div className="curriculum-intro"><span className="eyebrow">01 / FOUNDATION EDUCATION</span><h2>AI 시대,<br/><em>압도적인 인재로.</em></h2><p className="foundation-ambition">그 도약의 기반을 다지는 4주.</p><p>기술의 변화를 읽는 깊이와 최전선의 AI를 자기 일에 연결하는 힘. 두 기반을 함께 세워, AI가 발전할수록 더 큰 일을 해내는 사람으로 성장하고자 합니다.</p><p className="foundation-bridge">AI를 이해하고, 더 큰 일을 맡기는 방법을 배웁니다. 마지막 2주에는 나만의 프로젝트를 진행하며, 튜터의 피드백을 받아 배운 방법을 실제 결과물로 연결합니다.</p><div className="curriculum-facts">4주 · 주 1회 · 회당 2시간 · 소규모 교육</div>
+          <div className="curriculum-intro"><span className="eyebrow">01 / FOUNDATION EDUCATION</span><h2>AI 시대,<br/><em>압도적인 인재로.</em></h2><p className="foundation-ambition">그 도약의 기반을 다지는 4주.</p><p>기술의 변화를 읽는 깊이와 최전선의 AI를 자기 일에 연결하는 힘. 두 기반을 함께 세워, AI가 발전할수록 더 큰 일을 해내는 사람으로 성장하고자 합니다.</p><p className="foundation-bridge">매 회차 1부에서는 그날의 개념과 산업 지식을 배우고, 2부에서는 실제 작업 시연을 본 뒤 직접 해 봅니다. 마지막 2주에는 나만의 프로젝트로 배운 방법을 실제 결과물로 연결합니다.</p><div className="curriculum-facts">4주 · 주 1회 · 회당 2시간 · 한 반 8명 이내</div>
             <div className="curriculum-rhythm"><div><span><b>1–3주</b> 활용 중심</span><i aria-hidden="true"/><small>지식 20% · 활용 80%</small></div><div><span><b>4주</b> 기술·산업 이해 중심</span><i aria-hidden="true"/><small>지식 80% · 활용 20%</small></div></div>
           </div>
           <div className="curriculum-list">{curriculum.map(item => <article className="curriculum-row" key={item.week}>
@@ -86,36 +86,36 @@ export default async function Landing() {
           </article>)}</div>
         </div>
         <section className="landing-wrap foundation-project" aria-labelledby="project-title">
-          <div className="project-heading"><div><span className="eyebrow">YOUR OWN PROJECT / WEEK 03–04</span><h3 id="project-title">혼자서는 엄두가 나지 않았던 일,<br/><em>이번에는 AI와 함께.</em></h3></div><p>직접 쓰고 싶은 서비스, 반복 업무를 줄이는 도구, 리서치를 돕는 시스템.<br/>각자의 목표에 맞춰 범위를 정하고, 튜터의 피드백으로 막힌 지점을 풀며 완성해갑니다.</p></div>
-          <div className="project-timeline" aria-label="1주 도구 이해, 2주 업무 설계, 3주 활용 범위 확장, 4주 기술·산업 이해. 개인 프로젝트와 튜터링은 3–4주차에 병행합니다.">
-            <ol>{['도구 이해', '업무 설계', '활용 범위 확장', '기술·산업 이해'].map((title, i) => <li key={title}><span>0{i+1} WEEK</span><strong>{title}</strong></li>)}</ol>
-            <div className="project-span"><span>3–4주차 병행</span><strong>나만의 프로젝트 · 튜터링</strong></div>
+          <div className="project-heading"><div><span className="eyebrow">YOUR OWN PROJECT / WEEK 03–04</span><h3 id="project-title">혼자서는 엄두가 나지 않았던 일,<br/><em>이번에는 AI와 함께.</em></h3></div><p>직접 쓰고 싶은 서비스, 반복 업무를 줄이는 도구, 리서치를 돕는 시스템.<br/>실제로 작동하고 포트폴리오로 쓸 수 있는 결과물을 목표로, 튜터의 피드백을 받으며 완성합니다.</p></div>
+          <div className="project-timeline" aria-label="1주 AI와 함께 일을 설계하기, 2주 큰 일을 믿고 맡기기, 3주 할 수 있는 일의 범위 넓히기, 4주 달라지는 세상 읽기. 개인 프로젝트와 튜터링은 3–4주차에 수업과 함께 진행합니다.">
+            <ol>{['일을 설계하기', '믿고 맡기기', '범위 넓히기', '세상 읽기'].map((title, i) => <li key={title}><span>0{i+1} WEEK</span><strong>{title}</strong></li>)}</ol>
+            <div className="project-span"><span>3–4주차 수업과 함께</span><strong>나만의 프로젝트 · 튜터링</strong></div>
           </div>
           <ol className="project-steps">
-            <li><span>01</span><div><h4>주제와 범위 정하기</h4><p>내게 필요한 결과물과 완료 기준을 정하고, 2주 안에 시도할 범위로 조정합니다.</p></div></li>
-            <li><span>02</span><div><h4>만들며 피드백 받기</h4><p>AI에게 맡겨보고, 막힌 결과와 지시를 함께 살피며 다음 시도를 바꿉니다.</p></div></li>
-            <li><span>03</span><div><h4>결과와 배운 점 공유하기</h4><p>만든 것을 보여주고, 어디까지 맡겼고 어디서 직접 판단했는지 나눕니다.</p></div></li>
+            <li><span>01</span><div><h4>주제와 범위 정하기</h4><p>3주차까지 내게 필요한 결과물을 정하고, 2주 안에 끝낼 수 있는 범위로 줄입니다.</p></div></li>
+            <li><span>02</span><div><h4>완성도 높이기</h4><p>작동하는 첫 버전을 만들고, 튜터의 피드백으로 막힌 지점을 풀며 다듬습니다. 1:1 멘토링이 필요하면 따로 신청할 수 있습니다.</p></div></li>
+            <li><span>03</span><div><h4>공개하고 반응 받기</h4><p>4주차에는 만든 것을 실제로 알리고 사람들의 반응을 받아 봅니다. 해 본 적 없는 시도를 두 가지 이상 해 봅니다.</p></div></li>
           </ol>
           <ProjectExamples />
-          <div className="project-foot"><p>4주 교육 안에서 진행합니다. 주제는 배운 뒤 함께 구체화합니다.</p><Link href="/apply" className="text-link">내 프로젝트로 시작하기 ↗</Link></div>
+          <div className="project-foot"><p>4주 교육 안에서 진행합니다. 신청할 때 주제를 정할 필요는 없습니다.</p><Link href="/apply" className="text-link">내 프로젝트로 시작하기 ↗</Link></div>
         </section>
         <div className="landing-wrap foundation-result"><span>압도적인 성장의 출발점</span><p>변화를 읽는 지식.<br/>AI와 일을 완성하는 활용력.<br/><strong>스스로 한계를 넓혀가는 학습의 기준.</strong></p><a href="#community" aria-label="교육 이후의 커뮤니티 보기">↓</a></div>
       </section>
 
       <section id="community" className="community-section">
         <div className="landing-wrap">
-          <div className="section-heading"><div><span className="eyebrow">02 / COMMUNITY</span><h2>나의 시도가,<br/><em>우리의 다음이 되다.</em></h2></div><p>교육이 끝나면, 서로의 경험으로 더 멀리.<br/>변화와 시행착오를 함께 해석하며<br/>배움을 이어가는 월 구독 커뮤니티.</p></div>
+          <div className="section-heading"><div><span className="eyebrow">02 / COMMUNITY</span><h2>나의 시도가,<br/><em>우리의 다음이 되다.</em></h2></div><p>교육이 끝나면, 서로의 경험으로 더 멀리.<br/>변화와 시행착오를 함께 해석하며<br/>배움을 이어가는 수료생 커뮤니티.</p></div>
           <LearningExchange />
-          <div className="community-format"><strong>주 1회 온라인 콜</strong><span>약 1시간</span><span>5–6인 소규모</span><span>진행자 1인</span></div>
-          <div className="community-records"><span>배움이 이어지도록</span><p>주중의 경험 공유와 피드백, 중요한 변화를 짚는 브리핑,<br/>대화에서 얻은 판단과 질문을 남기는 기록으로 연결합니다.</p></div>
+          <div className="community-format"><strong>수료생 대화방</strong><span>별도 비용 없음</span><span>AI 소식·자료 공유</span><span>모임·행사</span></div>
+          <div className="community-records"><span>배움이 이어지도록</span><p>수료하면 기수와 상관없이 같은 대화방에서 만납니다.<br/>의미 있는 AI 소식은 자료로 정리해 나누고, 수료생이 늘어나면 강의와 밋업을 엽니다.</p></div>
           <div className="contribution"><span aria-hidden="true">↗</span><div><h3>배우는 사람이, 누군가의 배움을 돕는 사람으로.</h3><p>먼저 익힌 방법과 시행착오를 나누고, 다른 구성원의 질문에 관점을 더합니다. 스터디에서 성장한 사람이 다시 스터디에 기여하며, 함께 배울 수 있는 경험이 쌓입니다.</p></div></div>
-          <p className="community-planning">커뮤니티는 교육 이후의 운영 방향입니다. 시작 일정과 세부 참여 조건은 별도로 안내합니다.</p>
+          <p className="community-planning">모임과 행사의 구체적인 일정은 대화방에서 안내합니다.</p>
         </div>
       </section>
 
       <section id="join" className="landing-wrap track-join">
         <span className="eyebrow">YOUR NEXT STEP</span><h2>새로운 시대의 가능성,<br/>그 시작에 함께 서다.</h2>
-        <p>4주 교육으로 시작하고, 커뮤니티에서 배움을 이어갑니다.<br/>참여 가능한 일정을 남겨 주세요. 일정이 맞는 분들과 코호트를 구성합니다.<br/>정확한 일정과 참가비 안내 후 참여를 확정합니다.</p>
+        <p>4주 교육으로 시작하고, 커뮤니티에서 배움을 이어갑니다.<br/>참여 가능한 일정을 남겨 주세요. 일정이 맞는 분들과 코호트를 구성합니다.<br/>정확한 일정과 장소 안내 후 참여를 확정합니다.</p>
         <div className="track-join-actions"><Link href="/apply" className="landing-button ink">참가 신청하러 가기 <span>↗</span></Link><Link href="/routes" className="text-link">이미 참여 중이라면, 내 스터디로 ↗</Link></div>
       </section>
     </main>
