@@ -28,6 +28,7 @@ export default function ApplyPage() {
           <div><dt>일정</dt><dd>4주 · 주 1회 2시간<br/>토요일 또는 일요일</dd></div>
           <div><dt>인원</dt><dd>한 반 8명 이내</dd></div>
           <div><dt>장소</dt><dd>일정과 함께 안내</dd></div>
+          <div><dt>수료 후</dt><dd>CREAI+IT 커뮤니티 멤버로<br/>모임·행사·프로젝트 참여</dd></div>
         </dl>
         <div className={styles.guide}>
           <strong>가능한 일정부터 알려 주세요.</strong>

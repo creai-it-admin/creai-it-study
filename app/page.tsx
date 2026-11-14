@@ -104,18 +104,18 @@ export default async function Landing() {
 
       <section id="community" className="community-section">
         <div className="landing-wrap">
-          <div className="section-heading"><div><span className="eyebrow">02 / COMMUNITY</span><h2>나의 시도가,<br/><em>우리의 다음이 되다.</em></h2></div><p>교육이 끝나면, 서로의 경험으로 더 멀리.<br/>변화와 시행착오를 함께 해석하며<br/>배움을 이어가는 수료생 커뮤니티.</p></div>
+          <div className="section-heading"><div><span className="eyebrow">02 / COMMUNITY</span><h2>나의 시도가,<br/><em>우리의 다음이 되다.</em></h2></div><p>4주를 마치면 CREAI+IT 커뮤니티의 일원이 됩니다.<br/>기수가 끝나도 함께 배우고,<br/>함께 일할 기회는 계속 이어집니다.</p></div>
           <LearningExchange />
-          <div className="community-format"><strong>수료생 대화방</strong><span>별도 비용 없음</span><span>AI 소식·자료 공유</span><span>모임·행사</span></div>
-          <div className="community-records"><span>배움이 이어지도록</span><p>수료하면 기수와 상관없이 같은 대화방에서 만납니다.<br/>의미 있는 AI 소식은 자료로 정리해 나누고, 수료생이 늘어나면 강의와 밋업을 엽니다.</p></div>
-          <div className="contribution"><span aria-hidden="true">↗</span><div><h3>배우는 사람이, 누군가의 배움을 돕는 사람으로.</h3><p>먼저 익힌 방법과 시행착오를 나누고, 다른 구성원의 질문에 관점을 더합니다. 스터디에서 성장한 사람이 다시 스터디에 기여하며, 함께 배울 수 있는 경험이 쌓입니다.</p></div></div>
-          <p className="community-planning">모임과 행사의 구체적인 일정은 대화방에서 안내합니다.</p>
+          <div className="community-benefits"><span className="community-benefits-label">멤버가 되면 · 별도 비용 없음</span><ul><li><h3>수료생 대화방</h3><p>기수와 상관없이 수료생이 한곳에 모여 AI 소식과 자료, 각자의 시행착오를 나눕니다.</p></li><li><h3>정기 모임과 행사</h3><p>함께 배우는 모임부터 가볍게 어울리는 자리까지, 수료생끼리 얼굴을 보고 만나는 행사를 엽니다.</p></li><li><h3>함께하는 프로젝트</h3><p>기업과 기관의 실제 과제를 수료생 팀이 맡아 해결하는 프로젝트를 준비하고 있습니다.</p></li></ul></div>
+          
+          <div className="contribution"><span aria-hidden="true">↗</span><div><h3>배우는 사람이, 다음 기수를 돕는 사람으로.</h3><p>커뮤니티 안에서 멘토와 운영진처럼 더 큰 역할을 맡을 수 있습니다. 먼저 익힌 방법과 시행착오를 다음 기수에게 나누고, 스터디에서 성장한 사람이 다시 스터디를 함께 만들어 갑니다.</p></div></div>
+          <p className="community-planning">모임, 행사, 프로젝트는 준비되는 대로 커뮤니티 멤버에게 먼저 안내합니다.</p>
         </div>
       </section>
 
       <section id="join" className="landing-wrap track-join">
         <span className="eyebrow">YOUR NEXT STEP</span><h2>새로운 시대의 가능성,<br/>그 시작에 함께 서다.</h2>
-        <p>4주 교육으로 시작하고, 커뮤니티에서 배움을 이어갑니다.<br/>참여 가능한 일정을 남겨 주세요. 일정이 맞는 분들과 코호트를 구성합니다.<br/>정확한 일정과 장소 안내 후 참여를 확정합니다.</p>
+        <p>4주 교육을 마치면 CREAI+IT 커뮤니티의 일원으로 다음 활동을 함께합니다.<br/>참여 가능한 일정을 남겨 주세요. 일정이 맞는 분들과 코호트를 구성합니다.<br/>정확한 일정과 장소 안내 후 참여를 확정합니다.</p>
         <div className="track-join-actions"><Link href="/apply" className="landing-button ink">참가 신청하러 가기 <span>↗</span></Link><Link href="/routes" className="text-link">이미 참여 중이라면, 내 스터디로 ↗</Link></div>
       </section>
     </main>
