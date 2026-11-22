@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const PUBLIC = ["/routes/login", "/api/auth", "/landing", "/blog"];
+// /og는 링크 미리보기 이미지다. 카카오톡·슬랙 스크래퍼는 로그인 없이 가져가야 한다.
+const PUBLIC = ["/routes/login", "/api/auth", "/landing", "/blog", "/og"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
