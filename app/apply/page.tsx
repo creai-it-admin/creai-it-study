@@ -5,7 +5,18 @@ import { EnrollmentOffer } from '@/components/landing/EnrollmentOffer';
 import ApplicationForm from './ApplicationForm';
 import ApplyIntroFilm from './ApplyIntroFilm';
 import styles from './apply.module.css';
-export const metadata: Metadata = { title: '참가 신청 · CREAI+IT EDU', description: '시작 가능한 일정과 토요일·일요일 시간대를 알려 주세요. CREAI+IT EDU의 다음 코호트를 함께 구성합니다.' };
+// 링크 미리보기 카드. 원본은 docs/education/referral/og-apply.html, render_og.py로 다시 만든다.
+// og 태그가 없으면 카카오톡 같은 스크래퍼가 본문 첫 이미지(프로젝트 예시의 유튜브 화면)를 집어 간다.
+const shareTitle = '여울 · CREAI+IT AI 스터디 2기 모집';
+const shareDescription = 'AI 시대에 필요한 기초를 4주 동안 함께 쌓습니다. 한 반 8명 이내로 꾸리니, 가능한 날짜와 시간대를 남겨 주세요.';
+const shareImage = { url: '/og/yeoul-apply.png', width: 1200, height: 630, alt: '여울 CREAI+IT AI 스터디 2기 참가자 모집 안내' };
+export const metadata: Metadata = {
+  metadataBase: new URL('https://study.creai-it.com'),
+  title: '참가 신청 · CREAI+IT EDU',
+  description: '시작 가능한 일정과 토요일·일요일 시간대를 알려 주세요. CREAI+IT EDU의 다음 코호트를 함께 구성합니다.',
+  openGraph: { type: 'website', url: '/apply', siteName: 'CREAI+IT EDU', locale: 'ko_KR', title: shareTitle, description: shareDescription, images: [shareImage] },
+  twitter: { card: 'summary_large_image', title: shareTitle, description: shareDescription, images: [shareImage] },
+};
 export const dynamic = 'force-dynamic';
 
 const weeks = [
