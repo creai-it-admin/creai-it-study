@@ -357,6 +357,7 @@ model EducationApplication {
 model LibraryAsset {
   id String @id @default(uuid())
   title String
+  cohortNo Int @default(1)
   weekNo Int // 0 = OT, 1–4 = Foundation weeks
   versionCount Int @default(0)
   createdAt DateTime @default(now())

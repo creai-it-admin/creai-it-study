@@ -4,21 +4,31 @@ import {confirmDeck,downloadMedia,mediaBucket,storageClient,validDeckPath} from 
 export const librarySlot=(weekNo:number)=>weekNo===0?'OT':`${weekNo}주차`;
 export const isUuid=(id:unknown):id is string=>typeof id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id);
 export const libraryPath=(assetId:string,versionId:string)=>`library/${assetId}/decks/${versionId}.html`;
-export function parseLibraryInput(value:unknown){
+type LibraryInput={
+ assetId:string;
+ versionId:string;
+ title:string;
+ weekNo:number;
+ note:string;
+ cohortNo?:number;
+};
+export function parseLibraryInput(value:unknown):LibraryInput{
  const b=value as Record<string,unknown>|null;
  if(!b||!isUuid(b.assetId)||!isUuid(b.versionId)||typeof b.title!=='string'||!b.title.trim()||b.title.trim().length>100||!Number.isInteger(b.weekNo)||Number(b.weekNo)<0||Number(b.weekNo)>4||typeof b.note!=='string'||b.note.length>500)throw Error('제목·자료 구분·버전 설명을 확인해 주세요.');
- return {assetId:b.assetId,versionId:b.versionId,title:b.title.trim(),weekNo:Number(b.weekNo),note:b.note.trim()};
+ if(b.cohortNo!==undefined && (typeof b.cohortNo!=='number'||!Number.isInteger(b.cohortNo)||b.cohortNo<0||b.cohortNo>2147483647))throw Error('올바른 기수를 선택해 주세요.');
+ return {cohortNo:b.cohortNo,assetId:b.assetId,versionId:b.versionId,title:b.title.trim(),weekNo:Number(b.weekNo),note:b.note.trim()};
 }
-export async function publishLibraryVersion(input:ReturnType<typeof parseLibraryInput>){
+export async function publishLibraryVersion(input:LibraryInput){
  const path=libraryPath(input.assetId,input.versionId);
  await confirmDeck(path);
  return prisma.$transaction(async tx=>{
   // Serializes initial creation and version allocation, including request retries.
   await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${input.assetId}, 0))`;
+  const asset=await tx.libraryAsset.upsert({where:{id:input.assetId},create:{id:input.assetId,title:input.title,weekNo:input.weekNo,cohortNo:input.cohortNo??1},update:{}});
+  if(input.cohortNo!==undefined && asset.cohortNo!==input.cohortNo)throw Error('기존 자료의 기수는 변경할 수 없습니다.');
+  if(asset.weekNo!==input.weekNo)throw Error('기존 자료의 주차 구분은 변경할 수 없습니다.');
   const previous=await tx.libraryVersion.findUnique({where:{id:input.versionId}});
   if(previous){if(previous.assetId!==input.assetId)throw Error('다른 자료의 버전입니다.');return previous;}
-  const asset=await tx.libraryAsset.upsert({where:{id:input.assetId},create:{id:input.assetId,title:input.title,weekNo:input.weekNo},update:{}});
-  if(asset.weekNo!==input.weekNo)throw Error('기존 자료의 주차 구분은 변경할 수 없습니다.');
   const updated=await tx.libraryAsset.update({where:{id:asset.id},data:{versionCount:{increment:1}}});
   return tx.libraryVersion.create({data:{id:input.versionId,assetId:asset.id,number:updated.versionCount,path,note:input.note}});
  });
